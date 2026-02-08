@@ -16,6 +16,7 @@ private:
     int _serverFd;
     std::vector<pollfd> _pollFds;
     std::map<int, Client*> _clients;
+
 public:
     Server(int port, std::string password);
     ~Server();
@@ -25,6 +26,21 @@ private:
     void acceptClient(size_t index);
     void handleClient(size_t index);
     void removeClient(size_t index);
+    void printClients();
+
+    std::map<int, Client*>  getClient() const
+    {
+        return (_clients);
+    }
+
+    void addClient(Client* client)
+    {
+        if (!client)
+            return;
+
+        _clients[client->getFd()] = client;
+    }
+    
 };
 
 #endif

@@ -19,7 +19,7 @@ private:
 
     std::set<int> _invited; // invated client "fds"
     std::map<int, Client*> _members;
-    std::set<int> _operators;
+    std::set<Client*> _operators;
 
 
 
@@ -50,8 +50,14 @@ public:
     std::string getKey() const;
     bool isInviteOnly() const;
     bool isTopicRestricted() const;
+    void setInviteOnly(bool inviteOnly);
+    bool getInviteOnly() const;
     bool hasUserLimit() const;
     void  setKey(std::string key);
+    void setTopic(std::string key);
+    std::map<int, Client*> getmembers ();
+    std::set<Client*> getoperators() const;
+    void setUserLimit(size_t limit);
 };
 
 

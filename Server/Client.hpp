@@ -11,7 +11,7 @@ class Client
 private:
     int _fd;
     sockaddr_in _addr;
-    std::string name;
+    std::string name; // add 
     
 
 public:
@@ -31,15 +31,19 @@ public:
         close(_fd);
     }
     int getFd() const;
+    std::string getName() const
+    {
+        return name;
+    }
     int receive(char *buffer, size_t size)
     {
         return recv(_fd, buffer, size, 0);
     }
-
     void sendMsg(const std::string &msg)
     {
         send(_fd, msg.c_str(), msg.size(), 0);
     }
+    void setname(std::string nameHolder);
 };
 
 #endif

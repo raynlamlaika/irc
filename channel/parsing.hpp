@@ -4,11 +4,14 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <cstdlib>
+#include <string>
 #include "channel.hpp"
 
+class Server;
 
 
-class Parsing
+class Parsing 
 {
 private:
     std::map<std::string, Channel> _channels;
@@ -16,11 +19,15 @@ private:
 
     
 public:
-    bool newMessage(const std::string &line, Client &client);
+    void printListOfClients();
+    bool newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients);
     void join(Client &clinet, std::string line);
+    void kick(std::string line);
     void mode(Client &clinet, std::string line);
+    void topic(std::string line);
+    void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
+    void prvmsg(std::string line);
     static std::vector<std::string> HelperSplit(std::string line, char del);
-    
     
     // void addChannel(Client *client);
     // void listAllChannel();
@@ -28,6 +35,12 @@ public:
     // ~Parsing();
     void add_Channel(const Channel& channel);
     std::map<std::string, Channel> &Getchannel();
+    bool seachForClient(std::string clinet);
+    bool searchForChannel(std::string channelName);
+    Channel *searchForChannelref(std::string channelName);
+    Client *searchForClientref(std::string channelName);
+
+
     void printer();
 };
 

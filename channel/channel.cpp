@@ -1,6 +1,10 @@
 #include "channel.hpp"
 
 
+std::map<int, Client*> Channel::getmembers ()
+{
+    return (_members);
+}
 
 Channel::Channel(const std::string& name) : _name(name), _key("")
 {
@@ -25,7 +29,6 @@ Channel::Channel(std::string key, const std::string& name) : _name(name), _key(k
     _userLimit = 0;
 }
 
-
 /*--- ----*/
 
 
@@ -37,13 +40,15 @@ void Channel::addClient(Client& c)
     // check if the client already in the channel
     // _members[c.getFd()] = &c;
     // check if there is  in key needed
+
+
     std::map<int, Client*>::iterator it = _members.find(c.getFd());
     // user not exesit i the channel
     if (it == _members.end())
         _members[c.getFd()] = &c; // add the user
     else
         std::cout << " the client allready exist\n";
-    
+    std::cout << "this is the client : " << c.getName() << " wanna be added to channel : "<< getName() << "\n";
 }
 
 void Channel::removeClient(Client& c)
@@ -68,9 +73,7 @@ bool Channel::hasClient(Client& c)
 
 bool Channel::hasKey() const
 {
-    if (this->_key != "")
-        return false;
-    return true;
+    return !this->_key.empty();
 }
 
 bool Channel::isInviteOnly() const
@@ -106,4 +109,37 @@ std::string Channel::getKey() const
 void  Channel::setKey(std::string key)
 {
     this->_key = key;
+}
+
+
+void  Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
+void Channel::setUserLimit(size_t limit)
+{
+    if (limit == 0)
+    {
+        std::cout << "User limit must be greater than 0\n";
+        return;
+    }
+    // check the max shoud be of the clinet in every channel
+    this->_userLimit = limit;
+}
+
+void Channel::setInviteOnly(bool inviteOnly)
+{
+    this->_inviteOnly = inviteOnly;
+}
+
+bool Channel::getInviteOnly() const
+{
+    return this->_inviteOnly;
+}
+
+
+std::set<Client*> Channel::getoperators() const
+{
+    return this->_operators;
 }

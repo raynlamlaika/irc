@@ -66,6 +66,7 @@ void Server::acceptClient(size_t index)
         std::cout << "Client disconnected fd[" << clientFd << "]\n";
         return;
     }
+    //
     buffer[bytes - 1] = '\0';
     std::string pass = buffer;
     if (pass != password)
@@ -78,6 +79,22 @@ void Server::acceptClient(size_t index)
     {
         std::cout << "from Client : " << buffer << std::endl;
         client->sendMsg("Welcome to the server\n\r");
+        client->sendMsg("What ur  name \n\r");
+        char buffer[512];
+        int bytes = client->receive(buffer, sizeof(buffer) - 1);
+
+        if (bytes <= 0)
+        {
+            std::cout << "Client disconnected fd[" << clientFd << "]\n";
+            return;
+        }
+        //
+        buffer[bytes - 1] = '\0';
+        std::string pass = buffer;
+        client->setname(pass);
+        addClient(client);
+        // add client to list
+        
     }
 }
 
@@ -91,11 +108,29 @@ void Server::removeClient(size_t index)
     _pollFds.erase(_pollFds.begin() + index);
 }
 
+void Server::printClients()
+{
+    for (std::map<int, Client*>::const_iterator it = _clients.begin();
+         it != _clients.end();
+         ++it)
+    {
+        Client* c = it->second;
+        if (!c)
+            continue;
+
+        std::cout << "FD: " << it->first
+                  << " | Name: " << c->getName()
+                  << std::endl;
+    }
+}
+
+
 void Server::handleClient(size_t index)
 {
+
     int fd = _pollFds[index].fd;
     Client *client = _clients[fd];
-
+    // printClients();
     char buffer[512];
     int bytes = client->receive(buffer, sizeof(buffer) - 1);
 
@@ -108,7 +143,7 @@ void Server::handleClient(size_t index)
 
     buffer[bytes] = '\0';
 
-    // normalize CRLF (nc / telnet safe)
+    // normalize CRL ^C (nc / telnet safe)
     for (int i = 0; buffer[i]; i++)
     {
         if (buffer[i] == '\r')
@@ -123,7 +158,9 @@ void Server::handleClient(size_t index)
         msg += "\r\n";
 
     /// you'r part start from here 
-    newMessage(msg, *client);
+
+    // add cleant to
+    newMessage(msg, *client, _clients);
 
     // broadcast to ALL (including sender)
     for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
