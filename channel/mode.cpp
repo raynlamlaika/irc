@@ -80,7 +80,7 @@ void PrintMap(std::map<char,char> helper)
     }
 }
 
-bool Parsing::seachForClient(std::string name)
+bool Parsing::searchForClient(std::string name)
 {
     std::map<std::string, Channel> chns = Getchannel();
     std::map<std::string, Channel>::iterator it;
@@ -91,10 +91,12 @@ bool Parsing::seachForClient(std::string name)
         std::map<int, Client*>::iterator  Cit;
         for ( Cit =  ClientList.begin(); Cit !=  ClientList.end(); Cit++)
         {   
-            if (Cit->second->getName() == name)
+            // Check if Client pointer is valid before dereferencing
+            if (Cit->second != NULL && Cit->second->getName() == name)
                 return true;
         }
     }
+    
     return false;
 }
 
@@ -210,7 +212,7 @@ void Parsing::mode(Client &clinet, std::string line)
                     return ;
                 }
                 std::string operatorName = splitMode[3];
-                if (!seachForClient(operatorName))
+                if (!searchForClient(operatorName))
                 {
                     std::cout << "Client with nickname '" << operatorName << "' not found\n";
                     return ;

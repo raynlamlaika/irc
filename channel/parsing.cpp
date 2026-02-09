@@ -113,6 +113,7 @@ void cccccl(std::map<int, Client*> _clients)
 
 bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
 {
+    
     cccccl(_allClients);
     printListOfClients();
     // std::cout << "\n\n";
@@ -130,12 +131,12 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         kick(line);
     else if (holder[0] == "TOPIC")
         topic(line);
-    // else if (holder[0] == "PRVMSG")
-    //     prvmsg(line);
-    // else if (holder[0] == "INVTE")
-    // {
-    //     std::cout << holder[0] << std::endl;
-    // }
+    else if (holder[0] == "PRIVMSG")
+        prvmsg(line);
+    else if (holder[0] == "INVTE")
+    {
+        std::cout << holder[0] << std::endl;
+    }
     
     return (true);
 }
