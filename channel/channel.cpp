@@ -111,6 +111,10 @@ void  Channel::setKey(std::string key)
     this->_key = key;
 }
 
+std::map<int, Client*> Channel::getMembers() const
+{
+    return this->_members;
+}
 
 void  Channel::setTopic(std::string topic)
 {
@@ -142,4 +146,16 @@ bool Channel::getInviteOnly() const
 std::set<Client*> Channel::getoperators() const
 {
     return this->_operators;
+}
+
+bool Channel::isBanned(const Client& client) const
+{
+    std::vector<Client *>::const_iterator it = std::find(_banned.begin(), _banned.end(), &client);
+    return it != _banned.end();
+}
+
+bool Channel::isOperator(const Client& client) const
+{
+    std::set<Client *>::const_iterator it = _operators.find(const_cast<Client*>(&client));
+    return it != _operators.end();
 }

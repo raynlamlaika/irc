@@ -13,12 +13,18 @@ bool Parsing::searchForChannel(std::string channelName)
 }
 
 
-void Parsing::kick(std::string line)
+// check on 
+/*
+ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
+*/
+
+void Parsing::kick(std::string line, Client& client)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 3) {
-        std::cout << "not enough arguments for KICK command\n";
-        return;
+        // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
+        std::cout << client.getName() << " KICK :Not enough parameters\n";
+        return ;
     }
 
     std::string channelname = holder[1];
@@ -27,8 +33,21 @@ void Parsing::kick(std::string line)
         return;
 
     Channel* channel = searchForChannelref(channelname);
-    if (!channel) {
-        std::cout << "can't find target channel\n";
+    if (!channel)
+    {
+        // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
+        std::cout << client.getName() << " " << channelname << " :No such channel\n";
+        return;
+    }
+    if (!channel->isOperator(client)) {
+        // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
+        std::cout << client.getName() << " " << channelname << " :You're not channel operator\n";
+        return;
+    }
+    // check client is part of the channel
+    if (!channel->hasClient(client)) {
+        // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
+        std::cout << client.getName() << " " << usertarget << " " << channelname << " :They aren't on that channel\n";
         return;
     }
 
@@ -41,7 +60,8 @@ void Parsing::kick(std::string line)
         }
     }
     if (!targetClient) {
-        std::cout << "can't find target user in channel\n";
+        // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
+        std::cout << client.getName() << " " << usertarget << " " << channelname << " :They aren't on that channel\n";
         return;
     }
 
@@ -58,3 +78,4 @@ void Parsing::kick(std::string line)
         std::cout << " for reason: " << reason;
     std::cout << std::endl;
 }
+

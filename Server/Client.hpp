@@ -4,6 +4,7 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <algorithm>
 #include <string>
 
 class Client
@@ -11,39 +12,24 @@ class Client
 private:
     int _fd;
     sockaddr_in _addr;
+    int numberOfChannelsJoined; 
     std::string name; // add 
     
 
 public:
-    Client()
-    {
-        _addr.sin_port = 133;
-        std::cout << "Client connected fd[" << _fd << "]\n";
-    }
-    Client(int fd, const sockaddr_in &addr) : _fd(fd), _addr(addr)
-    {
-        std::cout << "Client connected fd[" << _fd << "]\n";
-    }
+    Client();
+    Client(int fd, const sockaddr_in &addr);
+    ~Client();
 
-    ~Client()
-    {
-        std::cout << "Client disconnected fd[" << _fd << "]\n";
-        close(_fd);
-    }
     int getFd() const;
-    std::string getName() const
-    {
-        return name;
-    }
-    int receive(char *buffer, size_t size)
-    {
-        return recv(_fd, buffer, size, 0);
-    }
-    void sendMsg(const std::string &msg)
-    {
-        send(_fd, msg.c_str(), msg.size(), 0);
-    }
+    std::string getName() const;
+    int receive(char *buffer, size_t size);
+    void sendMsg(const std::string &msg);
     void setname(std::string nameHolder);
+    int numberOfChannels() const;
+    void incrementChannels();
+    void decrementChannels();
+
 };
 
 #endif

@@ -4,7 +4,9 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 #include <set>
+#include <algorithm>
 #include  "../Server/Client.hpp"
 
 class Client;
@@ -20,6 +22,7 @@ private:
     std::set<int> _invited; // invated client "fds"
     std::map<int, Client*> _members;
     std::set<Client*> _operators;
+    std::vector<Client*> _banned;
 
 
 
@@ -52,12 +55,16 @@ public:
     bool isTopicRestricted() const;
     void setInviteOnly(bool inviteOnly);
     bool getInviteOnly() const;
+    std::map<int, Client*> getMembers() const;
     bool hasUserLimit() const;
     void  setKey(std::string key);
     void setTopic(std::string key);
     std::map<int, Client*> getmembers ();
     std::set<Client*> getoperators() const;
     void setUserLimit(size_t limit);
+    bool isBanned(const Client& client) const;
+    bool isOperator(const Client& client) const;
+    // bool addOperator(const Client& client) const;
 };
 
 

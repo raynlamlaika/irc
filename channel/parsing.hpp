@@ -22,9 +22,9 @@ public:
     void printListOfClients();
     bool newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients);
     void join(Client &clinet, std::string line);
-    void kick(std::string line);
+    void kick(std::string line, Client& client);
     void mode(Client &clinet, std::string line);
-    void topic(std::string line);
+    void topic(std::string line, Client& client);
     void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
     void prvmsg(std::string line);
     static std::vector<std::string> HelperSplit(std::string line, char del);
@@ -39,6 +39,7 @@ public:
     bool searchForChannel(std::string channelName);
     Channel *searchForChannelref(std::string channelName);
     Client *searchForClientref(std::string channelName);
+    bool canJoin(const Channel& channel, Client& client);
 
 
     void printer();

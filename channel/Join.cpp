@@ -105,19 +105,63 @@ std::map<std::string, std::string> key_name(std::vector<std::string> line)
     return holder;
 }
 
+bool Parsing::canJoin(const Channel& channel, Client& client)
+{
+    // check if the channel is invite only
+    if (channel.isInviteOnly())
+        return false; 
+    // check if the channel has a user limit and if it's reached
+    // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
+    if (channel.hasUserLimit() && channel.getMembers().size() >= channel.hasUserLimit())
+        {std::cout << client.getName() << " " << channel.getName() << " Cannot join channel (+l)\n";return false;}
+    return true;
+}
+
+static bool validName(std::string name, Client& client)
+{
+    // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
+    if (name.empty()){std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
+    if (name.length() > 50){std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
+    for (size_t i = 0; i < name.length(); ++i)
+    {
+        if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
+            {std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
+    }
+    return true;
+}
+
+void printTopic(const Channel& channel, Client &client)
+{
+    // RPL_TOPIC (332)  "<client> <channel> :<topic>"
+    if (channel.getTopic().empty())
+        std::cout << client.getName() << " " << channel.getName() << " :No topic is set\n";
+    else
+    {
+        std::cout << client.getName() << " " << channel.getName() << " :" << channel.getTopic() << "\n";
+        // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+        std::cout << "need to pass this RPL_TOPICWHOTIME (333)  <client> <channel> <nick> <setat>\n";
+    }
+}
+bool checkBan(const Channel& channel, const Client& client)
+{
+    // Check if the client is banned from the channel
+    if (channel.isBanned(client))
+    {
+        std::cout << client.getName() << " :You are banned from this channel\n";
+        return true; // Return true to indicate the client is banned
+    }
+    return false; // Return false if the client is not banned
+}
+
 void Parsing::join(Client &client, std::string line)
 {
     std::map<std::string, Channel>& chs = Getchannel();
 
-    // Parse the line
-    std::vector<std::string> parsed = parceCammandJoin(line);
-    if (parsed.size() < 2) {
-        std::cout << "JOIN command missing channel names\n";
-        return;
-    }
+    std::vector<std::string> parsed = parceCammandJoin(line); // need to optimaze the parcing here
+    // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+    if (parsed.size() < 2){ std::cout << client.getName() << " JOIN :Not enough parameters\n"; return;}
 
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
-
     for (auto it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
         const std::string& channelName = it->first;
         const std::string& key = it->second;
@@ -125,39 +169,53 @@ void Parsing::join(Client &client, std::string line)
         if (chIt == chs.end())
         {
             // Channel does not exist, create it
+            if(!validName(channelName, client)) return;
             Channel newChannel(channelName);
             if (!key.empty())
                 newChannel.setKey(key);
             newChannel.addClient(client);
             add_Channel(newChannel);
+            printTopic(newChannel, client);
         }
         else
         {
             Channel& channel = chIt->second;
-            std::cout << "Joining channel: " << channelName << (key.empty() ? "" : " with key: " + key) << "\n";
-            std::cout << "Channel " << channelName << " has key: " << (channel.hasKey() ? channel.getKey() : "none") << "\n";
+            // pass the check of the channel: now check for requierment of the channel
+            if (!canJoin(channel, client)) return;
+            if (client.numberOfChannels() >= 10)
+            {
+                std::cout << client.getName() << " :You have joined too many channels\n";
+                return;
+            }
             if (channel.hasKey())
             {
-                if (!key.empty()) {
+                if (!key.empty())
+                {
                     if (channel.getKey() == key)
                     {
-                        channel.addClient(client);
+                        if (checkBan(channel, client)) return;
+                        channel.addClient(client);printTopic(channel, client);
                     }
-                    else {
+                    else
+                    {
                         std::cout << "Incorrect key for channel: " << channelName << " with key: " << key << " this is the correct key: " << channel.getKey() << "\n";
                     }
-                } else {
-                    std::cout << "Key required for channel: " << channelName << "\n";
                 }
-            } else {
-                channel.addClient(client);
+                else
+                    std::cout << "Key required for channel: " << channelName << "\n";
+            }
+            else {
+                {channel.addClient(client);printTopic(channel, client);}
             }
         }
     }
 
-    std::cout << "\t\t\t------this is all of the channels------\t\t\t\n";
-    for (auto it1 = chs.begin(); it1 != chs.end(); ++it1) {
-        std::cout << "Channel : " << it1->first << ": " << it1->second.getName() << std::endl;
-    }
+    // std::cout << "\t\t\t------this is all of the channels------\t\t\t\n";
+    // for (auto it1 = chs.begin(); it1 != chs.end(); ++it1) {
+    //     std::cout << "Channel : " << it1->first << ": " << it1->second.getName() << std::endl;
+    // }
 }
 
+
+
+// RPL_NAMREPLY (353)  "<client> = <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"

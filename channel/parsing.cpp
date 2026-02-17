@@ -48,29 +48,49 @@ Client *Parsing::searchForClientref(std::string name)
     return NULL;
 }
 
-void Parsing::topic(std::string line)
+
+//check for this  : RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+void Parsing::topic(std::string line, Client& client)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 2)
+    {
+        // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+        std::cout << client.getName() << " TOPIC :Not enough parameters\n";
         return;
+    }
     if (!searchForChannel(holder[1])) {
-        std::cout << "can't find target channel\n";
+        // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
+        std::cout << client.getName() << " " << holder[1] << " :No such channel\n";
         return;
     }
     Channel *channel = searchForChannelref(holder[1]);
+    if (!channel->hasClient(client)) {
+        // ERR_NOTONCHANNEL (442) "<client> <channel> :You're not on that channel"
+        std::cout << client.getName() << " " << holder[1] << " :You're not on that channel\n";
+        return;
+    }
     size_t index = line.find(':');
     if (index == std::string::npos) {
         // No ':' found, just print the current topic
-        std::cout << channel->getTopic() << std::endl;
+        // RPL_TOPIC (332)  "<client> <channel> :<topic>"
+        std::cout << client.getName() << " " << holder[1] << " :" << channel->getTopic() << std::endl;
+        return;
+    }
+    if (!channel->isOperator(client)) {
+        // ERR_CHANOPRIVSNEEDED (482) "<client> <channel> :You're not channel operator"
+        std::cout << client.getName() << " " << holder[1] << " :You're not channel operator\n";
         return;
     }
     std::string topicUse = line.substr(index + 1); // skip the ':'
     if (topicUse.empty())
-        channel->setTopic("");
+    {
+        // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
+        std::cout << client.getName() << " " << holder[1] << " :No topic is set\n";
+        return;
+    }
     else
         channel->setTopic(topicUse);
-    
-
 }
 
 void Parsing::printListOfClients()
@@ -113,10 +133,8 @@ void cccccl(std::map<int, Client*> _clients)
 
 bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
 {
-    
     cccccl(_allClients);
-    printListOfClients();
-    // std::cout << "\n\n";
+    // printListOfClients();
 
     std::vector<std::string> holder;
     std::stringstream ss(line);
@@ -125,18 +143,40 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         holder.push_back(word);
     if (holder[0] == "JOIN")
         join(client, line);
-    else if (holder[0] == "MODE")
-        mode(client, line);
+    // else if (holder[0] == "MODE")
+    //     mode(client, line);
     else if (holder[0] == "KICK")
-        kick(line);
+        kick(line, client);
     else if (holder[0] == "TOPIC")
-        topic(line);
-    else if (holder[0] == "PRIVMSG")
-        prvmsg(line);
-    else if (holder[0] == "INVTE")
-    {
-        std::cout << holder[0] << std::endl;
-    }
+        topic(line, client);
+    // else if (holder[0] == "PRIVMSG")
+    //     prvmsg(line);m
+    // else if (holder[0] == "INVTE")
+    // {
+    //     std::cout << holder[0] << std::endl;
+    // }
     
     return (true);
 }
+
+
+
+
+
+/*
+the numrical reply i should handel
+
+ERR_NEEDMOREPARAMS (461)
+ERR_NOSUCHCHANNEL (403)
+ERR_TOOMANYCHANNELS (405)
+ERR_BADCHANNELKEY (475)
+ERR_BANNEDFROMCHAN (474)
+ERR_CHANNELISFULL (471)
+ERR_INVITEONLYCHAN (473)
+ERR_BADCHANMASK (476)
+RPL_TOPIC (332)
+RPL_TOPICWHOTIME (333)
+RPL_NAMREPLY (353)
+RPL_ENDOFNAMES (366)
+
+*/
