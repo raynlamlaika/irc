@@ -1,4 +1,3 @@
-
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
@@ -7,7 +6,6 @@
 #include <unistd.h>
 #include <algorithm>
 #include <string>
-#include <sstream>
 
 class Client
 {
@@ -16,30 +14,22 @@ private:
     sockaddr_in _addr;
     int numberOfChannelsJoined; 
     std::string name; // add 
-    std::string nick;
-    bool pass;
-    bool auth;
-    std::string password;
+    
 
 public:
     Client();
-    Client(int fd, const sockaddr_in &addr, std::string password);
+    Client(int fd, const sockaddr_in &addr);
     ~Client();
 
     int getFd() const;
     std::string getName() const;
     int receive(char *buffer, size_t size);
     void sendMsg(const std::string &msg);
+    void setname(std::string nameHolder);
     int numberOfChannels() const;
     void incrementChannels();
     void decrementChannels();
-    void get_informatoin();
 
-    void setname(std::string nameHolder);
-    void setnick(std::string nickHolder);
-    void setpass();
-    std::string readLine();
-    void handleCommand(const std::string &line);
 };
 
 #endif

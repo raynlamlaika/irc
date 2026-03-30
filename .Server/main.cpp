@@ -2,7 +2,6 @@
 
 int main(int argc, char *argv[])
 {
-    // dont forgat to add ./irc -------> !!!!! port  -------> !!!!! password
     if (argc != 2)
     {
         std::cerr << "Error ./server password" << std::endl;

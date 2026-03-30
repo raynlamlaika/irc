@@ -40,8 +40,7 @@ Server::~Server()
 }
 
 void Server::acceptClient(size_t index)
-{   
-    (void)index;
+{
     sockaddr_in addr;
     socklen_t len = sizeof(addr);
 
@@ -55,50 +54,48 @@ void Server::acceptClient(size_t index)
     p.revents = 0;
     _pollFds.push_back(p);
 
-    // std::cout << "[+][+]" << std::endl;
-    Client *client = new Client(clientFd, addr, password);
+    Client *client = new Client(clientFd, addr);
     _clients[clientFd] = client;
 
-    client->get_informatoin();
-    // client->sendMsg("What is the Password ? \n\r");
-    // char buffer[512];
-    // int bytes = client->receive(buffer, sizeof(buffer) - 1);
+    client->sendMsg("What is the Password ? \n\r");
+    char buffer[512];
+    int bytes = client->receive(buffer, sizeof(buffer) - 1);
 
-    // if (bytes <= 0)
-    // {
-    //     std::cout << "Client disconnected fd[" << clientFd << "]\n";
-    //     return;
-    // }
+    if (bytes <= 0)
+    {
+        std::cout << "Client disconnected fd[" << clientFd << "]\n";
+        return;
+    }
     //
-    // buffer[bytes - 1] = '\0';
-    // std::string pass = buffer;
-    // if (pass != password)
-    // {
-    //     client->sendMsg("sorry bad password\n\r");
-    //     removeClient(index);
-    //     close(clientFd);
-    // }
-    // else
-    // {
-    //     std::cout << "from Client : " << buffer << std::endl;
-    //     client->sendMsg("Welcome to the server\n\r");
-    //     client->sendMsg("What ur  name \n\r");
-    //     char buffer[512];
-    //     int bytes = client->receive(buffer, sizeof(buffer) - 1);
+    buffer[bytes - 1] = '\0';
+    std::string pass = buffer;
+    if (pass != password)
+    {
+        client->sendMsg("sorry bad password\n\r");
+        removeClient(index);
+        close(clientFd);
+    }
+    else
+    {
+        std::cout << "from Client : " << buffer << std::endl;
+        client->sendMsg("Welcome to the server\n\r");
+        client->sendMsg("What ur  name \n\r");
+        char buffer[512];
+        int bytes = client->receive(buffer, sizeof(buffer) - 1);
 
-    //     if (bytes <= 0)
-    //     {
-    //         std::cout << "Client disconnected fd[" << clientFd << "]\n";
-    //         return;
-    //     }
-    //     //
-    //     buffer[bytes - 1] = '\0';
-    //     std::string pass = buffer;
-    //     client->setname(pass);
-    //     addClient(client);
-    //     // add client to list
+        if (bytes <= 0)
+        {
+            std::cout << "Client disconnected fd[" << clientFd << "]\n";
+            return;
+        }
+        //
+        buffer[bytes - 1] = '\0';
+        std::string pass = buffer;
+        client->setname(pass);
+        addClient(client);
+        // add client to list
         
-    // }
+    }
 }
 
 void Server::removeClient(size_t index)
@@ -139,7 +136,7 @@ void Server::handleClient(size_t index)
 
     if (bytes == 0) // wwaaa team mate
     {
-        // std::cout << "Client disconnected fd[" << fd << "]\n";
+        std::cout << "Client disconnected fd[" << fd << "]\n";
         removeClient(index);
         return;
     }
