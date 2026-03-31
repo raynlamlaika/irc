@@ -162,10 +162,10 @@ void Parsing::join(Client &client, std::string line)
     if (parsed.size() < 2){ std::cout << client.getName() << " JOIN :Not enough parameters\n"; return;}
 
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
-    for (auto it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
+    for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
         const std::string& channelName = it->first;
         const std::string& key = it->second;
-        auto chIt = chs.find(channelName);
+        std::map<std::string, Channel>::iterator chIt = chs.find(channelName);
         if (chIt == chs.end())
         {
             // Channel does not exist, create it

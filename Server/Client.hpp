@@ -19,9 +19,9 @@ private:
     std::string nick;
     bool pass;
     bool auth;
-    std::string password;
-
+    
 public:
+    std::string password;
     Client();
     Client(int fd, const sockaddr_in &addr, std::string password);
     ~Client();
@@ -34,9 +34,11 @@ public:
     void incrementChannels();
     void decrementChannels();
     void get_informatoin();
-
+    bool getAuth();
+    bool getPass();
+    void setNick(std::string &value);
     void setname(std::string nameHolder);
-    void setnick(std::string nickHolder);
+    // void setnick(std::string nickHolder);
     void setpass();
     std::string readLine();
     void handleCommand(const std::string &line);

@@ -59,7 +59,7 @@ void Server::acceptClient(size_t index)
     Client *client = new Client(clientFd, addr, password);
     _clients[clientFd] = client;
 
-    client->get_informatoin();
+    // client->get_informatoin();
     // client->sendMsg("What is the Password ? \n\r");
     // char buffer[512];
     // int bytes = client->receive(buffer, sizeof(buffer) - 1);

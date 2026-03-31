@@ -6,17 +6,17 @@
 
 
 
-static bool validStr(const std::string& str)
-{
-    for (int i = 0 ;i < str.size() ; i++)
-    {
-        if (!std::isprint(str[i]))
-        {
-            return false;
-        }
-    }
-    return true;
-}
+// static bool validStr(const std::string& str)
+// {
+//     for (int i = 0 ;i < str.size() ; i++)
+//     {
+//         if (!std::isprint(str[i]))
+//         {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 Channel *Parsing::searchForChannelref(std::string channelName)
 {
@@ -141,20 +141,29 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     std::string word;
     while (ss >> word)
         holder.push_back(word);
-    if (holder[0] == "JOIN")
-        join(client, line);
-    // else if (holder[0] == "MODE")
-    //     mode(client, line);
-    else if (holder[0] == "KICK")
-        kick(line, client);
-    else if (holder[0] == "TOPIC")
-        topic(line, client);
-    // else if (holder[0] == "PRIVMSG")
-    //     prvmsg(line);m
-    // else if (holder[0] == "INVTE")
-    // {
-    //     std::cout << holder[0] << std::endl;
-    // }
+    if (holder[0] == "PASS")
+        pass(client, line);
+    else if (holder[0] == "NICK")
+        nick(client, line);
+    else if (client.getAuth())
+    {
+        if (holder[0] == "JOIN")
+            join(client, line);
+        // else if (holder[0] == "MODE")
+        //     mode(client, line);
+        else if (holder[0] == "KICK")
+            kick(line, client);
+        else if (holder[0] == "TOPIC")
+            topic(line, client);
+        // else if (holder[0] == "PRIVMSG")
+        //     prvmsg(line);m
+        // else if (holder[0] == "INVTE")
+        // {
+        //     std::cout << holder[0] << std::endl;
+        // }
+    }
+    else
+        client.sendMsg(":You have not registered\r\n");
     
     return (true);
 }

@@ -86,6 +86,26 @@ std::string Client::readLine()
     return content;
 }
 
+bool Client::getAuth()
+{
+    return auth;
+}
+
+bool Client::getPass()
+{
+    return pass;
+}
+
+void Client::setpass()
+{
+    pass = true;
+}
+
+void Client::setNick(std::string &value)
+{
+    nick = value;
+}
+
 void Client::get_informatoin()
 {
     while (!auth)

@@ -102,6 +102,7 @@ bool Parsing::searchForClient(std::string name)
 
 void Parsing::mode(Client &clinet, std::string line)
 {
+    (void)clinet;
     std::map<std::string, Channel>& chs = Getchannel();
     std::vector<std::string> splitMode = Parsing::HelperSplit(line, ' ');
     if (splitMode.size() < 2) {
@@ -115,7 +116,7 @@ void Parsing::mode(Client &clinet, std::string line)
     }
 
     if (splitMode[1][0] == '#') { // deals with channel
-        auto it = chs.find(splitMode[1]);
+        std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
         std::cout << "this is the channel name: " << splitMode[1] << "\n";
         if (it == chs.end()) {
             std::cout << "channel not exist\n";

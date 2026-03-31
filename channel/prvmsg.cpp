@@ -3,6 +3,9 @@
 
 void Parsing::prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient) // 1 for users, 0 for channels
 {
+    (void)message;
+    (void)ref;
+    (void)refClient;
     if (flag)
         std::cout << "passs a msg to client\n";
     else

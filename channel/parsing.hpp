@@ -41,6 +41,11 @@ public:
     Client *searchForClientref(std::string channelName);
     bool canJoin(const Channel& channel, Client& client);
 
+    // auth
+    void pass(Client &client, std::string line);
+    void user(Client &client, std::string line);
+    void nick(Client &client, std::string line);
+    bool cheack(std::string& value);
 
     void printer();
 };
