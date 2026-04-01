@@ -5,7 +5,7 @@ SERVER = server
 
 SERVER_SRC = ./Server/main.cpp ./Server/Server.cpp ./channel/parsing.cpp ./channel/channel.cpp ./Server/Client.cpp \
 				./channel/Join.cpp ./channel/mode.cpp ./channel/kick.cpp ./channel/prvmsg.cpp ./channel/pass.cpp \
-				./channel/nick.cpp
+				./channel/nick.cpp ./channel/user.cpp
 
 HEADERS = ./Server/Server.hpp ./Server/client.hpp
 

@@ -150,27 +150,30 @@ void Server::handleClient(size_t index)
     for (int i = 0; buffer[i]; i++)
     {
         if (buffer[i] == '\r')
-            buffer[i] = '\n';
+        buffer[i] = '\n';
     }
-
+    
     std::cout << "Client[" << fd << "] -> " << buffer;
-
+    
     // ensure message ends with \r\n
     std::string msg(buffer);
-    if (msg.size() < 2 || msg.substr(msg.size() - 2) != "\r\n")
-        msg += "\r\n";
+
+    if (msg.size() > 0 || msg.substr(msg.size() - 1) != "\n")
+        msg.erase(msg.size() - 1);
 
     /// you'r part start from here 
-
+    // std::cout << "============================================'"<< msg<< "'" << std::endl;
+    // if (msg.empty())
+    //     return ;
     // add cleant to
     newMessage(msg, *client, _clients);
 
     // broadcast to ALL (including sender)
-    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-    {
-        if (it->second->getFd() != fd)
-            it->second->sendMsg(msg);
-    }
+    // for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+    // {
+    //     if (it->second->getFd() != fd)
+    //         it->second->sendMsg(msg);
+    // }
 }
 
 void Server::run()

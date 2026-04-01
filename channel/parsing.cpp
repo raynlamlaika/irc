@@ -133,6 +133,8 @@ void cccccl(std::map<int, Client*> _clients)
 
 bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
 {
+    if (line.empty())
+        return false;
     cccccl(_allClients);
     // printListOfClients();
 
@@ -145,6 +147,8 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         pass(client, line);
     else if (holder[0] == "NICK")
         nick(client, line);
+    else if (holder[0] == "USER")
+        user(client, line);
     else if (client.getAuth())
     {
         if (holder[0] == "JOIN")
@@ -164,7 +168,11 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     }
     else
         client.sendMsg(":You have not registered\r\n");
-    
+    if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
+    {
+        client.setAuth();
+        client.sendMsg("wellcome to server\r\n");
+    }
     return (true);
 }
 

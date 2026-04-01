@@ -10,17 +10,17 @@ bool isStringPrintable(const std::string& str) {
     return true;
 }
 
-bool Parsing::cheack(std::string& value)
-{
-    return false;
-}
+// bool Parsing::cheack(std::string& value)
+// {
+//     return false;
+// }
 
 void Parsing::nick(Client &client, std::string line)
 {
     std::string cmd, value;
     std::stringstream ss(line);
     ss >> cmd >> value;
-    if (client.getPass())
+    if (!client.getPass())
         client.sendMsg(": You may not reregister\r\n");
     else
     {

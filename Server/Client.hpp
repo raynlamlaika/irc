@@ -27,17 +27,19 @@ public:
     ~Client();
 
     int getFd() const;
-    std::string getName() const;
     int receive(char *buffer, size_t size);
     void sendMsg(const std::string &msg);
     int numberOfChannels() const;
     void incrementChannels();
     void decrementChannels();
     void get_informatoin();
+    std::string getName() const;
+    std::string getNick() const;
     bool getAuth();
     bool getPass();
     void setNick(std::string &value);
     void setname(std::string nameHolder);
+    void setAuth();
     // void setnick(std::string nickHolder);
     void setpass();
     std::string readLine();

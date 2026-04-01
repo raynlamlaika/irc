@@ -96,9 +96,19 @@ bool Client::getPass()
     return pass;
 }
 
+std::string Client::getNick() const
+{
+    return nick;
+}
+
 void Client::setpass()
 {
     pass = true;
+}
+
+void Client::setAuth()
+{
+    auth = true;
 }
 
 void Client::setNick(std::string &value)
