@@ -146,7 +146,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     if (holder[0] == "PASS")
         pass(client, line);
     else if (holder[0] == "NICK")
-        nick(client, line);
+        nick(client, line, _allClients);
     else if (holder[0] == "USER")
         user(client, line);
     else if (client.getAuth())

@@ -44,8 +44,8 @@ public:
     // auth
     void pass(Client &client, std::string line);
     void user(Client &client, std::string line);
-    void nick(Client &client, std::string line);
-    bool cheack(std::string& value);
+    void nick(Client &client, std::string line, std::map<int, Client*> _allClients);
+    bool checkNick(std::map<int, Client*> _allClients, std::string& value);
 
     void printer();
 };

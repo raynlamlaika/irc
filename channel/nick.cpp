@@ -10,12 +10,18 @@ bool isStringPrintable(const std::string& str) {
     return true;
 }
 
-// bool Parsing::cheack(std::string& value)
-// {
-//     return false;
-// }
+bool Parsing::checkNick(std::map<int, Client*> _allClients, std::string& value)
+{
+    for (std::map<int, Client*>::iterator it = _allClients.begin(); it != _allClients.end(); ++it)
+    {
+        if (it->second->getNick() == value)
+            return false;
+    }
+    return true;
+}
 
-void Parsing::nick(Client &client, std::string line)
+
+void Parsing::nick(Client &client, std::string line, std::map<int, Client*> _allClients)
 {
     std::string cmd, value;
     std::stringstream ss(line);
@@ -28,6 +34,8 @@ void Parsing::nick(Client &client, std::string line)
             client.sendMsg(": No nickname given\r\n");
         else if (!isStringPrintable(value))
             client.sendMsg(": Erroneus nickname\r\n");
+        else if (!checkNick(_allClients, value))
+            client.sendMsg(": Nickname is already in use\r\n");
         else
             client.setNick(value);
     }
