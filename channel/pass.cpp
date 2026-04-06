@@ -6,7 +6,7 @@ void Parsing::pass(Client &client, std::string line)
     std::string cmd, value;
     std::stringstream ss(line);
     ss >> cmd >> value;
-    std::cout <<"v: " << "'" << value << "'"  << std::endl;
+    // std::cout <<"v: " << "'" << value << "'"  << std::endl;
     if (client.getPass())
         client.sendMsg(": You may not reregister\r\n");
     else

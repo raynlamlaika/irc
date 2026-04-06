@@ -7,8 +7,8 @@
 #include <cstdlib>
 #include <string>
 #include "channel.hpp"
-
-class Server;
+#include <fstream>
+#include <unistd.h>
 
 
 class Parsing 
@@ -41,6 +41,9 @@ public:
     Client *searchForClientref(std::string channelName);
     bool canJoin(const Channel& channel, Client& client);
 
+    // file handling 
+    void getfile(Client &client, std::string line, std::map<int, Client*> _allClients);
+    void sendfile(Client &client, std::string line, std::map<int, Client*> _allClients);
     // auth
     void pass(Client &client, std::string line);
     void user(Client &client, std::string line);

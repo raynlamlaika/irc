@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     // dont forgat to add ./irc -------> !!!!! port  -------> !!!!! password
     if (argc != 3)
     {
-        std::cerr << "Error ./server <port> <password>" << std::endl;
+        std::cerr << "Error ./ircserv <port> <password>" << std::endl;
         return 1;
     }
     try

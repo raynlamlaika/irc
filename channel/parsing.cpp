@@ -135,7 +135,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
 {
     if (line.empty())
         return false;
-    cccccl(_allClients);
+    // cccccl(_allClients);
     // printListOfClients();
 
     std::vector<std::string> holder;
@@ -160,11 +160,15 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         else if (holder[0] == "TOPIC")
             topic(line, client);
         // else if (holder[0] == "PRIVMSG")
-        //     prvmsg(line);m
+        //     prvmsg(line);
         // else if (holder[0] == "INVTE")
         // {
         //     std::cout << holder[0] << std::endl;
         // }
+        else if (holder[0] == "GET" || holder[0] == "DONE")
+            getfile(client, line, _allClients);
+        else if (holder[0] == "SEND")
+            sendfile(client, line, _allClients);
     }
     else
         client.sendMsg(":You have not registered\r\n");

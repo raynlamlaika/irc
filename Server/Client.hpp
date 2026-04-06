@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 class Client
 {
@@ -19,9 +20,25 @@ private:
     std::string nick;
     bool pass;
     bool auth;
+    bool statusFile;
+    bool headerIsGet;
+    size_t fileSize;
     
 public:
     std::string password;
+    std::string fileout;
+    std::string _sendBuffer;
+
+    void appendToSendBuffer(const std::string &data)
+    {
+        _sendBuffer += data;
+    }
+
+    std::string &getSendBuffer()
+    {
+        return _sendBuffer;
+    }
+    
     Client();
     Client(int fd, const sockaddr_in &addr, std::string password);
     ~Client();
@@ -40,6 +57,19 @@ public:
     void setNick(std::string &value);
     void setname(std::string nameHolder);
     void setAuth();
+
+    std::string getfileout();
+    void setfileout(std::string path);
+    
+    bool getstatusFile();
+    void setstatusFile(bool val);
+
+    bool getheaderIsGet();
+    void setheaderIsGet(bool val);
+
+    size_t getsizeFile();
+    void setsizeFile(size_t size);
+
     // void setnick(std::string nickHolder);
     void setpass();
     std::string readLine();

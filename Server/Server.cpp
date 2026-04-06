@@ -54,51 +54,9 @@ void Server::acceptClient(size_t index)
     p.events = POLLIN;
     p.revents = 0;
     _pollFds.push_back(p);
-
-    // std::cout << "[+][+]" << std::endl;
     Client *client = new Client(clientFd, addr, password);
     _clients[clientFd] = client;
 
-    // client->get_informatoin();
-    // client->sendMsg("What is the Password ? \n\r");
-    // char buffer[512];
-    // int bytes = client->receive(buffer, sizeof(buffer) - 1);
-
-    // if (bytes <= 0)
-    // {
-    //     std::cout << "Client disconnected fd[" << clientFd << "]\n";
-    //     return;
-    // }
-    //
-    // buffer[bytes - 1] = '\0';
-    // std::string pass = buffer;
-    // if (pass != password)
-    // {
-    //     client->sendMsg("sorry bad password\n\r");
-    //     removeClient(index);
-    //     close(clientFd);
-    // }
-    // else
-    // {
-    //     std::cout << "from Client : " << buffer << std::endl;
-    //     client->sendMsg("Welcome to the server\n\r");
-    //     client->sendMsg("What ur  name \n\r");
-    //     char buffer[512];
-    //     int bytes = client->receive(buffer, sizeof(buffer) - 1);
-
-    //     if (bytes <= 0)
-    //     {
-    //         std::cout << "Client disconnected fd[" << clientFd << "]\n";
-    //         return;
-    //     }
-    //     //
-    //     buffer[bytes - 1] = '\0';
-    //     std::string pass = buffer;
-    //     client->setname(pass);
-    //     addClient(client);
-    //     // add client to list
-        
-    // }
 }
 
 void Server::removeClient(size_t index)
@@ -111,69 +69,25 @@ void Server::removeClient(size_t index)
     _pollFds.erase(_pollFds.begin() + index);
 }
 
-void Server::printClients()
-{
-    for (std::map<int, Client*>::const_iterator it = _clients.begin();
-         it != _clients.end();
-         ++it)
-    {
-        Client* c = it->second;
-        if (!c)
-            continue;
-
-        std::cout << "FD: " << it->first
-                  << " | Name: " << c->getName()
-                  << std::endl;
-    }
-}
-
 
 void Server::handleClient(size_t index)
 {
 
     int fd = _pollFds[index].fd;
     Client *client = _clients[fd];
-    // printClients();
     char buffer[512];
     int bytes = client->receive(buffer, sizeof(buffer) - 1);
-
-    if (bytes == 0) // wwaaa team mate
+    if (bytes == 0)
     {
-        // std::cout << "Client disconnected fd[" << fd << "]\n";
         removeClient(index);
         return;
     }
-
     buffer[bytes] = '\0';
-
-    // normalize CRL ^C (nc / telnet safe)
-    for (int i = 0; buffer[i]; i++)
-    {
-        if (buffer[i] == '\r')
-        buffer[i] = '\n';
-    }
-    
-    std::cout << "Client[" << fd << "] -> " << buffer;
-    
-    // ensure message ends with \r\n
     std::string msg(buffer);
-
-    if (msg.size() > 0 || msg.substr(msg.size() - 1) != "\n")
-        msg.erase(msg.size() - 1);
-
-    /// you'r part start from here 
-    // std::cout << "============================================'"<< msg<< "'" << std::endl;
-    // if (msg.empty())
-    //     return ;
-    // add cleant to
+    if (msg.size() > 0 && msg.substr(msg.size() - 1) == "\n")
+        msg = msg.erase(msg.size() - 1);
+    std::cout << "msg is : ["<< msg << "]" << std::endl;
     newMessage(msg, *client, _clients);
-
-    // broadcast to ALL (including sender)
-    // for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-    // {
-    //     if (it->second->getFd() != fd)
-    //         it->second->sendMsg(msg);
-    // }
 }
 
 void Server::run()
@@ -192,9 +106,37 @@ void Server::run()
                 else
                 {
                     handleClient(i);
-                    break; // IMPORTANT: vector may change
+                    break;
                 }
             }
+
+            // if (_pollFds[i].revents & POLLOUT)
+            // {
+            //     int fd = _pollFds[i].fd;
+            //     Client *client = _clients[fd];
+
+            //     std::string &buffer = client->getSendBuffer();
+            //     std::cout << "BUFFER : " << buffer << std::endl;
+            //     if (!buffer.empty())
+            //     {
+            //         int sent = send(fd, buffer.c_str(), buffer.size(), 0);
+            //         if (sent > 0)
+            //             buffer.erase(0, sent);
+            //     }
+            // }
         }
+        // for (size_t i = 0; i < _pollFds.size(); i++)
+        // {
+        //     if (_pollFds[i].revents & POLLIN)
+        //     {
+        //         if (_pollFds[i].fd == _serverFd)
+        //             acceptClient(i);
+        //         else
+        //         {
+        //             handleClient(i);
+        //             break; // IMPORTANT: vector may change
+        //         }
+        //     }
+        // }
     }
 }

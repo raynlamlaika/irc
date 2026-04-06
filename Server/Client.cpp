@@ -25,7 +25,7 @@ Client::Client()
 }
 
 Client::Client(int fd, const sockaddr_in &addr, std::string password) 
-    : _fd(fd), _addr(addr), numberOfChannelsJoined(0), name(""), nick(""), pass(false), auth(false), password(password)
+    : _fd(fd), _addr(addr), numberOfChannelsJoined(0), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password)
 {
     //_addr.sin_port = 133;
     std::cout << "Client connected fd[" << _fd << "]\n";
@@ -185,4 +185,45 @@ void Client::handleCommand(const std::string &line)
     }
 }
 
+
+std::string Client::getfileout()
+{
+    return this->fileout;
+}
+
+void Client::setfileout(std::string path)
+{
+    this->fileout = path;
+}
+
+bool Client::getstatusFile()
+{
+    return this->statusFile;
+}
+
+void Client::setstatusFile(bool val)
+{
+    this->statusFile = val;
+}
+
+
+bool Client::getheaderIsGet()
+{
+    return this->headerIsGet;
+}
+
+void Client::setheaderIsGet(bool val)
+{
+    this->headerIsGet = val;
+}
+
+size_t Client::getsizeFile()
+{
+    return this->fileSize;
+}
+
+void Client::setsizeFile(size_t size)
+{
+    this->fileSize = size;
+}
 
