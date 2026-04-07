@@ -109,22 +109,28 @@ void Server::run()
                     break;
                 }
             }
-
-            // if (_pollFds[i].revents & POLLOUT)
-            // {
-            //     int fd = _pollFds[i].fd;
-            //     Client *client = _clients[fd];
-
-            //     std::string &buffer = client->getSendBuffer();
-            //     std::cout << "BUFFER : " << buffer << std::endl;
-            //     if (!buffer.empty())
-            //     {
-            //         int sent = send(fd, buffer.c_str(), buffer.size(), 0);
-            //         if (sent > 0)
-            //             buffer.erase(0, sent);
-            //     }
-            // }
         }
+
+    }
+}
+
+/*
+            if (_pollFds[i].revents & POLLOUT)
+            {
+                int fd = _pollFds[i].fd;
+                Client *client = _clients[fd];
+
+                std::string &buffer = client->getSendBuffer();
+                std::cout << "BUFFER : " << buffer << std::endl;
+                if (!buffer.empty())
+                {
+                    int sent = send(fd, buffer.c_str(), buffer.size(), 0);
+                    if (sent > 0)
+                        buffer.erase(0, sent);
+                }
+            }
+*/
+
         // for (size_t i = 0; i < _pollFds.size(); i++)
         // {
         //     if (_pollFds[i].revents & POLLIN)
@@ -138,5 +144,3 @@ void Server::run()
         //         }
         //     }
         // }
-    }
-}

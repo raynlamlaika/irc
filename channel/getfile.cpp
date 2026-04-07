@@ -54,12 +54,7 @@ void Parsing::getfile(Client &client, std::string line, std::map<int, Client*> _
     }
     else if (client.getstatusFile() && !client.getheaderIsGet())
     {
-        // std::string &buffer = client.getSendBuffer();
-        // std::cout << "BUFFER : " << buffer << std::endl;
-        std::cout << "second time " << std::endl;
         handelGetHeader(client, line);
-    
-        std::cout << "++++++++++++++++++" << std::endl;
         std::ofstream fileout(client.getfileout().c_str(), std::ios::binary);
         if (!fileout.is_open())
         {
@@ -68,22 +63,16 @@ void Parsing::getfile(Client &client, std::string line, std::map<int, Client*> _
             client.setstatusFile(false);
             return;
         }
-        std::cout << "is open" <<std::endl;
-        // size_t received = 0;
-        // char buffer[512];
         std::string buffer = client.getSendBuffer();
         std::string content = buffer.substr(client.getSendBuffer().find('\n'));
-        // while (received < client.getsizeFile())
-        // {
-        //     int bytes = client.receive(buffer, sizeof(buffer));
-        //     if (bytes <= 0)
-        //         break;
-
         fileout.write(content.c_str(), client.getsizeFile());
-        //     received += bytes;
-        // }
         fileout.close();
         client.sendMsg(": File received successfully\n");
+        client.setheaderIsGet(false);
+        client.setstatusFile(false);
+        client.setsizeFile(0);
+        client.setfileout("");
+        client.setBufferEmpty();
     }
 
 }

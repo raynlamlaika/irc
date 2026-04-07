@@ -29,6 +29,10 @@ public:
     std::string fileout;
     std::string _sendBuffer;
 
+    void setBufferEmpty()
+    {
+        _sendBuffer = "";
+    };
     void appendToSendBuffer(const std::string &data)
     {
         _sendBuffer += data;
