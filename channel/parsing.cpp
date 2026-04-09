@@ -65,7 +65,7 @@ void Parsing::topic(std::string line, Client& client)
         return;
     }
     Channel *channel = searchForChannelref(holder[1]);
-    if (!channel->hasClient(client)) {
+    if (!channel->hasClient(&client)) {
         // ERR_NOTONCHANNEL (442) "<client> <channel> :You're not on that channel"
         std::cout << client.getName() << " " << holder[1] << " :You're not on that channel\n";
         return;

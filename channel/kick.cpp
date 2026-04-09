@@ -41,11 +41,12 @@ void Parsing::kick(std::string line, Client& client)
     }
     if (!channel->isOperator(client)) {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
-        std::cout << client.getName() << " " << channelname << " :You're not channel operator\n";
+        std::string msg = client.getName() + " " + channelname + " :You're not channel operator\n";
+        client.sendMsg(msg);
         return;
     }
     // check client is part of the channel
-    if (!channel->hasClient(client)) {
+    if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
         std::cout << client.getName() << " " << usertarget << " " << channelname << " :They aren't on that channel\n";
         return;
@@ -72,7 +73,7 @@ void Parsing::kick(std::string line, Client& client)
             reason = line.substr(index + 1);
     }
 
-    channel->removeClient(*targetClient);
+    channel->removeClient(targetClient);
     std::cout << "User " << usertarget << " kicked from channel " << channelname;
     if (!reason.empty())
         std::cout << " for reason: " << reason;

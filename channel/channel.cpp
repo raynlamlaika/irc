@@ -33,7 +33,7 @@ Channel::Channel(std::string key, const std::string& name) : _name(name), _key(k
 
 
     // Membership
-void Channel::addClient(Client& c)
+void Channel::addClient(Client* c)
 {
     // MAY check if the c is null or have no value later
 
@@ -42,31 +42,31 @@ void Channel::addClient(Client& c)
     // check if there is  in key needed
 
 
-    std::map<int, Client*>::iterator it = _members.find(c.getFd());
+    std::map<int, Client*>::iterator it = _members.find(c->getFd());
     // user not exesit i the channel
     if (it == _members.end())
-        _members[c.getFd()] = &c; // add the user
+        _members[c->getFd()] = c; // add the user
     else
         std::cout << " the client allready exist\n";
-    std::cout << "this is the client : " << c.getName() << " wanna be added to channel : "<< getName() << "\n";
+    std::cout << "this is the client : " << c->getName() << " wanna be added to channel : "<< getName() << "\n";
 }
 
-void Channel::removeClient(Client& c)
+void Channel::removeClient(Client* c)
 {
     // check if the client already in the channel
-    std::map<int, Client*>::iterator it = _members.find(c.getFd());
+    std::map<int, Client*>::iterator it = _members.find(c->getFd());
 
     // user not exesit i the channel
     if (it != _members.end())
-        _members.erase(c.getFd()); // remove the user
+        _members.erase(c->getFd()); // remove the user
     else
         std::cout << " the client not exist\n";
 }
 
 
-bool Channel::hasClient(Client& c)
+bool Channel::hasClient(Client* c)
 {
-    return _members.find(c.getFd()) != _members.end();
+    return _members.find(c->getFd()) != _members.end();
 }
 
 /*---    ---*/

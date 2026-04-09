@@ -13,10 +13,9 @@ std::map<std::string, Channel>& Parsing::Getchannel()
 void Parsing::add_Channel(const Channel& channel)
 {
     const std::string& name = channel.getName();
-
+    
     if (_channels.find(name) != _channels.end())
         return;
-
     _channels.insert(std::make_pair(name, channel));
 }
 
@@ -117,27 +116,27 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     return true;
 }
 
-static bool validName(std::string name, Client& client)
+static bool validName(std::string name, Client *client)
 {
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty()){std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
-    if (name.length() > 50){std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
+    if (name.empty()){std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
+    if (name.length() > 50){std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
         if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
-            {std::cout << client.getName() << " :Bad Channel Mask\n";return false;}
+        {std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
     }
     return true;
 }
 
-void printTopic(const Channel& channel, Client &client)
+void printTopic(const Channel& channel, Client *client)
 {
     // RPL_TOPIC (332)  "<client> <channel> :<topic>"
     if (channel.getTopic().empty())
-        std::cout << client.getName() << " " << channel.getName() << " :No topic is set\n";
+        std::cout << client->getName() << " " << channel.getName() << " :No topic is set\n";
     else
     {
-        std::cout << client.getName() << " " << channel.getName() << " :" << channel.getTopic() << "\n";
+        std::cout << client->getName() << " " << channel.getName() << " :" << channel.getTopic() << "\n";
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
         std::cout << "need to pass this RPL_TOPICWHOTIME (333)  <client> <channel> <nick> <setat>\n";
     }
@@ -157,10 +156,9 @@ void Parsing::join(Client &client, std::string line)
 {
     std::map<std::string, Channel>& chs = Getchannel();
 
-    std::vector<std::string> parsed = parceCammandJoin(line); // need to optimaze the parcing here
-    // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+    std::vector<std::string> parsed = parceCammandJoin(line);
     if (parsed.size() < 2){ std::cout << client.getName() << " JOIN :Not enough parameters\n"; return;}
-
+    
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
     for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
         const std::string& channelName = it->first;
@@ -169,13 +167,12 @@ void Parsing::join(Client &client, std::string line)
         if (chIt == chs.end())
         {
             // Channel does not exist, create it
-            if(!validName(channelName, client)) return;
+            if(!validName(channelName, &client)) return;
             Channel newChannel(channelName);
-            if (!key.empty())
-                newChannel.setKey(key);
-            newChannel.addClient(client);
+            if (!key.empty())newChannel.setKey(key);
+            newChannel.addClient(&client);
             add_Channel(newChannel);
-            printTopic(newChannel, client);
+            printTopic(newChannel, &client);
         }
         else
         {
@@ -194,7 +191,7 @@ void Parsing::join(Client &client, std::string line)
                     if (channel.getKey() == key)
                     {
                         if (checkBan(channel, client)) return;
-                        channel.addClient(client);printTopic(channel, client);
+                        channel.addClient(&client);printTopic(channel, &client);
                     }
                     else
                     {
@@ -205,7 +202,7 @@ void Parsing::join(Client &client, std::string line)
                     std::cout << "Key required for channel: " << channelName << "\n";
             }
             else {
-                {channel.addClient(client);printTopic(channel, client);}
+                {channel.addClient(&client);printTopic(channel, &client);}
             }
         }
     }

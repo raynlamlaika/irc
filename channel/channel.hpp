@@ -11,7 +11,7 @@
 
 class Client;
 
-class Channel : public Client
+class Channel
 {
 private:
     std::string _name;
@@ -45,9 +45,9 @@ public:
     const std::string& getTopic() const;
 
     // Membership
-    void addClient(Client& c);
-    void removeClient(Client& c);
-    bool hasClient(Client& c);
+    void addClient(Client* c);
+    void removeClient(Client* c);
+    bool hasClient(Client* c);
 
     bool hasKey() const;
     std::string getKey() const;
