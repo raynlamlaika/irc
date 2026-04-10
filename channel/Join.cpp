@@ -130,10 +130,14 @@ void printTopic(const Channel& channel, Client *client)
 {
     // RPL_TOPIC (332)  "<client> <channel> :<topic>"
     if (channel.getTopic().empty())
-        std::cout << client->getName() << " " << channel.getName() << " :No topic is set\n";
+    {
+        std::string msg = client->getName() + " " + channel.getName() + " :No topic is set\n";
+        client->sendMsg(msg);
+    }
     else
     {
-        std::cout << client->getName() << " " << channel.getName() << " :" << channel.getTopic() << "\n";
+        std::string msg = client->getName() + " " + channel.getName() + " :" + channel.getTopic() + "\n";
+        client->sendMsg(msg);
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
         std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
     }
