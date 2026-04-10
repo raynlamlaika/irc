@@ -23,7 +23,8 @@ void Parsing::kick(std::string line, Client& client)
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 3) {
         // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
-        std::cout << client.getName() << " KICK :Not enough parameters\n";
+        std::string msg = client.getName() + " KICK :Not enough parameters\n";
+        client.sendMsg(msg);
         return ;
     }
 
@@ -36,7 +37,8 @@ void Parsing::kick(std::string line, Client& client)
     if (!channel)
     {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
-        std::cout << client.getName() << " " << channelname << " :No such channel\n";
+        std::string msg = client.getName() + " " + channelname + " :No such channel\n";
+        client.sendMsg(msg);
         return;
     }
     if (!channel->isOperator(client)) {
@@ -48,7 +50,8 @@ void Parsing::kick(std::string line, Client& client)
     // check client is part of the channel
     if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::cout << client.getName() << " " << usertarget << " " << channelname << " :They aren't on that channel\n";
+        std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
+        client.sendMsg(msg);
         return;
     }
 
@@ -62,7 +65,8 @@ void Parsing::kick(std::string line, Client& client)
     }
     if (!targetClient) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::cout << client.getName() << " " << usertarget << " " << channelname << " :They aren't on that channel\n";
+        std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
+        client.sendMsg(msg);
         return;
     }
 
@@ -73,10 +77,12 @@ void Parsing::kick(std::string line, Client& client)
             reason = line.substr(index + 1);
     }
 
+    //check
     channel->removeClient(targetClient);
-    std::cout << "User " << usertarget << " kicked from channel " << channelname;
-    if (!reason.empty())
-        std::cout << " for reason: " << reason;
-    std::cout << std::endl;
+    std::string msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked from channel\n";
+    client.sendMsg(msg);
+    if (!reason.empty()) {
+        msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";
+        client.sendMsg(msg);
+    }
 }
-

@@ -21,14 +21,11 @@ void Parsing::add_Channel(const Channel& channel)
 
 std::vector<std::string> parceCammandJoin(std::string line)
 {
-    // separate the names and keys to loop out of them
-
     std::vector<std::string> holder;
     std::stringstream ss(line);
     std::string word;
     while (ss >> word)
     {
-        // std::cout << word << std::endl;
         holder.push_back(word);
     }
     if (holder.size() >= 1)
@@ -112,19 +109,19 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     // check if the channel has a user limit and if it's reached
     // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
     if (channel.hasUserLimit() && channel.getMembers().size() >= channel.hasUserLimit())
-        {std::cout << client.getName() << " " << channel.getName() << " Cannot join channel (+l)\n";return false;}
+        {std::string msg = client.getName() + " " + channel.getName() + " :Cannot join channel (+l)\n";client.sendMsg(msg);return false;}
     return true;
 }
 
 static bool validName(std::string name, Client *client)
 {
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty()){std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
-    if (name.length() > 50){std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
+    if (name.empty()){std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+    if (name.length() > 50){std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
         if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
-        {std::cout << client->getName() << " :Bad Channel Mask\n";return false;}
+        {std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     }
     return true;
 }
@@ -138,15 +135,16 @@ void printTopic(const Channel& channel, Client *client)
     {
         std::cout << client->getName() << " " << channel.getName() << " :" << channel.getTopic() << "\n";
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-        std::cout << "need to pass this RPL_TOPICWHOTIME (333)  <client> <channel> <nick> <setat>\n";
+        std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
     }
 }
-bool checkBan(const Channel& channel, const Client& client)
+bool checkBan(const Channel& channel, Client& client)
 {
     // Check if the client is banned from the channel
     if (channel.isBanned(client))
     {
-        std::cout << client.getName() << " :You are banned from this channel\n";
+        std::string msg = client.getName() + " :You are banned from this channel\n";
+        client.sendMsg(msg);
         return true; // Return true to indicate the client is banned
     }
     return false; // Return false if the client is not banned
@@ -157,7 +155,8 @@ void Parsing::join(Client &client, std::string line)
     std::map<std::string, Channel>& chs = Getchannel();
 
     std::vector<std::string> parsed = parceCammandJoin(line);
-    if (parsed.size() < 2){ std::cout << client.getName() << " JOIN :Not enough parameters\n"; return;}
+    if (parsed.size() < 2)
+        {std::string msg = client.getName() + " JOIN :Not enough parameters\n";client.sendMsg(msg);return;}
     
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
     for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
@@ -181,7 +180,8 @@ void Parsing::join(Client &client, std::string line)
             if (!canJoin(channel, client)) return;
             if (client.numberOfChannels() >= 10)
             {
-                std::cout << client.getName() << " :You have joined too many channels\n";
+                std::string msg = client.getName() + " :You have joined too many channels\n";
+                client.sendMsg(msg);
                 return;
             }
             if (channel.hasKey())
