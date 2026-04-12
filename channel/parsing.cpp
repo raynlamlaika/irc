@@ -183,6 +183,8 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             getfile(client, line, _allClients);
         else if (holder[0] == "SEND")
             sendfile(client, line, _allClients);
+        else if (holder[0] == "BOOT")
+            boot(client, line);
     }
     else
         client.sendMsg(":You have not registered\r\n");
