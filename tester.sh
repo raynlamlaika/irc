@@ -20,15 +20,24 @@ echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
   # sleep 0.6; echo "QUIT :done"
   #create new client in the server
 
-  sleep 0.6; echo "KICK #UltraW"
-  sleep 0.6; echo "KICK #UltraW ray"
+  sleep 0.4; echo "KICK #UltraW"
+  sleep 0.4; echo "KICK #UltraW ray"
 
 
-  sleep 0.6; echo "Test TOPIC ------------"
-  sleep 0.6; echo "TOPIC #UltraW :New topic for UltraW"
-  sleep 0.6; echo "TOPIC #UltraW"
-  sleep 0.6; echo "TOPIC #UltraW :"
-  sleep 0.6; echo "TOPIC #UltraW"
+  sleep 0.4; echo "Test TOPIC ------------"
+  sleep 0.4; echo "TOPIC #UltraW :New topic for UltraW"
+  sleep 0.4; echo "TOPIC #UltraW"
+  sleep 0.4; echo "TOPIC #UltraW :"
+  sleep 0.4; echo "TOPIC #UltraW"
+
+
+  sleep 0.4; echo "TEST MOOOOODE ---"
+
+  sleep 0.4; echo "MODE #UltraW +o rlamlaik"
+  # sleep 0.4; echo "MODE #UltraW"
+  # sleep 0.4; echo "MODE #UltraW"
+  # sleep 0.4; echo "MODE #UltraW"
+  # sleep 0.4; echo "MODE #UltraW"
 
 } | nc 127.0.0.1 1234
 

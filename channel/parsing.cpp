@@ -90,7 +90,8 @@ void Parsing::topic(std::string line, Client& client)
         }
         return;
     }
-    if (!channel->isOperator(client)) {
+    if (!channel->isOperator(client))
+    {
         // ERR_CHANOPRIVSNEEDED (482) "<client> <channel> :You're not channel operator"
         std::string msg = client.getName() + " " + holder[1] + " :You're not channel operator\n";
         client.sendMsg(msg);

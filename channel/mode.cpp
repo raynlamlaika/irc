@@ -115,15 +115,18 @@ void Parsing::mode(Client &clinet, std::string line)
         return;
     }
 
-    if (splitMode[1][0] == '#') { // deals with channel
+    if (splitMode[1][0] == '#')
+    {
         std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
-        std::cout << "this is the channel name: " << splitMode[1] << "\n";
-        if (it == chs.end()) {
-            std::cout << "channel not exist\n";
+        if (it == chs.end())
+        {
+            // irc.example.com 403 <nick> <channel> :No such channel
+            std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel";
+            clinet.sendMsg(msg);
             return;
         }
         std::map<char, char> helper = modeSpliter(splitMode);
-        PrintMap(helper);
+        // PrintMap(helper);
         Channel& channel = it->second;
         // · i: Set/remove Invite-only channel
         if (helper.find('i') != helper.end())
@@ -133,12 +136,11 @@ void Parsing::mode(Client &clinet, std::string line)
             {
                 // Enable invite-only mode
                 channel.setInviteOnly(true);
+                //broadcast to all the client in channel
+                channel.broadcastMsg(clinet.getName() + " has set the channel to invite-only.", channel.getmembers());
             }
             else
-            {
-                // Disable invite-only mode
                 channel.setInviteOnly(false);
-            }
         }
         // · t: Set/remove the restrictions of the TOPIC command to channel operators
         if (helper.find('t') != helper.end())
@@ -274,8 +276,7 @@ void Parsing::mode(Client &clinet, std::string line)
     }
     else
     {
-        // mode just for channel not for client
-        // put the error right here
+        // mode just for channel not for client  put the error right here
         return ;
         
     }

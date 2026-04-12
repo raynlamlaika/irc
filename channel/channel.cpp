@@ -176,3 +176,18 @@ bool Channel::isOperator(const Client& client) const
     std::set<Client *>::const_iterator it = _operators.find(const_cast<Client*>(&client));
     return it != _operators.end();
 }
+
+
+
+void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members)
+{
+    std::map<int, Client*>::const_iterator it = members.begin();
+
+    for ( ;it != members.end(); it++)
+    {
+        if (it->second)
+        {
+            it->second->sendMsg(msg);
+        }
+    }
+}

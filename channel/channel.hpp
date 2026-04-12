@@ -66,6 +66,8 @@ public:
     void setUserLimit(size_t limit);
     bool isBanned(const Client& client) const;
     bool isOperator(const Client& client) const;
+    void broadcastMsg(const std::string& msg, const std::map<int, Client*>& members);
+
     // bool addOperator(const Client& client) const;
 };
 
