@@ -208,7 +208,7 @@ void Parsing::mode(Client &clinet, std::string line)
             {
                 // Enable channel operator mode
                 if (splitMode.size() < 4)
-                {
+                { 
                     std::cout << "Operator nickname not provided\n";
                     return ;
                 }

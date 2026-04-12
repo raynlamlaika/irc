@@ -21,7 +21,7 @@ ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
 void Parsing::kick(std::string line, Client& client)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');
-    if (holder.size() < 3) {
+    if (holder.size() < 3){
         // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
         std::string msg = client.getName() + " KICK :Not enough parameters\n";
         client.sendMsg(msg);
@@ -41,7 +41,8 @@ void Parsing::kick(std::string line, Client& client)
         client.sendMsg(msg);
         return;
     }
-    if (!channel->isOperator(client)) {
+    if (!channel->isOperator(client))
+    {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
         std::string msg = client.getName() + " " + channelname + " :You're not channel operator\n";
         client.sendMsg(msg);
@@ -79,7 +80,7 @@ void Parsing::kick(std::string line, Client& client)
 
     //check
     channel->removeClient(targetClient);
-    std::string msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked from channel\n";
+    std::string msg = client.getName() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
     client.sendMsg(msg);
     if (!reason.empty()) {
         msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";

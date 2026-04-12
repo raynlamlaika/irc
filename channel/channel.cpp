@@ -154,6 +154,23 @@ bool Channel::isBanned(const Client& client) const
     return it != _banned.end();
 }
 
+void Channel::addOperator(Client* client)
+{
+    if (!client)
+        return;
+    _operators.insert(client);
+}
+
+void Channel::removeOperator(Client* client)
+{
+    if (!client)
+        return;
+    std::set<Client*>::iterator it = _operators.find(client);
+    if (it != _operators.end())
+        _operators.erase(it);
+}
+
+
 bool Channel::isOperator(const Client& client) const
 {
     std::set<Client *>::const_iterator it = _operators.find(const_cast<Client*>(&client));

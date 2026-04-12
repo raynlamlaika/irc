@@ -61,6 +61,8 @@ public:
     void setTopic(std::string key);
     std::map<int, Client*> getmembers ();
     std::set<Client*> getoperators() const;
+    void addOperator(Client* client);
+    void removeOperator(Client* client);
     void setUserLimit(size_t limit);
     bool isBanned(const Client& client) const;
     bool isOperator(const Client& client) const;

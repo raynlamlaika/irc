@@ -115,13 +115,16 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
 
 static bool validName(std::string name, Client *client)
 {
+    std::cout << "\033[0;31m TEST JOIN COMMAND  \033[0m\n";
+    
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty()){std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
-    if (name.length() > 50){std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+    if (name.empty()){std::string msg = client->getName() + " " + name + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+    if (name.length() > 50){std::string msg = client->getName() + " " + name +" :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+    if (name[0] != '#' && name[0] != '&'&& name[0] != '!'&& name[0] != '+'){std::string msg = client->getName() + " " + name +" :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
         if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
-        {std::string msg = client->getName() + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+        {std::string msg = client->getName() +  " " + name + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     }
     return true;
 }
@@ -139,7 +142,7 @@ void printTopic(const Channel& channel, Client *client)
         std::string msg = client->getName() + " " + channel.getName() + " :" + channel.getTopic() + "\n";
         client->sendMsg(msg);
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-        std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
+        // std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
     }
 }
 bool checkBan(const Channel& channel, Client& client)
@@ -172,10 +175,15 @@ void Parsing::join(Client &client, std::string line)
             // Channel does not exist, create it
             if(!validName(channelName, &client)) return;
             Channel newChannel(channelName);
-            if (!key.empty())newChannel.setKey(key);
+            if (!key.empty())
+                newChannel.setKey(key);
             newChannel.addClient(&client);
+            // add channel operator (make first joiner operator)
+            newChannel.addOperator(&client);
             add_Channel(newChannel);
-            printTopic(newChannel, &client);
+            std::string msg = client.getName() + " JOIN " + newChannel.getName() + "\n";
+            client.sendMsg(msg);
+            // printTopic(newChannel, &client);
         }
         else
         {
@@ -195,26 +203,38 @@ void Parsing::join(Client &client, std::string line)
                     if (channel.getKey() == key)
                     {
                         if (checkBan(channel, client)) return;
-                        channel.addClient(&client);printTopic(channel, &client);
+                        channel.addClient(&client);//printTopic(channel, &client);
+                        std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
+                        client.sendMsg(msg);
                     }
                     else
                     {
                         std::cout << "Incorrect key for channel: " << channelName << " with key: " << key << " this is the correct key: " << channel.getKey() << "\n";
+                        std::string msg = client.getName() + " " + channelName + " :Incorrect key\n";
+                        client.sendMsg(msg);
                     }
                 }
                 else
-                    std::cout << "Key required for channel: " << channelName << "\n";
+                {
+                    // ERR_CANNOTJOINCHANNEL (475)   "<client> <channel> :Cannot join channel (+k)"
+                    std::string msg = client.getName() + " " + channelName + " :Cannot join channel (+k)\n";
+                    client.sendMsg(msg);
+                }
             }
-            else {
-                {channel.addClient(&client);printTopic(channel, &client);}
+            else 
+            {
+                channel.addClient(&client);
+                std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
+                client.sendMsg(msg);//printTopic(channel, &client);}
             }
         }
     }
 
-    // std::cout << "\t\t\t------this is all of the channels------\t\t\t\n";
+    // std::cout << "\t\t\t------this is all of the channels------\t\t\t\n \033[0;32m";
     // for (auto it1 = chs.begin(); it1 != chs.end(); ++it1) {
     //     std::cout << "Channel : " << it1->first << ": " << it1->second.getName() << std::endl;
     // }
+    // std::cout << "\033[0m";
 }
 
 
