@@ -168,14 +168,14 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     {
         if (holder[0] == "JOIN")
             join(client, line);
-        // else if (holder[0] == "MODE")
-        //     mode(client, line);
+        else if (holder[0] == "MODE")
+            mode(client, line);
         else if (holder[0] == "KICK")
             kick(line, client);
         else if (holder[0] == "TOPIC")
             topic(line, client);
-        // else if (holder[0] == "PRIVMSG")
-        //     prvmsg(line);
+        else if (holder[0] == "PRIVMSG")
+            prvmsg(line);
         // else if (holder[0] == "INVTE")
         // {
         //     std::cout << holder[0] << std::endl;

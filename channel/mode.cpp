@@ -114,9 +114,11 @@ void Parsing::mode(Client &clinet, std::string line)
         std::cout << "Not a MODE command\n";
         return;
     }
+    std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
 
-    if (splitMode[1][0] == '#')
+    if (splitMode[1][0] == '#')// check is valid name 
     {
+        // need to make  a loop out of that shit 
         std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
         if (it == chs.end())
         {
