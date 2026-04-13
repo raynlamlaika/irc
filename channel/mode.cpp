@@ -61,7 +61,7 @@ std::map<char, char> modeSpliter(const std::vector<std::string>& splitMode)
             sign = c;
             continue;
         }
-        if (sign && std::isalpha(static_cast<unsigned char>(c)))
+        else if (sign && std::isalpha(static_cast<unsigned char>(c)))
         {
             modes[c] = sign;
         }
@@ -114,172 +114,388 @@ void Parsing::mode(Client &clinet, std::string line)
         std::cout << "Not a MODE command\n";
         return;
     }
-    std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
+    // std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
 
-    if (splitMode[1][0] == '#')// check is valid name 
+    // check valid name for channel
+    std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
+    if (it == chs.end())
     {
-        // need to make  a loop out of that shit 
-        std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
-        if (it == chs.end())
+        // irc.example.com 403 <nick> <channel> :No such channel
+        std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel";
+        clinet.sendMsg(msg);
+        return;
+    }
+    std::map<char, char> helper = modeSpliter(splitMode);
+    if (splitMode.size() < 2)
+    {
+        // std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
+        return;
+    }
+
+    int sign = 0 ;
+
+    for (size_t j = 0 ; splitMode[2].size() > j ; j++)
+    {
+        char c = splitMode[2][j];
+        if (c == '+' || c == '-')
         {
-            // irc.example.com 403 <nick> <channel> :No such channel
-            std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel";
-            clinet.sendMsg(msg);
-            return;
-        }
-        std::map<char, char> helper = modeSpliter(splitMode);
-        // PrintMap(helper);
-        Channel& channel = it->second;
-        // · i: Set/remove Invite-only channel
-        if (helper.find('i') != helper.end())
-        {
-            std::cout << "Setting invite-only mode: " << (helper['i'] == '+' ? "ON" : "OFF") << "\n";
-            if (helper['i'] == '+')
+            sign = c;
+            j++;c = splitMode[2][j];
+            if (splitMode[2].size() > j &&  (c == 'i' || c == 't' || c == 'k' || c == 'o' || c == 'l'))
             {
-                // Enable invite-only mode
-                channel.setInviteOnly(true);
-                //broadcast to all the client in channel
-                channel.broadcastMsg(clinet.getName() + " has set the channel to invite-only.", channel.getmembers());
-            }
-            else
-                channel.setInviteOnly(false);
-        }
-        // · t: Set/remove the restrictions of the TOPIC command to channel operators
-        if (helper.find('t') != helper.end())
-        {
-            std::cout << "Setting topic restriction mode: " << (helper['t'] == '+' ? "ON" : "OFF") << "\n";
-            if (helper['t'] == '+')
-            {
-                // Enable topic restriction mode
-                if (splitMode.size() < 4) // Check if topic is provided and is printable
+                // i
+                if (c == 'i')
                 {
-                    std::cout << "Topic not provided\n";
-                    return ;
-                }
-                //check if topic is printable
-                for (size_t i = 0; i < splitMode[3].size(); ++i)
-                {
-                    if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
+                    if (sign == '+')
                     {
-                        std::cout << "Topic contains non-printable characters\n";
-                        return ;
+                        // Enable invite-only mode
+                        it->second.setInviteOnly(true);
+                        //broadcast to all the client in channel
+                        it->second.broadcastMsg(clinet.getName() + " has set the channel to invite-only.", it->second.getmembers());
+                    }
+                    else
+                        it->second.setInviteOnly(false);
+                }
+                // t
+                if (c == 't')
+                {
+                    if (sign == '+')
+                    {
+                        // Enable topic restriction mode
+                        if (splitMode.size() < 4) // Check if topic is provided and is printable
+                        {
+                            // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+                            std::string msg = clinet.getNick() + " T " + it->first + " :Not enough parameters\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        //check if topic is printable
+                        for (size_t i = 0; i < splitMode[3].size(); ++i)
+                        {
+                            if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
+                            {
+                                std::string msg = clinet.getNick() + " T " + it->first + " :Invalid topic format (contains non-printable characters)\n";
+                                clinet.sendMsg(msg);
+                                return ;
+                            }
+                        }
+                        it->second.setTopic(splitMode[3]);
+                    }
+                    else
+                    {
+                        // Disable topic restriction mode
+                        it->second.setTopic("");
                     }
                 }
-                channel.setTopic(splitMode[3]);
-            }
-            else
-            {
-                // Disable topic restriction mode
-                channel.setTopic("");
-            }
-        }
-        // · k: Set/remove the channel key (password)
-        if (helper.find('k') != helper.end())
-        {
-            std::cout << "Setting channel key mode: " << (helper['k'] == '+' ? "ON" : "OFF") << "\n";
-            if (helper['k'] == '+')
-            {
-                if (splitMode.size() < 4)
+                // k
+                if (c == 'k')
                 {
-                    std::cout << "Channel key not provided\n";
-                    return ;
+                    if (sign == '+')
+                    {
+                        if (splitMode.size() < 4)
+                        {
+                            // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+                            std::string msg = clinet.getNick() + " K " + it->first + " :Not enough parameters\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        // Check if it is a valid key
+                        // for (size_t i = 0; i < splitMode[3].size(); ++i)
+                        // {
+                        //     if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
+                        //     {
+                        //         std::cout << "Channel key contains non-printable characters\n";
+                        //         return ;
+                        //     }
+                        // }
+                        it->second.setKey(splitMode[3]);
+                        // std::cout << "Channel key set to: '" << splitMode[3] << "' (length: " << splitMode[3].length() << ")\n";
+                    }
+                    else
+                    {
+                        // Disable channel key mode
+                        if (it->second.hasKey())
+                            it->second.setKey("");
+                    }
                 }
-                // Check if the key contains only printable characters
-                // for (size_t i = 0; i < splitMode[3].size(); ++i)
-                // {
-                //     if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
-                //     {
-                //         std::cout << "Channel key contains non-printable characters\n";
-                //         return ;
-                //     }
-                // }
-                channel.setKey(splitMode[3]);
-                std::cout << "Channel key set to: '" << splitMode[3] << "' (length: " << splitMode[3].length() << ")\n";
+                // o
+                if (c == 'o')
+                {
+                    if (sign == '+')
+                    {
+                        // Enable channel operator mode
+                        if (splitMode.size() < 4)
+                        { 
+                            // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Not enough parameters\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        std::string operatorName = splitMode[3];
+                        if (!searchForClient(operatorName))
+                        {
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        Client* operatorClient = searchForClientref(operatorName);
+                        // check if the client is already an operator
+                        if (it->second.isOperator(*operatorClient))
+                        {
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' is already an operator\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        if (operatorClient)
+                        {
+                            it->second.getoperators().insert(operatorClient);
+                        }
+                        else
+                        {
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                    }
+                    else
+                    {
+                        // Disable channel operator mode
+                        if (splitMode.size() < 4)
+                        { 
+                            // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Not enough parameters\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        std::string operatorName = splitMode[3];
+                        if (!searchForClient(operatorName))
+                        {
+                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        Client* operatorClient = searchForClientref(operatorName);
+                        if (it->second.isOperator(*operatorClient))
+                        {
+                            it->second.getoperators().erase(operatorClient);
+                            return ;
+                        }
+                    }
+                }
+                // l
+                if (c == 'l')
+                {
+                    if (sign == '+')
+                    {
+                        // Enable user limit mode
+                        size_t userLimit;
+                        if (splitMode.size() < 4)
+                        {
+                            // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
+                            std::string msg = clinet.getNick() + " L " + it->first + " :Not enough parameters\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        try 
+                        {
+                            userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
+                            if (userLimit == 0)
+                            {
+                                std::string msg = clinet.getNick() + " O " + it->first + " :User limit must be greater than 0\n";
+                                clinet.sendMsg(msg);
+                                return ;
+                            }
+                        }
+                        catch (const std::invalid_argument& e) 
+                        {
+                            std::cout << "Invalid user limit\n";
+                            return ;
+                        }
+                        it->second.setUserLimit(userLimit);
+                    }
+                    else
+                    {
+                        // Disable user limit mode
+                        it->second.setUserLimit(0);
+                    }
+                }
+
             }
-            else
-            {
-                // Disable channel key mode
-                if (channel.hasKey())
-                    channel.setKey("");
-            }
+
+        }
+        else
+        {
+            // std::cout << "Invalid mode format\n";
+
+            return ;
+            // wtf is happend;}
+        }
+    }
+    
+    // if (splitMode[1][0] == '#')// check is valid name 
+    // {
+    //     // need to make  a loop out of that shit 
+    //     std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
+    //     if (it == chs.end())
+    //     {
+    //         // irc.example.com 403 <nick> <channel> :No such channel
+    //         std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel";
+    //         clinet.sendMsg(msg);
+    //         return;
+    //     }
+    //     std::map<char, char> helper = modeSpliter(splitMode);
+    //     // PrintMap(helper);
+    //     Channel& channel = it->second;
+    //     // · i: Set/remove Invite-only channel
+    //     if (helper.find('i') != helper.end())
+    //     {
+    //         std::cout << "Setting invite-only mode: " << (helper['i'] == '+' ? "ON" : "OFF") << "\n";
+    //         if (helper['i'] == '+')
+    //         {
+    //             // Enable invite-only mode
+    //             channel.setInviteOnly(true);
+    //             //broadcast to all the client in channel
+    //             channel.broadcastMsg(clinet.getName() + " has set the channel to invite-only.", channel.getmembers());
+    //         }
+    //         else
+    //             channel.setInviteOnly(false);
+    //     }
+    //     // · t: Set/remove the restrictions of the TOPIC command to channel operators
+    //     if (helper.find('t') != helper.end())
+    //     {
+    //         std::cout << "Setting topic restriction mode: " << (helper['t'] == '+' ? "ON" : "OFF") << "\n";
+    //         if (helper['t'] == '+')
+    //         {
+    //             // Enable topic restriction mode
+    //             if (splitMode.size() < 4) // Check if topic is provided and is printable
+    //             {
+    //                 std::cout << "Topic not provided\n";
+    //                 return ;
+    //             }
+    //             //check if topic is printable
+    //             for (size_t i = 0; i < splitMode[3].size(); ++i)
+    //             {
+    //                 if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
+    //                 {
+    //                     std::cout << "Topic contains non-printable characters\n";
+    //                     return ;
+    //                 }
+    //             }
+    //             channel.setTopic(splitMode[3]);
+    //         }
+    //         else
+    //         {
+    //             // Disable topic restriction mode
+    //             channel.setTopic("");
+    //         }
+    //     }
+    //     // · k: Set/remove the channel key (password)
+    //     if (helper.find('k') != helper.end())
+    //     {
+    //         std::cout << "Setting channel key mode: " << (helper['k'] == '+' ? "ON" : "OFF") << "\n";
+    //         if (helper['k'] == '+')
+    //         {
+    //             if (splitMode.size() < 4)
+    //             {
+    //                 std::cout << "Channel key not provided\n";
+    //                 return ;
+    //             }
+    //             // Check if the key contains only printable characters
+    //             // for (size_t i = 0; i < splitMode[3].size(); ++i)
+    //             // {
+    //             //     if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
+    //             //     {
+    //             //         std::cout << "Channel key contains non-printable characters\n";
+    //             //         return ;
+    //             //     }
+    //             // }
+    //             channel.setKey(splitMode[3]);
+    //             std::cout << "Channel key set to: '" << splitMode[3] << "' (length: " << splitMode[3].length() << ")\n";
+    //         }
+    //         else
+    //         {
+    //             // Disable channel key mode
+    //             if (channel.hasKey())
+    //                 channel.setKey("");
+    //         }
         
-        }
-        // · o: Give/take channel operator privilege
-        if (helper.find('o') != helper.end())
-        {
-            std::cout << "Setting channel operator mode: " << (helper['o'] == '+' ? "ON" : "OFF") << "\n";
-            if (helper['o'] == '+')
-            {
-                // Enable channel operator mode
-                if (splitMode.size() < 4)
-                { 
-                    std::cout << "Operator nickname not provided\n";
-                    return ;
-                }
-                std::string operatorName = splitMode[3];
-                if (!searchForClient(operatorName))
-                {
-                    std::cout << "Client with nickname '" << operatorName << "' not found\n";
-                    return ;
-                }
-                Client* operatorClient = searchForClientref(operatorName);
-                if (operatorClient)
-                {
-                    channel.getoperators().insert(operatorClient);
-                }
-                else
-                {
-                    std::cout << "Client with nickname '" << operatorName << "' not found\n";
-                    return ;
-                }
-            }
-            else
-            {
-                // Disable channel operator mode
-                ;
-            }
-        }
-        // · l: Set/remove the user limit to channel
-        if (helper.find('l') != helper.end())
-        {
-            std::cout << "Setting user limit mode: " << (helper['l'] == '+' ? "ON" : "OFF") << "\n";
-            if (helper['l'] == '+')
-            {
-                // Enable user limit mode
-                size_t userLimit;
-                if (splitMode.size() < 4)
-                {
-                    std::cout << "User limit not provided\n";
-                    return ;
-                }
-                try 
-                {
+    //     }
+    //     // · o: Give/take channel operator privilege
+    //     if (helper.find('o') != helper.end())
+    //     {
+    //         std::cout << "Setting channel operator mode: " << (helper['o'] == '+' ? "ON" : "OFF") << "\n";
+    //         if (helper['o'] == '+')
+    //         {
+    //             // Enable channel operator mode
+    //             if (splitMode.size() < 4)
+    //             { 
+    //                 std::cout << "Operator nickname not provided\n";
+    //                 return ;
+    //             }
+    //             std::string operatorName = splitMode[3];
+    //             if (!searchForClient(operatorName))
+    //             {
+    //                 std::cout << "Client with nickname '" << operatorName << "' not found\n";
+    //                 return ;
+    //             }
+    //             Client* operatorClient = searchForClientref(operatorName);
+    //             if (operatorClient)
+    //             {
+    //                 channel.getoperators().insert(operatorClient);
+    //             }
+    //             else
+    //             {
+    //                 std::cout << "Client with nickname '" << operatorName << "' not found\n";
+    //                 return ;
+    //             }
+    //         }
+    //         else
+    //         {
+    //             // Disable channel operator mode
+    //             ;
+    //         }
+    //     }
+    //     // · l: Set/remove the user limit to channel
+    //     if (helper.find('l') != helper.end())
+    //     {
+    //         std::cout << "Setting user limit mode: " << (helper['l'] == '+' ? "ON" : "OFF") << "\n";
+    //         if (helper['l'] == '+')
+    //         {
+    //             // Enable user limit mode
+    //             size_t userLimit;
+    //             if (splitMode.size() < 4)
+    //             {
+    //                 std::cout << "User limit not provided\n";
+    //                 return ;
+    //             }
+    //             try 
+    //             {
                     
-                    userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
-                    if (userLimit == 0)
-                    {
-                        std::cout << "User limit must be greater than 0\n";
-                        return ;
-                    }
-                }
-                catch (const std::invalid_argument& e) 
-                {
-                    std::cout << "Invalid user limit\n";
-                    return ;
-                }
-                channel.setUserLimit(userLimit);
-            }
-            else
-            {
-                // Disable user limit mode
-                channel.setUserLimit(0);
-            }
-        }
-    }
-    else
-    {
-        // mode just for channel not for client  put the error right here
-        return ;
+    //                 userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
+    //                 if (userLimit == 0)
+    //                 {
+    //                     std::cout << "User limit must be greater than 0\n";
+    //                     return ;
+    //                 }
+    //             }
+    //             catch (const std::invalid_argument& e) 
+    //             {
+    //                 std::cout << "Invalid user limit\n";
+    //                 return ;
+    //             }
+    //             channel.setUserLimit(userLimit);
+    //         }
+    //         else
+    //         {
+    //             // Disable user limit mode
+    //             channel.setUserLimit(0);
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     // mode just for channel not for client  put the error right here
+    //     return ;
         
-    }
+    // }
 }
