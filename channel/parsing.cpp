@@ -186,6 +186,12 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             sendfile(client, line, _allClients);
         else if (holder[0] == "BOOT")
             boot(client, line);
+        else
+        {
+            //invalid command
+            std::string msg =  "Invalid command\r\n";
+            client.sendMsg(msg);
+        }
     }
     else
         client.sendMsg(":You have not registered\r\n");
