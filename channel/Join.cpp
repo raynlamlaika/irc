@@ -115,10 +115,9 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
 
 static bool validName(std::string name, Client *client)
 {
-    std::cout << "\033[0;31m TEST JOIN COMMAND  \033[0m\n";
     
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty()){std::string msg = client->getName() + " " + name + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
+    if (name.empty() || name.size() < 2){std::string msg = client->getName() + " " + name + " :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     if (name.length() > 50){std::string msg = client->getName() + " " + name +" :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     if (name[0] != '#' && name[0] != '&'&& name[0] != '!'&& name[0] != '+'){std::string msg = client->getName() + " " + name +" :Bad Channel Mask\n";client->sendMsg(msg);return false;}
     for (size_t i = 0; i < name.length(); ++i)

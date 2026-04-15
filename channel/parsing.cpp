@@ -4,20 +4,6 @@
 #include <algorithm>
 #include <cctype>
 
-
-
-// static bool validStr(const std::string& str)
-// {
-//     for (int i = 0 ;i < str.size() ; i++)
-//     {
-//         if (!std::isprint(str[i]))
-//         {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
 Channel *Parsing::searchForChannelref(std::string channelName)
 {
     std::map<std::string, Channel>& chs = Getchannel();
@@ -62,7 +48,7 @@ void Parsing::topic(std::string line, Client& client)
     }
     if (!searchForChannel(holder[1])) {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
-        std::string msg = client.getName() + " " + holder[1] + " :No such channel\n";
+        std::string msg = client.getName() + " " + holder[1] + " :No such channel\r\n";
         client.sendMsg(msg);
         return;
     }
@@ -98,6 +84,8 @@ void Parsing::topic(std::string line, Client& client)
         return;
     }
     std::string topicUse = line.substr(index + 1); // skip the ':'
+    std::cout << "line is : " << line << std::endl;
+    std::cout << "topicUse: " << topicUse << std::endl;
     if (topicUse.empty())
     {
         // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
@@ -188,8 +176,8 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             boot(client, line);
         else
         {
-            //invalid command
-            std::string msg =  "Invalid command\r\n";
+            //:<server> 421 <nick> <command> :Unknown command
+            std::string msg =  ":ircserv 421 " + client.getName() + " " + holder[0] + " :Unknown command\r\n";
             client.sendMsg(msg);
         }
     }

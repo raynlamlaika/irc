@@ -1,0 +1,20 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/goinfre/rlamlaik/irc'
+c++ -Wall -Wextra -std=c++98 -g   -c -o Server/main.o Server/main.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o Server/Server.o Server/Server.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/parsing.o channel/parsing.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/channel.o channel/channel.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o Server/Client.o Server/Client.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/Join.o channel/Join.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/mode.o channel/mode.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/kick.o channel/kick.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/prvmsg.o channel/prvmsg.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/pass.o channel/pass.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/nick.o channel/nick.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/user.o channel/user.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/getfile.o channel/getfile.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/sendfile.o channel/sendfile.cpp
+c++ -Wall -Wextra -std=c++98 -g   -c -o channel/boot.o channel/boot.cpp
+c++ -Wall -Wextra -std=c++98 -g -o ircserv Server/main.o Server/Server.o channel/parsing.o channel/channel.o Server/Client.o channel/Join.o channel/mode.o channel/kick.o channel/prvmsg.o channel/pass.o channel/nick.o channel/user.o channel/getfile.o channel/sendfile.o channel/boot.o
+make: Leaving directory '/goinfre/rlamlaik/irc'
+ 

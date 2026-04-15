@@ -37,7 +37,7 @@ void Parsing::kick(std::string line, Client& client)
     if (!channel)
     {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
-        std::string msg = client.getName() + " " + channelname + " :No such channel\n";
+        std::string msg = client.getName() + " " + channelname + " :No such channel\r\n";
         client.sendMsg(msg);
         return;
     }

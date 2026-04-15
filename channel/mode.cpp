@@ -76,7 +76,7 @@ void Parsing::mode(Client &clinet, std::string line)
     if (it == chs.end())
     {
         // irc.example.com 403 <nick> <channel> :No such channel
-        std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel";
+        std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel\r\n";
         clinet.sendMsg(msg);
         return;
     }
@@ -134,7 +134,15 @@ void Parsing::mode(Client &clinet, std::string line)
                                 return ;
                             }
                         }
-                        it->second.setTopic(splitMode[3]);
+                        int index = line.find(":");
+                        if (index == std::string::npos)
+                        {
+                            std::string msg = clinet.getNick() + " T " + it->first + " :Not enough parameters\r\n";
+                            clinet.sendMsg(msg);
+                            return ;
+                        }
+                        std::string topic = line.substr(index + 1);
+                        it->second.setTopic(topic);
                     }
                     else
                     {

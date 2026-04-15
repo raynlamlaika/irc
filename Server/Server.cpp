@@ -20,7 +20,7 @@ Server::Server(int port, std::string password) : password(password)
     if (bind(_serverFd, (sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
 
-    if (listen(_serverFd, 10) < 0)
+    if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
 
     pollfd p;
