@@ -41,7 +41,7 @@ private:
 
         _clients[client->getFd()] = client;
     }
-    
+    std::string readLine(Client *client);
 };
 
 #endif

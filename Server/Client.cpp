@@ -17,17 +17,16 @@ void Client::setname(std::string nameHolder)
     name = nameHolder;
 }
 
-Client::Client()
+void Client::setrealname(std::string realname)
 {
-    // _addr.sin_port = 133;
-    // numberOfChannelsJoined = 0;
-    // std::cout << "[+] Client connected fd[" << _fd << "]\n";
+    realname = realname;
 }
 
+Client::Client(){}
+
 Client::Client(int fd, const sockaddr_in &addr, std::string password) 
-    : _fd(fd), _addr(addr), numberOfChannelsJoined(0), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password)
+    : _fd(fd), _addr(addr), numberOfChannelsJoined(0), realname(""), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password)
 {
-    //_addr.sin_port = 133;
     std::cout << "Client connected fd[" << _fd << "]\n";
 }
 

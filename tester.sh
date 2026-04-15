@@ -1,12 +1,12 @@
 #!/bin/bash
 echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
 {
-  sleep 0.2; echo "PASS ra"
-  sleep 0.2; echo "NICK rlamlaik"
-  sleep 0.2; echo "USER rlamlaik 0 * :rlamlaik"
+  echo "PASS hamza\r\n"
+  echo "NICK rlamlaik\r\n"
+  echo "USER rlamlaik 0 * :rlamlaik\r\n"
 
-  sleep 0.1; echo "JOIN #test"
-  sleep 0.1; echo "JOIN #test2"
+  echo "JOIN #test\r\n"
+  # sleep 0.1; echo "JOIN #test2"
 
 
 # # ------------------- to be fixwed
@@ -43,14 +43,14 @@ echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
 
 
 
-  sleep 0.1; echo "JOIN #UltraW ray"
-  sleep 0.1; echo "ls ls"
-  sleep 0.1; echo "ls ls"
-  sleep 0.1; echo "ls ls"
-  sleep 0.1; echo "TOPIC #UltraW :chanelltopic is l7wa TTTTTTTTTTTTTTTTTTTTTTTTT"
-  sleep 0.1; echo "TOPIC #UltraW"
-  sleep 0.2; echo "MODE #UltraW +t "
-  sleep 0.2; echo "TOPIC #UltraW"
+  # sleep 0.1; echo "JOIN #UltraW ray"
+  # sleep 0.1; echo "ls ls"
+  # sleep 0.1; echo "ls ls"
+  # sleep 0.1; echo "ls ls"
+  # sleep 0.1; echo "TOPIC #UltraW :chanelltopic is l7wa TTTTTTTTTTTTTTTTTTTTTTTTT"
+  # sleep 0.1; echo "TOPIC #UltraW"
+  # sleep 0.2; echo "MODE #UltraW +t "
+  # sleep 0.2; echo "TOPIC #UltraW"
 
 
 

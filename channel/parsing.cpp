@@ -139,7 +139,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     if (line.empty())
         return false;
     // cccccl(_allClients);
-    printListOfClients();
+    // printListOfClients();
 
     std::vector<std::string> holder;
     std::stringstream ss(line);

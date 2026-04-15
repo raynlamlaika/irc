@@ -44,6 +44,7 @@ public:
     // file handling 
     void getfile(Client &client, std::string line, std::map<int, Client*> _allClients);
     void sendfile(Client &client, std::string line, std::map<int, Client*> _allClients);
+    void handleFirstCommand(Client &client, std::string line, std::map<int, Client*> _allClients);
     //boot
     void boot(Client &client, std::string msg);
     // auth

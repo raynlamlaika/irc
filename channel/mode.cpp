@@ -134,7 +134,7 @@ void Parsing::mode(Client &clinet, std::string line)
                                 return ;
                             }
                         }
-                        int index = line.find(":");
+                        size_t index = line.find(":");
                         if (index == std::string::npos)
                         {
                             std::string msg = clinet.getNick() + " T " + it->first + " :Not enough parameters\r\n";

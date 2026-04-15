@@ -4,9 +4,8 @@
 #include "parsing.hpp"
 
 
-void handleFirstCommand(Client &client, std::string line, std::map<int, Client*> _allClients)
+void Parsing::handleFirstCommand(Client &client, std::string line, std::map<int, Client*> _allClients)
 {
-    (void)_allClients;
     std::string cmd, nick, path;
     std::stringstream ss(line);
     ss >> cmd >> nick >> path;
@@ -14,6 +13,13 @@ void handleFirstCommand(Client &client, std::string line, std::map<int, Client*>
     if (cmd.empty() || nick.empty() || path.empty())
     {
         client.sendMsg(": USAGE <GETFILE> <NICK> </PATH/TO/FILE>\n");
+        client.setheaderIsGet(false);
+        client.setstatusFile(false);
+        return;
+    }
+    if (!checkNick(_allClients, nick))
+    {
+        client.sendMsg(": Internal error: client not found\n");
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         return;

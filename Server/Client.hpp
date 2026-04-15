@@ -16,6 +16,7 @@ private:
     int _fd;
     sockaddr_in _addr;
     int numberOfChannelsJoined; 
+    std::string realname;
     std::string name; // add 
     std::string nick;
     bool pass;
@@ -60,6 +61,7 @@ public:
     bool getPass();
     void setNick(std::string &value);
     void setname(std::string nameHolder);
+    void setrealname(std::string realname);
     void setAuth();
 
     std::string getfileout();

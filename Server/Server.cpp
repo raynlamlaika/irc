@@ -69,6 +69,29 @@ void Server::removeClient(size_t index)
     _pollFds.erase(_pollFds.begin() + index);
 }
 
+std::string Server::readLine(Client *client)
+{
+    std::string content;
+
+    while (true)
+    {
+        char buffer[1024];
+        int byte = client->receive(buffer, sizeof(buffer));
+
+        if (byte <= 0)
+            return "";
+
+        content.append(buffer, byte);
+
+        if (!content.empty() && content[content.length() - 1] == '\n')
+            break;
+    }
+
+    if (!content.empty() && content[content.length() - 1] == '\n')
+        content.erase(content.length() - 1);
+
+    return content;
+}
 
 void Server::handleClient(size_t index)
 {
@@ -84,10 +107,27 @@ void Server::handleClient(size_t index)
     }
     buffer[bytes] = '\0';
     std::string msg(buffer);
-    if (msg.size() > 0 && msg.substr(msg.size() - 1) == "\n")
-        msg = msg.erase(msg.size() - 1);
-    std::cout << "msg is : ["<< msg << "]" << std::endl;
-    newMessage(msg, *client, _clients);
+    if (msg.find("\r\n") != std::string::npos)
+    {
+        while (msg.find("\r\n") != std::string::npos)
+        {
+            std::string m = msg.substr(0, msg.find("\r\n"));
+            msg.erase(msg.begin(), msg.begin() + msg.find("\r\n") + 2);
+            std::cout << "-> " << m << std::endl;
+            newMessage(m, *client, _clients);
+        }
+    }
+    else
+    {
+        while (msg.find("\n") != std::string::npos)
+        {
+            std::string m = msg.substr(0, msg.find("\n"));
+            msg.erase(msg.begin(), msg.begin() + msg.find("\n") + 1);
+            std::cout << "-> " << m << std::endl;
+            newMessage(m, *client, _clients);
+        }
+    }
+    std::cout << "|========================|" << std::endl;
 }
 
 void Server::run()
