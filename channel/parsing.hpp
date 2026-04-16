@@ -40,6 +40,7 @@ public:
     Channel *searchForChannelref(std::string channelName);
     Client *searchForClientref(std::string channelName);
     bool canJoin(const Channel& channel, Client& client);
+    void invite(std::string line, Client& client);
 
     // file handling 
     void getfile(Client &client, std::string line, std::map<int, Client*> _allClients);

@@ -170,6 +170,27 @@ void Channel::removeOperator(Client* client)
         _operators.erase(it);
 }
 
+void Channel::addInvited(Client* client)
+{
+    if (!client)
+        return;
+    _invited.insert(client->getFd());
+}
+
+void Channel::removeInvited(Client* client)
+{
+    if (!client)
+        return;
+    std::set<int>::iterator it = _invited.find(client->getFd());
+    if (it != _invited.end())
+        _invited.erase(it);
+}
+
+bool Channel::isInvited(const Client& client) const
+{
+    return _invited.find(client.getFd()) != _invited.end();
+}
+
 
 bool Channel::isOperator(const Client& client) const
 {

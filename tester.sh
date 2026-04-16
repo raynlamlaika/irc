@@ -1,11 +1,23 @@
 #!/bin/bash
 echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
 {
-  echo "PASS hamza\r\n"
-  echo "NICK rlamlaik\r\n"
-  echo "USER rlamlaik 0 * :rlamlaik\r\n"
+  sleep 0.4;echo "PASS ra\r\n"
+  sleep 0.4;echo "NICK rlamlaik\r\n"
+  sleep 0.4;echo "USER rlamlaik 0 * :rlamlaik\r\n"
 
-  echo "JOIN #test\r\n"
+  sleep 0.4;echo "JOIN #te3st\r\n"
+  sleep 0.4;echo "MODE #te3st +i\r\n"
+  sleep 0.4;echo "INVITE raw #te3st\r\n"
+  sleep 0.4;echo "JOIN #ewewe1 \r\n"
+  sleep 0.4;echo "JOIN #ewewe2 \r\n"
+  sleep 0.4;echo "JOIN #ewewe31 \r\n"
+  sleep 0.4;echo "JOIN #ewewe14 \r\n"
+  sleep 0.4;echo "JOIN #ewewe14 \r\n"
+  sleep 0.4;echo "JOIN 0 \r\n"
+  sleep 0.4;echo "JOIN #ee \r\n"
+  sleep 0.4;echo "JOIN #0 \r\n"
+
+
   # sleep 0.1; echo "JOIN #test2"
 
 

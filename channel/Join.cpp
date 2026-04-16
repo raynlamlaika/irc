@@ -104,8 +104,12 @@ std::map<std::string, std::string> key_name(std::vector<std::string> line)
 bool Parsing::canJoin(const Channel& channel, Client& client)
 {
     // check if the channel is invite only
-    if (channel.isInviteOnly())
-        return false; 
+    if (channel.isInviteOnly() && !channel.isInvited(client))
+    {
+        std::string msg = client.getName() + " " + channel.getName() + " :Cannot join channel (+i)\n";
+        client.sendMsg(msg);
+        return false;
+    }
     // check if the channel has a user limit and if it's reached
     // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
     if (channel.hasUserLimit() && channel.getMembers().size() >= channel.hasUserLimit())
@@ -163,7 +167,23 @@ void Parsing::join(Client &client, std::string line)
     std::vector<std::string> parsed = parceCammandJoin(line);
     if (parsed.size() < 2)
         {std::string msg = client.getName() + " JOIN :Not enough parameters\n";client.sendMsg(msg);return;}
-    
+    std::cout << "Parsed JOIN command: "    << "Command: " << parsed[0] << ", Channels: " << parsed[1] << ", Keys: " << (parsed.size() > 2 ? parsed[2] : "None") << "\n";    
+    if (parsed[1]  == "0")
+    {
+        // get out in all of the channels that the client is in
+        std::map<std::string, Channel>::iterator it;
+        for (it = chs.begin(); it != chs.end(); ++it)
+        {
+            Channel& channel = it->second;
+            if (channel.hasClient(&client))      
+            {
+                channel.removeClient(&client);
+                std::string msg = client.getName() + " PART " + channel.getName() + "\n";
+                client.sendMsg(msg);
+            }
+        }
+        return;
+    }
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
     for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
         const std::string& channelName = it->first;
@@ -203,6 +223,7 @@ void Parsing::join(Client &client, std::string line)
                     {
                         if (checkBan(channel, client)) return;
                         channel.addClient(&client);//printTopic(channel, &client);
+                            channel.removeInvited(&client);
                         std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
                         client.sendMsg(msg);
                     }
@@ -223,6 +244,7 @@ void Parsing::join(Client &client, std::string line)
             else 
             {
                 channel.addClient(&client);
+                channel.removeInvited(&client);
                 std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
                 client.sendMsg(msg);//printTopic(channel, &client);}
             }

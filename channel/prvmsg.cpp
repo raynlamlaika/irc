@@ -10,7 +10,6 @@ void Parsing::prvmsghelpre(bool flag, std::string message, Channel &ref, Client&
         std::cout << "passs a msg to client\n";
     else
         std::cout << "passs a msg to cHANNLE\n";
-
 }
 
 

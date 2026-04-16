@@ -106,7 +106,8 @@ void Parsing::mode(Client &clinet, std::string line)
                         // Enable invite-only mode
                         it->second.setInviteOnly(true);
                         //broadcast to all the client in channel
-                        it->second.broadcastMsg(clinet.getName() + " has set the channel to invite-only.", it->second.getmembers());
+                        std::string msg = clinet.getName() + " has set the channel to invite-only.\r\n";
+                        it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
                         it->second.setInviteOnly(false);

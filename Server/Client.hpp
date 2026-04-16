@@ -3,6 +3,7 @@
 #define CLIENT_HPP
 
 #include <iostream>
+#include <vector>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <algorithm>
@@ -19,6 +20,7 @@ private:
     std::string realname;
     std::string name; // add 
     std::string nick;
+    std::vector<std::string> invitedChannels; // to store the channels that the client is invited to but not yet joined
     bool pass;
     bool auth;
     bool statusFile;

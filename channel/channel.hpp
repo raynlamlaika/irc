@@ -63,6 +63,9 @@ public:
     std::set<Client*> getoperators() const;
     void addOperator(Client* client);
     void removeOperator(Client* client);
+    void addInvited(Client* client);
+    void removeInvited(Client* client);
+    bool isInvited(const Client& client) const;
     void setUserLimit(size_t limit);
     bool isBanned(const Client& client) const;
     bool isOperator(const Client& client) const;

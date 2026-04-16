@@ -94,7 +94,14 @@ void Parsing::topic(std::string line, Client& client)
         return;
     }
     else
+    {    
         channel->setTopic(topicUse);
+        // breadcast for all of the channel members
+        std::string msg = client.getName() + " has changed the topic to: " + topicUse + "\n";
+        channel->broadcastMsg(msg, channel->getMembers());
+        // channel->setTopicSetBy(client.getName());
+        // channel->setTopicSetAt();
+    }
 }
 
 void Parsing::printListOfClients()
@@ -164,10 +171,8 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             topic(line, client);
         else if (holder[0] == "PRIVMSG")
             prvmsg(line);
-        // else if (holder[0] == "INVTE")
-        // {
-        //     std::cout << holder[0] << std::endl;
-        // }
+        else if (holder[0] == "INVITE")
+            invite(line, client);
         else if (holder[0] == "GET" || holder[0] == "DONE")
             getfile(client, line, _allClients);
         else if (holder[0] == "SEND")
