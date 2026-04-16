@@ -31,7 +31,6 @@ std::string parsingPassword(std::string pass)
 
 int main(int argc, char *argv[])
 {
-    // dont forgat to add ./irc -------> !!!!! port  -------> !!!!! password
     if (argc != 3)
     {
         std::cerr << "Error ./ircserv <port> <password>" << std::endl;
@@ -39,6 +38,7 @@ int main(int argc, char *argv[])
     }
     try
     {
+        std::signal(SIGINT, SIG_IGN);
         std::string pass = parsingPassword(argv[2]);
         int port = parsingPort(argv[1]);
         Server server(port, pass);

@@ -2,13 +2,18 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define RED   "\033[31m"
+#define GREEN "\033[32m"
+#define BLUE  "\033[34m"
+#define RESET "\033[0m"
+
 #include "Client.hpp"
 #include <vector>
 #include <map>
 #include <poll.h>
-#include <arpa/inet.h>
+#include <cstring>
 #include "../channel/parsing.hpp"
-
+#include <csignal>
 
 class Server : public Parsing
 {

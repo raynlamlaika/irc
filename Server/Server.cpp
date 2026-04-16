@@ -1,6 +1,4 @@
 #include "Server.hpp"
-#include <cstring>
-#include <iostream>
 
 Server::Server(int port, std::string password) : password(password)
 {
@@ -23,13 +21,17 @@ Server::Server(int port, std::string password) : password(password)
     if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
 
+    pollfd p1;
+    p1.fd = STDIN_FILENO;
+    p1.events = POLLIN;
+    _pollFds.push_back(p1);
     pollfd p;
     p.fd = _serverFd;
     p.events = POLLIN;
     p.revents = 0;
     _pollFds.push_back(p);
 
-    std::cout << "Server running on port " << port << std::endl;
+    std::cout << BLUE << "Server running on port " << port << "..." << RESET << std::endl;
 }
 
 Server::~Server()
@@ -54,9 +56,9 @@ void Server::acceptClient(size_t index)
     p.events = POLLIN;
     p.revents = 0;
     _pollFds.push_back(p);
-    Client *client = new Client(clientFd, addr, password);
+    Client *client = new Client(clientFd, password);
     _clients[clientFd] = client;
-
+    std::cout << GREEN << "New connection "<< clientFd << RESET << std::endl;
 }
 
 void Server::removeClient(size_t index)
@@ -113,7 +115,6 @@ void Server::handleClient(size_t index)
         {
             std::string m = msg.substr(0, msg.find("\r\n"));
             msg.erase(msg.begin(), msg.begin() + msg.find("\r\n") + 2);
-            std::cout << "-> " << m << std::endl;
             newMessage(m, *client, _clients);
         }
     }
@@ -123,11 +124,9 @@ void Server::handleClient(size_t index)
         {
             std::string m = msg.substr(0, msg.find("\n"));
             msg.erase(msg.begin(), msg.begin() + msg.find("\n") + 1);
-            std::cout << "-> " << m << std::endl;
             newMessage(m, *client, _clients);
         }
     }
-    std::cout << "|========================|" << std::endl;
 }
 
 void Server::run()
@@ -143,6 +142,13 @@ void Server::run()
             {
                 if (_pollFds[i].fd == _serverFd)
                     acceptClient(i);
+                else if (_pollFds[i].fd == STDIN_FILENO)
+                {
+                    char buf[128];
+                    int n = read(STDIN_FILENO, buf, sizeof(buf));
+                    if (n == 0)
+                        throw std::runtime_error("\nShutting down server...");
+                }
                 else
                 {
                     handleClient(i);
@@ -153,34 +159,3 @@ void Server::run()
 
     }
 }
-
-/*
-            if (_pollFds[i].revents & POLLOUT)
-            {
-                int fd = _pollFds[i].fd;
-                Client *client = _clients[fd];
-
-                std::string &buffer = client->getSendBuffer();
-                std::cout << "BUFFER : " << buffer << std::endl;
-                if (!buffer.empty())
-                {
-                    int sent = send(fd, buffer.c_str(), buffer.size(), 0);
-                    if (sent > 0)
-                        buffer.erase(0, sent);
-                }
-            }
-*/
-
-        // for (size_t i = 0; i < _pollFds.size(); i++)
-        // {
-        //     if (_pollFds[i].revents & POLLIN)
-        //     {
-        //         if (_pollFds[i].fd == _serverFd)
-        //             acceptClient(i);
-        //         else
-        //         {
-        //             handleClient(i);
-        //             break; // IMPORTANT: vector may change
-        //         }
-        //     }
-        // }

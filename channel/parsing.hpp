@@ -10,6 +10,8 @@
 #include <fstream>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sstream>
+
 
 class Parsing 
 {
@@ -32,7 +34,7 @@ public:
     // void addChannel(Client *client);
     // void listAllChannel();
 
-    // ~Parsing();
+    ~Parsing();
     void add_Channel(const Channel& channel);
     std::map<std::string, Channel> &Getchannel();
     bool searchForClient(std::string clinet);
