@@ -25,7 +25,7 @@ void Client::setrealname(std::string realname)
 Client::Client(){}
 
 Client::Client(int fd, std::string password) 
-    : _fd(fd), numberOfChannelsJoined(0), realname(""), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password)
+    : _fd(fd), numberOfChannelsJoined(0), realname(""), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password), buffer("")
 {}
 
 Client::~Client()

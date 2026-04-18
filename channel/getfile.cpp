@@ -1,6 +1,3 @@
-
-
-
 #include "parsing.hpp"
 
 
@@ -82,62 +79,4 @@ void Parsing::getfile(Client &client, std::string line, std::map<int, Client*> _
     }
 
 }
-
-
-
-    // std::string cmd, nick, path;
-    // std::stringstream ss(line);
-    // ss >> cmd >> nick >> path;
-
-    
-
-    // (void)_allClients;
-    // if (checkNick(_allClients, nick))
-    // {
-    //     client.sendMsg(": Sorry no user with this nick " + nick + "\n");
-    //     return;
-    // }
-
-    
-
-    // std::cout << "++[ 1 ]++" << std::endl;
-    // char header[128];
-    // int hbytes = client.receive(header, sizeof(header) - 1);
-    // if (hbytes <= 0)
-    //     return;
-
-    // header[hbytes] = '\0';
-    // std::cout << "++[ 2 ]++ " << header  << std::endl;
-
-    // std::stringstream hss(header);
-    // std::string tag;
-    // size_t filesize;
-
-    // hss >> tag >> filesize;
-
-    // if (tag != "FILE")
-    // {
-    //     client.sendMsg(": Invalid file header\n");
-    //     return;
-    // }
-
-    // size_t received = 0;
-    // char buffer[512];
-
-    // while (received < filesize)
-    // {
-    //     int bytes = client.receive(buffer, sizeof(buffer));
-    //     if (bytes <= 0)
-    //         break;
-
-    //     fileout.write(buffer, bytes);
-    //     received += bytes;
-    // }
-
-    // fileout.close();
-    // client.sendMsg(": File received successfully\n");
-
-
-
-
 

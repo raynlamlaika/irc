@@ -26,6 +26,7 @@ public:
     std::string password;
     std::string fileout;
     std::string _sendBuffer;
+    std::string buffer;
 
     void setBufferEmpty();
     void appendToSendBuffer(const std::string &data);
