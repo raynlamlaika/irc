@@ -91,8 +91,12 @@ void Parsing::topic(std::string line, Client& client)
     if (topicUse.empty())
     {
         // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
-        std::string msg = client.getName() + " " + holder[1] + " :No topic is set\n";
-        client.sendMsg(msg);
+        // std::string msg = client.getName() + " " + holder[1] + " :No topic is set\n";
+        // client.sendMsg(msg);
+        channel->setTopic("");
+         // breadcast for all of the channel members
+        std::string msg = client.getName() + " has removed the topic\n";
+        channel->broadcastMsg(msg, channel->getMembers());
         return;
     }
     else

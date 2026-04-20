@@ -4,6 +4,26 @@
 #include <algorithm>
 #include <cctype>
 
+static std::string buildClientPrefix(const Client &client)
+{
+    std::string nick = client.getNick();
+    std::string user = client.getName();
+
+    if (nick.empty())
+        nick = user;
+    if (nick.empty())
+        nick = "unknown";
+    if (user.empty())
+        user = nick;
+
+    return ":" + nick + "!" + user + "@localhost";
+}
+
+static std::string buildJoinMsg(const Client &client, const std::string &channelName)
+{
+    return buildClientPrefix(client) + " JOIN " + channelName + "\r\n";
+}
+
 
 std::map<std::string, Channel>& Parsing::Getchannel()
 {
@@ -137,7 +157,7 @@ void printTopic(const Channel& channel, Client *client)
     // RPL_TOPIC (332)  "<client> <channel> :<topic>"
     if (channel.getTopic().empty())
     {
-        std::string msg = client->getName() + " " + channel.getName() + " :No topic is set\n";
+        std::string msg =  client->getName() + " " + channel.getName() + " :No topic is set\n";
         client->sendMsg(msg);
     }
     else
@@ -155,10 +175,11 @@ bool checkBan(const Channel& channel, Client& client)
     {
         std::string msg = client.getName() + " :You are banned from this channel\n";
         client.sendMsg(msg);
-        return true; // Return true to indicate the client is banned
+        return true;
     }
-    return false; // Return false if the client is not banned
+    return false;
 }
+
 
 void Parsing::join(Client &client, std::string line)
 {
@@ -168,7 +189,7 @@ void Parsing::join(Client &client, std::string line)
     if (parsed.size() < 2)
         {std::string msg = client.getName() + " JOIN :Not enough parameters\n";client.sendMsg(msg);return;}
     std::cout << "Parsed JOIN command: "    << "Command: " << parsed[0] << ", Channels: " << parsed[1] << ", Keys: " << (parsed.size() > 2 ? parsed[2] : "None") << "\n";    
-    if (parsed[1]  == "0")
+    if (parsed[1]  == "0" && parsed.size() == 2)
     {
         // get out in all of the channels that the client is in
         std::map<std::string, Channel>::iterator it;
@@ -197,17 +218,19 @@ void Parsing::join(Client &client, std::string line)
             if (!key.empty())
                 newChannel.setKey(key);
             newChannel.addClient(&client);
-            // add channel operator (make first joiner operator)
             newChannel.addOperator(&client);
             add_Channel(newChannel);
-            std::string msg = client.getName() + " JOIN " + newChannel.getName() + "\n";
+            std::string msg = buildJoinMsg(client, newChannel.getName());
             client.sendMsg(msg);
-            // printTopic(newChannel, &client);
+            if (!newChannel.getTopic().empty())
+            {
+                printTopic(newChannel, &client);
+                //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+            }
         }
         else
         {
             Channel& channel = chIt->second;
-            // pass the check of the channel: now check for requierment of the channel
             if (!canJoin(channel, client)) return;
             if (client.numberOfChannels() >= 10)
             {
@@ -222,10 +245,32 @@ void Parsing::join(Client &client, std::string line)
                     if (channel.getKey() == key)
                     {
                         if (checkBan(channel, client)) return;
-                        channel.addClient(&client);//printTopic(channel, &client);
+                        channel.addClient(&client);
                             channel.removeInvited(&client);
-                        std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
+                        std::string msg = buildJoinMsg(client, channel.getName());
                         client.sendMsg(msg);
+                        if (!channel.getTopic().empty())
+                        {    
+                            printTopic(channel, &client);
+                            //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+                        }
+                        // // RPL_NAMREPLY (353)  "<client> = <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
+                        // std::string namesList;
+                        // std::set<Client*> members = channel.getMembers();
+                        // for (std::set<Client*>::iterator it = members.begin(); it != members.end(); ++it)
+                        // {   
+                        //     if (channel.isOperator(**it))
+                        //         namesList += "@" + (*it)->getNick() + " ";
+                        //     else                                
+                        //         namesList += (*it)->getNick() + " ";
+                        // }
+                        // std::string msg = client.getName() + " = " + channel.getName() + " :" + namesList + "\n";
+                        // client.sendMsg(msg);
+                        // Servers MAY restrict the number of channels a client 
+                        // may be joined to at one time. This limit SHOULD be defined in the
+                        // CHANLIMIT RPL_ISUPPORT parameter. If the client cannot join this 
+                        // channel because they would be over their limit, they will receive 
+                        // an ERR_TOOMANYCHANNELS (405) reply and the command will fail.
                     }
                     else
                     {
@@ -245,19 +290,14 @@ void Parsing::join(Client &client, std::string line)
             {
                 channel.addClient(&client);
                 channel.removeInvited(&client);
-                std::string msg = client.getName() + " JOIN " + channel.getName() + "\n";
-                client.sendMsg(msg);//printTopic(channel, &client);}
+                std::string msg = buildJoinMsg(client, channel.getName());
+                client.sendMsg(msg);
+                if (!channel.getTopic().empty())
+                {    
+                    printTopic(channel, &client);
+                    //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+                }
             }
         }
     }
-
-    // std::cout << "\t\t\t------this is all of the channels------\t\t\t\n \033[0;32m";
-    // for (auto it1 = chs.begin(); it1 != chs.end(); ++it1) {
-    //     std::cout << "Channel : " << it1->first << ": " << it1->second.getName() << std::endl;
-    // }
-    // std::cout << "\033[0m";
 }
-
-
-
-// RPL_NAMREPLY (353)  "<client> = <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
