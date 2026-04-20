@@ -15,7 +15,7 @@ private:
     std::string realname;
     std::string name;
     std::string nick;
-    std::vector<std::string> invitedChannels;
+
     bool pass;
     bool auth;
     bool statusFile;
@@ -23,6 +23,7 @@ private:
     size_t fileSize;
 
 public:
+    std::vector<std::string> invitedChannels;
     std::string password;
     std::string fileout;
     std::string _sendBuffer;
