@@ -137,7 +137,7 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     return true;
 }
 
-static bool validName(std::string name, Client *client)
+bool validName(std::string name, Client *client)
 {
     
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"

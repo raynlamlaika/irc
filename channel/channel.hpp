@@ -74,5 +74,5 @@ public:
     // bool addOperator(const Client& client) const;
 };
 
-
+bool validName(std::string name, Client *client);
 #endif

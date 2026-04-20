@@ -29,7 +29,10 @@ void Parsing::kick(std::string line, Client& client)
     }
 
     std::string channelname = holder[1];
+    if (!validName(channelname, &client))
+        return;
     std::string usertarget = holder[2];
+    std::vector<std::string> usersTargeted = HelperSplit(holder[2], ',');
     if (holder[0] != "KICK")
         return;
 
@@ -58,32 +61,67 @@ void Parsing::kick(std::string line, Client& client)
 
     Client* targetClient = NULL;
     std::map<int, Client*> members = channel->getmembers();
-    for (std::map<int, Client *>::iterator it = members.begin(); it != members.end(); ++it) {
-        if (it->second && it->second->getName() == usertarget) {
-            targetClient = it->second;
-            break;
+
+    for (int y = 0 ; usersTargeted.size() >  y; y++)
+    {
+        usertarget = usersTargeted[y];
+        std::cout << " allo alo ____________>" << usertarget << "\n";
+        for (std::map<int, Client *>::iterator it = members.begin(); it != members.end(); ++it)
+        {
+            if (it->second && it->second->getName() == usertarget)
+            {
+                targetClient = it->second;
+                std::string reason = "";
+                if (holder.size() > 3 && holder[3][0] == ':') {
+                    size_t index = line.find(":");
+                    if (index != std::string::npos)
+                        reason = line.substr(index + 1);
+                }
+                //check
+                channel->removeClient(targetClient);
+                std::string msg = client.getName() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+                client.sendMsg(msg);
+                if (!reason.empty())
+                {
+                    msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";
+                    client.sendMsg(msg);
+                }
+                break;
+            }
         }
-    }
-    if (!targetClient) {
-        // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
-        client.sendMsg(msg);
-        return;
+        if (!targetClient)
+        {
+            // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
+            std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
+            client.sendMsg(msg);
+            // return;
+        }
+
     }
 
-    std::string reason = "";
-    if (holder.size() > 3 && holder[3][0] == ':') {
-        size_t index = line.find(":");
-        if (index != std::string::npos)
-            reason = line.substr(index + 1);
-    }
 
-    //check
-    channel->removeClient(targetClient);
-    std::string msg = client.getName() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
-    client.sendMsg(msg);
-    if (!reason.empty()) {
-        msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";
-        client.sendMsg(msg);
-    }
+
+    // if (!targetClient)
+    // {
+    //     // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
+    //     std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
+    //     client.sendMsg(msg);
+    //     return;
+    // }
+
+    // std::string reason = "";
+    // if (holder.size() > 3 && holder[3][0] == ':') {
+    //     size_t index = line.find(":");
+    //     if (index != std::string::npos)
+    //         reason = line.substr(index + 1);
+    // }
+
+    // //check
+    // channel->removeClient(targetClient);
+    // std::string msg = client.getName() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+    // client.sendMsg(msg);
+    // if (!reason.empty()) {
+    //     msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";
+    //     client.sendMsg(msg);
+    // }
 }
