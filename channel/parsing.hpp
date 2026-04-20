@@ -35,6 +35,7 @@ public:
     // void listAllChannel();
 
     ~Parsing();
+    static std::string _gethostname();
     void add_Channel(const Channel& channel);
     std::map<std::string, Channel> &Getchannel();
     bool searchForClient(std::string clinet);

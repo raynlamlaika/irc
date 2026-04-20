@@ -44,20 +44,20 @@ void Parsing::topic(std::string line, Client& client)
     if (holder.size() < 2)
     {
         // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-        std::string msg = client.getName() + " TOPIC :Not enough parameters\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Not enough parameters\r\n";
         client.sendMsg(msg);
         return;
     }
     if (!searchForChannel(holder[1])) {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
-        std::string msg = client.getName() + " " + holder[1] + " :No such channel\r\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :No such channel\r\n";
         client.sendMsg(msg);
         return;
     }
     Channel *channel = searchForChannelref(holder[1]);
     if (!channel->hasClient(&client)) {
         // ERR_NOTONCHANNEL (442) "<client> <channel> :You're not on that channel"
-        std::string msg = client.getName() + " " + holder[1] + " :You're not on that channel\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You're not on that channel\r\n";
         client.sendMsg(msg);
         return;
     }
@@ -68,12 +68,12 @@ void Parsing::topic(std::string line, Client& client)
         if (channel->getTopic().empty())
         {
             // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
-            std::string msg = client.getName() + " " + holder[1] + " :No topic is set\n";
+            std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :No topic is set\r\n";
             client.sendMsg(msg);
         }
         else
         {
-            std::string msg = client.getName() + " " + holder[1] + " :" + channel->getTopic() + "\n";
+            std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :" + channel->getTopic() + "\r\n";
             client.sendMsg(msg);
         }
         return;
@@ -81,7 +81,7 @@ void Parsing::topic(std::string line, Client& client)
     if (!channel->isOperator(client))
     {
         // ERR_CHANOPRIVSNEEDED (482) "<client> <channel> :You're not channel operator"
-        std::string msg = client.getName() + " " + holder[1] + " :You're not channel operator\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You're not channel operator\r\n";
         client.sendMsg(msg);
         return;
     }
@@ -95,7 +95,7 @@ void Parsing::topic(std::string line, Client& client)
         // client.sendMsg(msg);
         channel->setTopic("");
          // breadcast for all of the channel members
-        std::string msg = client.getName() + " has removed the topic\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :has removed the topic\r\n";
         channel->broadcastMsg(msg, channel->getMembers());
         return;
     }
@@ -103,7 +103,7 @@ void Parsing::topic(std::string line, Client& client)
     {    
         channel->setTopic(topicUse);
         // breadcast for all of the channel members
-        std::string msg = client.getName() + " has changed the topic to: " + topicUse + "\n";
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :has changed the topic to: " + topicUse + "\r\n";
         channel->broadcastMsg(msg, channel->getMembers());
         // channel->setTopicSetBy(client.getName());
         // channel->setTopicSetAt();
@@ -188,12 +188,15 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         else
         {
             //:<server> 421 <nick> <command> :Unknown command
-            std::string msg =  ":ircserv 421 " + client.getName() + " " + holder[0] + " :Unknown command\r\n";
+            std::string msg =  ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Unknown command\r\n";
             client.sendMsg(msg);
         }
     }
     else
-        client.sendMsg(":You have not registered\r\n");
+    { 
+        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have not registered\r\n";
+        client.sendMsg(msg);
+    }
     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
     {
         client.setAuth();
