@@ -69,9 +69,6 @@ void Parsing::mode(Client &clinet, std::string line)
         std::cout << "Not a MODE command\n";
         return;
     }
-    // std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
-
-    // check valid name for channel
     std::map<std::string, Channel>::iterator it = chs.find(splitMode[1]);
     if (it == chs.end())
     {
@@ -83,7 +80,6 @@ void Parsing::mode(Client &clinet, std::string line)
     std::map<char, char> helper = modeSpliter(splitMode);
     if (splitMode.size() < 2)
     {
-        // std::cout << "Processing MODE command for target: TTTTTTTTTTTTTTTTTTTTT&WIITTTTTTTTTTTTTTTTTTTTIKARI" << splitMode[1] << "\n";
         return;
     }
 

@@ -176,7 +176,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         else if (holder[0] == "TOPIC")
             topic(line, client);
         else if (holder[0] == "PRIVMSG")
-            prvmsg(line);
+            prvmsg(line, client);
         else if (holder[0] == "INVITE")
             invite(line, client);
         else if (holder[0] == "GET" || holder[0] == "DONE")

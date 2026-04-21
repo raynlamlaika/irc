@@ -28,7 +28,7 @@ public:
     void mode(Client &clinet, std::string line);
     void topic(std::string line, Client& client);
     void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
-    void prvmsg(std::string line);
+    void prvmsg(std::string line, Client& client);
     static std::vector<std::string> HelperSplit(std::string line, char del);
     
     // void addChannel(Client *client);
