@@ -44,10 +44,8 @@ Server::~Server()
 void Server::acceptClient(size_t index)
 {   
     (void)index;
-    sockaddr_in addr;
-    socklen_t len = sizeof(addr);
 
-    int clientFd = accept(_serverFd, (sockaddr*)&addr, &len);
+    int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
         return;
 

@@ -52,5 +52,8 @@ echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
   sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
   sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
   sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
+  sleep 0.4;echo "/dev/random\n"
+
+
 } | nc 127.0.0.1 1234
 
