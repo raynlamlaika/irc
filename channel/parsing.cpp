@@ -16,10 +16,17 @@ Channel *Parsing::searchForChannelref(std::string channelName)
     return NULL;
 }
 
-Client *Parsing::searchForClientref(std::string name)
+Client *Parsing::searchForClientref(std::string name , std::map<int, Client*> _allClients)
 {
     std::map<std::string, Channel> chns = Getchannel();
     std::map<std::string, Channel>::iterator it;
+    std::map<int, Client*>::iterator it2;
+
+    for (it2 = _allClients.begin(); it2 != _allClients.end(); ++it2)
+    {
+        if (it2->second && it2->second->getName() == name)
+            return it2->second;
+    }
 
     for(it = chns.begin();it != chns.end(); it++)
     {
@@ -170,15 +177,15 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         if (holder[0] == "JOIN")
             join(client, line);
         else if (holder[0] == "MODE")
-            mode(client, line);
+            mode(client, line,_allClients);
         else if (holder[0] == "KICK")
             kick(line, client);
         else if (holder[0] == "TOPIC")
             topic(line, client);
         else if (holder[0] == "PRIVMSG")
-            prvmsg(line, client);
+            prvmsg(line, client,_allClients);
         else if (holder[0] == "INVITE")
-            invite(line, client);
+            invite(line, client,_allClients);
         else if (holder[0] == "GET" || holder[0] == "DONE")
             getfile(client, line, _allClients);
         else if (holder[0] == "SEND")

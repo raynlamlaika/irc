@@ -12,8 +12,7 @@
 #include <sys/wait.h>
 #include <sstream>
 
-
-class Parsing 
+class Parsing
 {
 private:
     std::map<std::string, Channel> _channels;
@@ -25,10 +24,10 @@ public:
     bool newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients);
     void join(Client &clinet, std::string line);
     void kick(std::string line, Client& client);
-    void mode(Client &clinet, std::string line);
+    void mode(Client &clinet, std::string line, std::map<int, Client*> _allClients);
     void topic(std::string line, Client& client);
-    void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
-    void prvmsg(std::string line, Client& client);
+    // void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
+    void prvmsg(std::string line, Client& client,  std::map<int, Client*> _allClients);
     static std::vector<std::string> HelperSplit(std::string line, char del);
     
     // void addChannel(Client *client);
@@ -38,12 +37,12 @@ public:
     static std::string _gethostname();
     void add_Channel(const Channel& channel);
     std::map<std::string, Channel> &Getchannel();
-    bool searchForClient(std::string clinet);
+    bool searchForClient(std::string clinet ,std::map<int, Client*> _allClients);
     bool searchForChannel(std::string channelName);
     Channel *searchForChannelref(std::string channelName);
-    Client *searchForClientref(std::string channelName);
+    Client *searchForClientref(std::string channelName, std::map<int, Client*> _allClients);
     bool canJoin(const Channel& channel, Client& client);
-    void invite(std::string line, Client& client);
+    void invite(std::string line, Client& client,std::map<int, Client*> _allClients);
 
     // file handling 
     void getfile(Client &client, std::string line, std::map<int, Client*> _allClients);

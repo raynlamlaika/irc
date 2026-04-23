@@ -2,18 +2,8 @@
 #include "parsing.hpp"
 
 // void Parsing::prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient) // 1 for users, 0 for channels
-// {
-//     (void)message;
-//     (void)ref;
-//     (void)refClient;
-//     if (flag)
-//         std::cout << "passs a msg to client\n";
-//     else
-//         std::cout << "passs a msg to cHANNLE\n";
-// }
 
-
-void Parsing::prvmsg(std::string line, Client& client)
+void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _allClients)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 2)
@@ -31,12 +21,12 @@ void Parsing::prvmsg(std::string line, Client& client)
         for (size_t i = 0; i < targets.size(); i++)
         {
             std::string target = targets[i];
-             if (target.empty())
+            if (target.empty())
             {
                 std::cout << "Empty target in PRIVMSG command\n";
                 continue;
             }
-             if (target[0] == '#')
+            if (target[0] == '#')
             {
                 if(!searchForChannel(target))
                 {
@@ -51,7 +41,7 @@ void Parsing::prvmsg(std::string line, Client& client)
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                if (channelHolder->isBanned(client) || channelHolder->isOperator(client) || !channelHolder->hasClient(&client))
+                if (channelHolder->isBanned(client) || !channelHolder->isOperator(client) || !channelHolder->hasClient(&client))
                 {
                     std::string errorMsg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :Cannot send to channel\r\n";
                     client.sendMsg(errorMsg);
@@ -69,14 +59,14 @@ void Parsing::prvmsg(std::string line, Client& client)
             }
             else if (isalpha(target[0]))
             {
-                if(!searchForClient(target))
+                if(!searchForClient(target, _allClients))
                 {
                     // ERR_NOSUCHNICK (401)  "<client> <nickname> :No such nick/channel"
                     std::string errorMsg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                Client *clientHolder = searchForClientref(target);
+                Client *clientHolder = searchForClientref(target, _allClients);
                 if (clientHolder == NULL)
                 {
                     std::string errorMsg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
@@ -85,7 +75,6 @@ void Parsing::prvmsg(std::string line, Client& client)
                 }
                 std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
                 clientHolder->sendMsg(msg);
-                // clientHolder->sendMsg(message);
             }
              else
             {

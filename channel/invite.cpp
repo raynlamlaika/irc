@@ -15,7 +15,7 @@ void sendInviteList(Parsing& parsing, Client& client)
 }
 
 
-void Parsing::invite(std::string line, Client& client)
+void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _allClients)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');
 
@@ -55,14 +55,14 @@ void Parsing::invite(std::string line, Client& client)
         return;
     }
 
-    if (!searchForClient(target))
+    if (!searchForClient(target, _allClients))
     {
         //ERR_NOSUCHNICK (401)  "<client> <nick> :No such nick"
         std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + target + " :No such nick\r\n";
         client.sendMsg(msg);
         return;
     }
-    Client *targetClient = searchForClientref(target);
+    Client *targetClient = searchForClientref(target, _allClients);
     if (targetClient == NULL)
     {
         //ERR_NOSUCHNICK (401)  "<client> <nick> :No such nick"

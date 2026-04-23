@@ -35,10 +35,17 @@ void PrintMap(std::map<char,char> helper)
     }
 }
 
-bool Parsing::searchForClient(std::string name)
+bool Parsing::searchForClient(std::string name, std::map<int, Client*> _allClients)
 {
     std::map<std::string, Channel> chns = Getchannel();
     std::map<std::string, Channel>::iterator it;
+    std::map<int, Client*>::iterator it2;
+
+    for (it2 = _allClients.begin(); it2 != _allClients.end(); ++it2)
+    {
+        if (it2->second && it2->second->getName() == name)
+            return true;
+    }
 
     for(it = chns.begin();it != chns.end(); it++)
     {
@@ -55,7 +62,7 @@ bool Parsing::searchForClient(std::string name)
     return false;
 }
 
-void Parsing::mode(Client &clinet, std::string line)
+void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allClients)
 {
     (void)clinet;
     std::map<std::string, Channel>& chs = Getchannel();
@@ -192,13 +199,13 @@ void Parsing::mode(Client &clinet, std::string line)
                             return ;
                         }
                         std::string operatorName = splitMode[3];
-                        if (!searchForClient(operatorName))
+                        if (!searchForClient(operatorName, _allClients))
                         {
                             std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
-                        Client* operatorClient = searchForClientref(operatorName);
+                        Client* operatorClient = searchForClientref(operatorName, _allClients);
                         // check if the client is already an operator
                         if (it->second.isOperator(*operatorClient))
                         {
@@ -228,13 +235,13 @@ void Parsing::mode(Client &clinet, std::string line)
                             return ;
                         }
                         std::string operatorName = splitMode[3];
-                        if (!searchForClient(operatorName))
+                        if (!searchForClient(operatorName, _allClients))
                         {
                             std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
-                        Client* operatorClient = searchForClientref(operatorName);
+                        Client* operatorClient = searchForClientref(operatorName, _allClients);
                         if (it->second.isOperator(*operatorClient))
                         {
                             it->second.getoperators().erase(operatorClient);
