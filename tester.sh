@@ -1,60 +1,15 @@
 #!/bin/bash
 echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
 {
-  sleep 0.4;echo "PASS ra\n"
-  sleep 0.4;echo "NICK rlamlaik\n"
-  sleep 0.4;echo "USER 4ayon 0 * :rlamlaik\n"
-
-  sleep 0.4;echo "JOIN #te3st,&rerre,ererer\n"
-  sleep 0.4;echo "JOIN #test,&helo,#ULTRA WIN,WIN,WIN\n"
-  sleep 0.4;echo "JOIN 0\n"
-  sleep 0.4;echo "JOIN #te3st,&rerre,ererer\n"
-  sleep 0.4;echo "JOIN #test,&helo,#ULTRA WIN,WIN,WIN\n"
+  sleep 0.2;echo "PASS ra\n"
+  sleep 0.2;echo "NICK rlamlaik\n"
+  sleep 0.2;echo "USER 4ayon 0 * :rlamlaik\n"
 
 
-  sleep 0.4;echo "TOPIC #te3st :ray hello eloeihvean fhr s,rg gzldf f,\n"
-  sleep 0.4;echo "TOPIC ererer :ray hello eloeihvean fhr s,rg gzldf f,\n"
-  sleep 0.4;echo "TOPIC &rerre :ray hello eloeihvean fhr s,rg gzldf f,\n"
+  sleep 0.2;echo "JOIN #test \n"
 
 
-
-
-  # sleep 0.4;echo "KICK #te3st ray\n"
-  # sleep 0.4;echo "KICK ererer ray\n"
-  # sleep 0.4;echo "KICK &rerre ray\n"
-  # sleep 0.4;echo "KICK TTTTTTTTTTTTTTTT ray\n"
-
-
-
-
-
-
-
-
-  sleep 0.4;echo "INVITE ray ererer\n"
-  sleep 0.4;echo "INVITE ray &rerre\n"
-  sleep 0.4;echo "INVITE ray #te3st \n"
-  sleep 0.4;echo "INVITE ray #HELO\n"
-
-
-
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "PRIVMSG ray :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-
-
+  sleep 0.2;echo "MODE #test +k+t secret :hello\n"
 
 } | nc 127.0.0.1 1234
 

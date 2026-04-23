@@ -292,10 +292,9 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
         }
         else
         {
-            // std::cout << "Invalid mode format\n";
-            
+            std::string msg = clinet.getNick() + " O " + it->first + " :Unknown mode character '" + c + "'\n";
+            clinet.sendMsg(msg);
             return ;
-            // wtf is happend;}
         }
     }
 }
