@@ -48,7 +48,7 @@ void Server::acceptClient(size_t index)
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
         return;
-
+    fcntl(clientFd, F_SETFL, O_NONBLOCK);
     pollfd p;
     p.fd = clientFd;
     p.events = POLLIN;
@@ -67,6 +67,7 @@ void Server::removeClient(size_t index)
     _clients.erase(fd);
 
     _pollFds.erase(_pollFds.begin() + index);
+    close(fd);
 }
 
 void Server::handleClient(size_t index)
@@ -76,15 +77,27 @@ void Server::handleClient(size_t index)
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
     char buffer[1024];
-    int bytes = client->receive(buffer, sizeof(buffer) - 1);
-
-    if (bytes <= 0)
+    int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
+    if (bytes > 0)
+    {
+        buffer[bytes] = '\0';
+        msg.append(buffer, bytes);
+    }
+    else if (bytes == 0)
     {
         removeClient(index);
         return;
     }
-    buffer[bytes] = '\0';
-    msg.append(buffer, bytes);
+    else
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return;
+        else
+        {
+            removeClient(index);
+            return;
+        }
+    }
     std::cout << msg << std::endl;
     if (msg.find("\r\n") != std::string::npos)
     {
@@ -128,7 +141,7 @@ void Server::run()
                 else
                 {
                     handleClient(i);
-                    break;
+                    // break;
                 }
             }
         }

@@ -14,6 +14,7 @@
 #include <cstring>
 #include "../channel/parsing.hpp"
 #include <csignal>
+#include <fcntl.h>
 
 class Server : public Parsing
 {
