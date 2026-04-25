@@ -132,8 +132,12 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     }
     // check if the channel has a user limit and if it's reached
     // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
-    if (channel.hasUserLimit() && channel.getMembers().size() >= channel.hasUserLimit())
-        {std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+l)\r\n";client.sendMsg(msg);return false;}
+    if (channel.hasUserLimit() && channel.getMembers().size() >= channel.getUserLimit())
+        {
+            std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+l)\r\n";
+            client.sendMsg(msg);
+            return false;
+        }
     return true;
 }
 

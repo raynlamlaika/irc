@@ -88,6 +88,11 @@ bool Channel::isTopicRestricted() const
 
 bool Channel::hasUserLimit() const
 {
+    return this->_userLimit > 0;
+}
+
+size_t Channel::getUserLimit() const
+{
     return this->_userLimit;
 }
 

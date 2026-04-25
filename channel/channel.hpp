@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <string>
 #include <set>
 #include <algorithm>
 #include  "../Server/Client.hpp"
@@ -57,6 +58,7 @@ public:
     bool getInviteOnly() const;
     std::map<int, Client*> getMembers() const;
     bool hasUserLimit() const;
+    size_t getUserLimit() const;
     void  setKey(std::string key);
     void setTopic(std::string key);
     std::map<int, Client*> getmembers ();

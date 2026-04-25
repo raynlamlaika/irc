@@ -268,7 +268,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                             userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
                             if (userLimit == 0)
                             {
-                                std::string msg = clinet.getNick() + " O " + it->first + " :User limit must be greater than 0\n";
+                                std::string msg = clinet.getNick() + " L " + it->first + " :User limit must be greater than 0\n";
                                 clinet.sendMsg(msg);
                                 return ;
                             }
@@ -279,6 +279,9 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                             return ;
                         }
                         it->second.setUserLimit(userLimit);
+                        
+                        std::string msg = clinet.getNick() + " L " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
+                        it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
                     {
