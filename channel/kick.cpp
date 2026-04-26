@@ -27,7 +27,8 @@ std::string Parsing::_gethostname()
     {
         // std::cout << "Hostname: " << hostname << std::endl;
         return std::string(hostname);
-    } else {
+    }
+    else {
         return "localhost";
     }
     return std::string(hostname);
@@ -38,7 +39,7 @@ void Parsing::kick(std::string line, Client& client)
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 3){
         // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
-        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Not enough parameters\r\n";
+        std::string msg = "461:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Not enough parameters\r\n";
         client.sendMsg(msg);
         return ;
     }
@@ -56,21 +57,21 @@ void Parsing::kick(std::string line, Client& client)
     {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
         
-        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :No such channel\r\n";
+        std::string msg = "403:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :No such channel\r\n";
         client.sendMsg(msg);
         return;
     }
     if (!channel->isOperator(client))
     {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
-        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+        std::string msg = "482:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
         client.sendMsg(msg);
         return;
     }
     // check client is part of the channel
     if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+        std::string msg = "441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
         client.sendMsg(msg);
         return;
     }
@@ -94,11 +95,11 @@ void Parsing::kick(std::string line, Client& client)
                 }
                 //check
                 channel->removeClient(targetClient);
-                std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+                std::string msg = "367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
                 client.sendMsg(msg);
                 if (!reason.empty())
                 {
-                    msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+                    msg = "367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
                     client.sendMsg(msg);
                 }
                 break;
@@ -107,36 +108,9 @@ void Parsing::kick(std::string line, Client& client)
         if (!targetClient)
         {
             // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-            std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
+            std::string msg = "441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
             client.sendMsg(msg);
             // return;
         }
-
     }
-
-
-
-    // if (!targetClient)
-    // {
-    //     // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-    //     std::string msg = client.getName() + " " + usertarget + " " + channelname + " :They aren't on that channel\n";
-    //     client.sendMsg(msg);
-    //     return;
-    // }
-
-    // std::string reason = "";
-    // if (holder.size() > 3 && holder[3][0] == ':') {
-    //     size_t index = line.find(":");
-    //     if (index != std::string::npos)
-    //         reason = line.substr(index + 1);
-    // }
-
-    // //check
-    // channel->removeClient(targetClient);
-    // std::string msg = client.getName() + " " + " :KICK "+ channelname + " " + usertarget +   "\n";
-    // client.sendMsg(msg);
-    // if (!reason.empty()) {
-    //     msg = client.getName() + " " + usertarget + " " + channelname + " :User kicked for reason: " + reason + "\n";
-    //     client.sendMsg(msg);
-    // }
 }

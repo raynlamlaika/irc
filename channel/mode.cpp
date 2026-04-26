@@ -124,7 +124,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4) // Check if topic is provided and is printable
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = clinet.getNick() + " T " + it->first + " :Not enough parameters\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -133,7 +133,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         {
                             if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
                             {
-                                std::string msg = clinet.getNick() + " T " + it->first + " :Invalid topic format (contains non-printable characters)\n";
+                                std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Invalid topic format (contains non-printable characters)\n";
                                 clinet.sendMsg(msg);
                                 return ;
                             }
@@ -141,7 +141,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         size_t index = line.find(":");
                         if (index == std::string::npos)
                         {
-                            std::string msg = clinet.getNick() + " T " + it->first + " :Not enough parameters\r\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\r\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -162,7 +162,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = clinet.getNick() + " K " + it->first + " :Not enough parameters\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -194,14 +194,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         { 
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Not enough parameters\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
                         std::string operatorName = splitMode[3];
                         if (!searchForClient(operatorName, _allClients))
                         {
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -209,7 +209,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         // check if the client is already an operator
                         if (it->second.isOperator(*operatorClient))
                         {
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' is already an operator\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' is already an operator\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -219,7 +219,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         }
                         else
                         {
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -230,14 +230,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         { 
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Not enough parameters\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
                         std::string operatorName = splitMode[3];
                         if (!searchForClient(operatorName, _allClients))
                         {
-                            std::string msg = clinet.getNick() + " O " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -259,7 +259,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = clinet.getNick() + " L " + it->first + " :Not enough parameters\n";
+                            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -268,7 +268,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                             userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
                             if (userLimit == 0)
                             {
-                                std::string msg = clinet.getNick() + " L " + it->first + " :User limit must be greater than 0\n";
+                                std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit must be greater than 0\n";
                                 clinet.sendMsg(msg);
                                 return ;
                             }
@@ -280,7 +280,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         }
                         it->second.setUserLimit(userLimit);
                         
-                        std::string msg = clinet.getNick() + " L " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
+                        std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
                         it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
@@ -295,7 +295,7 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
         }
         else
         {
-            std::string msg = clinet.getNick() + " O " + it->first + " :Unknown mode character '" + c + "'\n";
+            std::string msg = "461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Unknown mode character '" + c + "'\n";
             clinet.sendMsg(msg);
             return ;
         }
