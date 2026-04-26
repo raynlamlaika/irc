@@ -17,9 +17,9 @@ void Client::setname(std::string nameHolder)
     name = nameHolder;
 }
 
-void Client::setrealname(std::string realname)
+void Client::setrealname(std::string _realname)
 {
-    realname = realname;
+    realname = _realname;
 }
 
 Client::Client(){}

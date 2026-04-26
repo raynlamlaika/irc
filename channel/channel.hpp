@@ -31,15 +31,20 @@ private:
     bool _topicRestricted; // +t
     size_t _userLimit; // +l 
     
+    std::string _topicOwner;
+    time_t _topicSetTime ;
 
 public:
-
 // make a defulaut constractor
     Channel(const std::string& name);
     ~Channel();
 // make a  parameteras 
     Channel(std::string key ,const std::string& name);
 
+    std::string getTopicOwner() const;
+    time_t getTopicSetTime() const;
+    void setTopicOwner(std::string name);
+    void setTopicSetTime(time_t time);
 
     // Basic info
     const std::string& getName() const;

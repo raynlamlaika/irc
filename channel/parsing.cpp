@@ -1,8 +1,21 @@
 #include "parsing.hpp"
 #include <sstream>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <cctype>
+
+
+
+std::string Channel::getTopicOwner() const
+{
+    return this->_topicOwner;
+}
+
+time_t Channel::getTopicSetTime() const
+{
+    return this->_topicSetTime;
+}
 
 Channel *Parsing::searchForChannelref(std::string channelName)
 {
@@ -43,6 +56,8 @@ Client *Parsing::searchForClientref(std::string name , std::map<int, Client*> _a
 
 Parsing::~Parsing()
 {}
+
+
 
 //check for this  : RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
 void Parsing::topic(std::string line, Client& client)
@@ -109,11 +124,11 @@ void Parsing::topic(std::string line, Client& client)
     else
     {    
         channel->setTopic(topicUse);
+        channel->setTopicOwner(client.getName());
+        channel->setTopicSetTime(time(NULL));
         // breadcast for all of the channel members
         std::string msg = "461:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + holder[1] + " :has changed the topic to: " + topicUse + "\r\n";
         channel->broadcastMsg(msg, channel->getMembers());
-        // channel->setTopicSetBy(client.getName());
-        // channel->setTopicSetAt();
     }
 }
 

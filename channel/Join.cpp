@@ -257,6 +257,11 @@ void Parsing::join(Client &client, std::string line)
                         {    
                             printTopic(channel, &client);
                             //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+                            std::stringstream ss;
+                            ss << channel.getTopicSetTime();
+                            std::string topicSetTime = ss.str();
+                            std::string msg = "333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
+                            client.sendMsg(msg);
                         }
                         // // RPL_NAMREPLY (353)  "<client> = <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
                         // std::string namesList;
@@ -299,7 +304,12 @@ void Parsing::join(Client &client, std::string line)
                 if (!channel.getTopic().empty())
                 {    
                     printTopic(channel, &client);
+                    std::stringstream ss;
+                    ss << channel.getTopicSetTime();
+                    std::string topicSetTime = ss.str();
                     //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+                    std::string msg = "333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
+                    client.sendMsg(msg);
                 }
             }
         }

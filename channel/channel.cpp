@@ -6,7 +6,7 @@ std::map<int, Client*> Channel::getmembers ()
     return (_members);
 }
 
-Channel::Channel(const std::string& name) : _name(name), _key("")
+Channel::Channel(const std::string& name) : _name(name), _key(""), _topicOwner(""), _topicSetTime(0)
 {
     // if ther is not keys 
     
@@ -20,7 +20,7 @@ Channel::~Channel()
 {
     
 }
-Channel::Channel(std::string key, const std::string& name) : _name(name), _key(key) 
+Channel::Channel(std::string key, const std::string& name) : _name(name), _key(key), _topicOwner(""), _topicSetTime(0)
 {
     
     _topic = "";
@@ -50,6 +50,17 @@ void Channel::addClient(Client* c)
         std::cout << " the client allready exist\n";
     std::cout << "this is the client : " << c->getName() << " wanna be added to channel : "<< getName() << "\n";
 }
+
+
+void Channel::setTopicOwner(std::string name)
+{
+    this->_topicOwner = name;
+}
+void Channel::setTopicSetTime(time_t time)
+{
+    this->_topicSetTime = time;
+}
+
 
 void Channel::removeClient(Client* c)
 {

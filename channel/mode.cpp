@@ -147,6 +147,11 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         }
                         std::string topic = line.substr(index + 1);
                         it->second.setTopic(topic);
+                        it->second.setTopicOwner(clinet.getName());
+                        it->second.setTopicSetTime(time(NULL));
+                        //broadcast to all the client in channel
+                        std::string msg = clinet.getName() + " has set the topic to: " + topic + "\r\n";
+                        it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
                     {

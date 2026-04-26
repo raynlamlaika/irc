@@ -79,7 +79,7 @@ void Parsing::kick(std::string line, Client& client)
     Client* targetClient = NULL;
     std::map<int, Client*> members = channel->getmembers();
 
-    for (int y = 0 ; usersTargeted.size() >  y; y++)
+    for (size_t y = 0 ; usersTargeted.size() >  y; y++)
     {
         usertarget = usersTargeted[y];
         for (std::map<int, Client *>::iterator it = members.begin(); it != members.end(); ++it)
