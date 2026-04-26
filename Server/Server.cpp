@@ -7,11 +7,11 @@ Server::Server(int port, std::string password) : password(password)
         throw std::runtime_error("socket failed");
 
     int opt = 1;
-    setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if (setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+        throw std::runtime_error("setsockopt failed");
 
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
 
@@ -48,7 +48,6 @@ void Server::acceptClient(size_t index)
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
         return;
-    fcntl(clientFd, F_SETFL, O_NONBLOCK);
     pollfd p;
     p.fd = clientFd;
     p.events = POLLIN;
@@ -77,7 +76,7 @@ void Server::handleClient(size_t index)
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
     char buffer[1024];
-    int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
+    int bytes = recv(fd, buffer, sizeof(buffer) - 1, MSG_DONTWAIT); // or 0 
     if (bytes > 0)
     {
         buffer[bytes] = '\0';
