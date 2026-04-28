@@ -32,7 +32,7 @@ public:
     
     // void addChannel(Client *client);
     // void listAllChannel();
-
+    
     ~Parsing();
     static std::string _gethostname();
     void add_Channel(const Channel& channel);
