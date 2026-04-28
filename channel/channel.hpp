@@ -20,7 +20,7 @@ private:
     std::string _key;
 
 
-    std::set<int> _invited; // invated client "fds"
+    std::set<int> _invited;
     std::map<int, Client*> _members;
     std::set<Client*> _operators;
     std::vector<Client*> _banned;
@@ -35,10 +35,8 @@ private:
     time_t _topicSetTime ;
 
 public:
-// make a defulaut constractor
     Channel(const std::string& name);
     ~Channel();
-// make a  parameteras 
     Channel(std::string key ,const std::string& name);
 
     std::string getTopicOwner() const;
@@ -78,7 +76,6 @@ public:
     bool isOperator(const Client& client) const;
     void broadcastMsg(const std::string& msg, const std::map<int, Client*>& members);
 
-    // bool addOperator(const Client& client) const;
 };
 
 bool validName(std::string name, Client *client);

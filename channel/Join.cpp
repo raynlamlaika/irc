@@ -126,7 +126,7 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     // check if the channel is invite only
     if (channel.isInviteOnly() && !channel.isInvited(client))
     {
-        std::string msg = "473:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+i)\r\n";
+        std::string msg = "ircserv 473:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+i)\r\n";
         client.sendMsg(msg);
         return false;
     }
@@ -134,7 +134,7 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
     if (channel.hasUserLimit() && channel.getMembers().size() >= channel.getUserLimit())
         {
-            std::string msg = "471:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+l)\r\n";
+            std::string msg = "ircserv 471:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Cannot join channel (+l)\r\n";
             client.sendMsg(msg);
             return false;
         }
@@ -145,13 +145,13 @@ bool validName(std::string name, Client *client)
 {
     
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty() || name.size() < 2){std::string msg = "476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
-    if (name.length() > 50){std::string msg = "476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
-    if (name[0] != '#' && name[0] != '&'&& name[0] != '!'&& name[0] != '+'){std::string msg = "476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
+    if (name.empty() || name.size() < 2){std::string msg = "ircserv 476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
+    if (name.length() > 50){std::string msg = "ircserv 476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
+    if (name[0] != '#' && name[0] != '&'&& name[0] != '!'&& name[0] != '+'){std::string msg = "ircserv 476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
         if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
-        {std::string msg = "476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
+        {std::string msg = "ircserv 476:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :Bad Channel Mask\r\n";client->sendMsg(msg);return false;}
     }
     return true;
 }
@@ -161,12 +161,12 @@ void printTopic(const Channel& channel, Client *client)
     // RPL_TOPIC (332)  "<client> <channel> :<topic>"
     if (channel.getTopic().empty())
     {
-        std::string msg = "332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :No topic is set\r\n";
+        std::string msg = "ircserv 332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :No topic is set\r\n";
         client->sendMsg(msg);
     }
     else
     {
-        std::string msg = "332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :" + channel.getTopic() + "\r\n";
+        std::string msg = "ircserv 332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :" + channel.getTopic() + "\r\n";
         client->sendMsg(msg);
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
         // std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
@@ -177,7 +177,7 @@ bool checkBan(const Channel& channel, Client& client)
     // Check if the client is banned from the channel
     if (channel.isBanned(client))
     {
-        std::string msg = "467:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You are banned from this channel\r\n";
+        std::string msg = "ircserv 467:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You are banned from this channel\r\n";
         client.sendMsg(msg);
         return true;
     }
@@ -191,7 +191,7 @@ void Parsing::join(Client &client, std::string line)
 
     std::vector<std::string> parsed = parceCammandJoin(line);
     if (parsed.size() < 2)
-        {std::string msg = "461:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Not enough parameters\r\n";client.sendMsg(msg);return;}
+        {std::string msg = "ircserv 461:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Not enough parameters\r\n";client.sendMsg(msg);return;}
     std::cout << "Parsed JOIN command: "    << "Command: " << parsed[0] << ", Channels: " << parsed[1] << ", Keys: " << (parsed.size() > 2 ? parsed[2] : "None") << "\n";    
     if (parsed[1]  == "0" && parsed.size() == 2)
     {
@@ -203,7 +203,7 @@ void Parsing::join(Client &client, std::string line)
             if (channel.hasClient(&client))      
             {
                 channel.removeClient(&client);
-                std::string msg = "331:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " PART " + channel.getName() + "\r\n";
+                std::string msg = "ircserv 331:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " PART " + channel.getName() + "\r\n";
                 client.sendMsg(msg);
             }
         }
@@ -224,7 +224,7 @@ void Parsing::join(Client &client, std::string line)
             newChannel.addClient(&client);
             newChannel.addOperator(&client);
             add_Channel(newChannel);
-            std::string msg = buildJoinMsg(client, newChannel.getName());
+            std::string msg = "ircserv 332:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + newChannel.getName() + " :" + newChannel.getTopic() + "\r\n";
             client.sendMsg(msg);
             if (!newChannel.getTopic().empty())
             {
@@ -238,7 +238,7 @@ void Parsing::join(Client &client, std::string line)
             if (!canJoin(channel, client)) return;
             if (client.numberOfChannels() >= 10)
             {
-                std::string msg = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have joined too many channels\r\n";
+                std::string msg = "ircserv 405:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have joined too many channels\r\n";
                 client.sendMsg(msg);
                 return;
             }
@@ -260,7 +260,7 @@ void Parsing::join(Client &client, std::string line)
                             std::stringstream ss;
                             ss << channel.getTopicSetTime();
                             std::string topicSetTime = ss.str();
-                            std::string msg = "333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
+                            std::string msg = "ircserv 333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
                             client.sendMsg(msg);
                         }
                         // // RPL_NAMREPLY (353)  "<client> = <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
@@ -284,14 +284,14 @@ void Parsing::join(Client &client, std::string line)
                     else
                     {
                         std::cout << "Incorrect key for channel: " << channelName << " with key: " << key << " this is the correct key: " << channel.getKey() << "\n";
-                        std::string msg = "475:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Incorrect key\r\n";
+                        std::string msg = "ircserv 475:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Incorrect key\r\n";
                         client.sendMsg(msg);
                     }
                 }
                 else
                 {
                     // ERR_CANNOTJOINCHANNEL (475)   "<client> <channel> :Cannot join channel (+k)"
-                    std::string msg = "475:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Cannot join channel (+k)\r\n";
+                    std::string msg = "ircserv 475:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Cannot join channel (+k)\r\n";
                     client.sendMsg(msg);
                 }
             }
@@ -308,7 +308,7 @@ void Parsing::join(Client &client, std::string line)
                     ss << channel.getTopicSetTime();
                     std::string topicSetTime = ss.str();
                     //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-                    std::string msg = "333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
+                    std::string msg = "ircserv 333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
                     client.sendMsg(msg);
                 }
             }

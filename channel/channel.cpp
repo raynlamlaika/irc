@@ -8,7 +8,6 @@ std::map<int, Client*> Channel::getmembers ()
 
 Channel::Channel(const std::string& name) : _name(name), _key(""), _topicOwner(""), _topicSetTime(0)
 {
-    // if ther is not keys 
     
     _topic = "";
     _inviteOnly =  false;
@@ -18,8 +17,8 @@ Channel::Channel(const std::string& name) : _name(name), _key(""), _topicOwner("
 
 Channel::~Channel()
 {
-    
 }
+
 Channel::Channel(std::string key, const std::string& name) : _name(name), _key(key), _topicOwner(""), _topicSetTime(0)
 {
     
