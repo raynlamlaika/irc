@@ -33,6 +33,7 @@ private:
     
     std::string _topicOwner;
     time_t _topicSetTime ;
+    
 
 public:
     Channel(const std::string& name);
@@ -40,7 +41,7 @@ public:
     Channel(std::string key ,const std::string& name);
 
     std::string getTopicOwner() const;
-    time_t getTopicSetTime() const;
+    std::string getTopicSetTime() const;
     void setTopicOwner(std::string name);
     void setTopicSetTime(time_t time);
 

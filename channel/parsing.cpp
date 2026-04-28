@@ -12,9 +12,16 @@ std::string Channel::getTopicOwner() const
     return this->_topicOwner;
 }
 
-time_t Channel::getTopicSetTime() const
+std::string Channel::getTopicSetTime() const
 {
-    return this->_topicSetTime;
+    time_t  t = this->_topicSetTime;
+    char buffer[100];
+    return std::string(buffer);
+}
+
+void Channel::setTopicSetTime(time_t time)
+{
+    this->_topicSetTime = time;
 }
 
 Channel *Parsing::searchForChannelref(std::string channelName)
@@ -187,25 +194,3 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     }
     return (true);
 }
-
-
-
-
-
-/*
-the numrical reply i should handel
-
-ERR_NEEDMOREPARAMS (461)
-ERR_NOSUCHCHANNEL (403)
-ERR_TOOMANYCHANNELS (405)
-ERR_BADCHANNELKEY (475)
-ERR_BANNEDFROMCHAN (474)
-ERR_CHANNELISFULL (471)
-ERR_INVITEONLYCHAN (473)
-ERR_BADCHANMASK (476)
-RPL_TOPIC (332)
-RPL_TOPICWHOTIME (333)
-RPL_NAMREPLY (353)
-RPL_ENDOFNAMES (366)
-
-*/

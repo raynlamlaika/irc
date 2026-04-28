@@ -169,7 +169,8 @@ void printTopic(const Channel& channel, Client *client)
         std::string msg = "ircserv 332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :" + channel.getTopic() + "\r\n";
         client->sendMsg(msg);
         // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-        // std::string msg = client->getName() + " " + channel.getName() + " " + channel.getTopic() + " " + "std::to_string(channel.getTopicSetTime()) "+ "\n";
+        std::string msg = "ircserv 333:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopic() + " " + channel.getTopicSetTime() + "\r\n";
+        client->sendMsg(msg);
     }
 }
 bool checkBan(const Channel& channel, Client& client)
@@ -195,7 +196,6 @@ void Parsing::join(Client &client, std::string line)
     std::cout << "Parsed JOIN command: "    << "Command: " << parsed[0] << ", Channels: " << parsed[1] << ", Keys: " << (parsed.size() > 2 ? parsed[2] : "None") << "\n";    
     if (parsed[1]  == "0" && parsed.size() == 2)
     {
-        // get out in all of the channels that the client is in
         std::map<std::string, Channel>::iterator it;
         for (it = chs.begin(); it != chs.end(); ++it)
         {
@@ -210,7 +210,8 @@ void Parsing::join(Client &client, std::string line)
         return;
     }
     std::map<std::string, std::string> NamesKeys = key_name(parsed);
-    for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it) {
+    for (std::map<std::string, std::string>::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it)
+    {
         const std::string& channelName = it->first;
         const std::string& key = it->second;
         std::map<std::string, Channel>::iterator chIt = chs.find(channelName);
