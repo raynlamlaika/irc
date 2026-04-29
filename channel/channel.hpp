@@ -41,7 +41,7 @@ public:
     Channel(std::string key ,const std::string& name);
     std::string	displayTimestamp();
     std::string getTopicOwner() const;
-    std::string getTopicSetTime() const;
+    time_t getTopicSetTime() const;
     void setTopicOwner(std::string name);
     void setTopicSetTime(time_t time);
 

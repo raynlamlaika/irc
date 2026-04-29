@@ -156,21 +156,37 @@ bool validName(std::string name, Client *client)
     return true;
 }
 
+#include <sstream>
+
 void printTopic(const Channel& channel, Client *client)
 {
-    // RPL_TOPIC (332)  "<client> <channel> :<topic>"
+    std::string prefix = ":ircserv ";
+
+    // 332
     if (channel.getTopic().empty())
     {
-        std::string msg = "ircserv 332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :No topic is set\r\n";
+        std::string msg = prefix + "332 " + client->getNick() +
+            " " + channel.getName() + " :No topic is set\r\n";
         client->sendMsg(msg);
     }
     else
     {
-        std::string msg = "ircserv 332:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + " :" + channel.getTopic() + "\r\n";
+        std::string msg = prefix + "332 " + client->getNick() +
+            " " + channel.getName() + " :" +
+            channel.getTopic() + "\r\n";
         client->sendMsg(msg);
-        // RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-        std::string msg = "ircserv 333:" + client->getNick() + "!" + client->getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopic() + " " + channel.getTopicSetTime() + "\r\n";
-        client->sendMsg(msg);
+
+        // convert time_t → string
+        std::stringstream ss;
+        ss << channel.getTopicSetTime();
+
+        // ⚠️ you need who set the topic (nick)
+        std::string msg2 = prefix + "333 " + client->getNick() +
+            " " + channel.getName() + " " +
+            ss.str() + "\r\n";
+            //  channel.getTopicSetter() + " " +  // <-- you should have this
+
+        client->sendMsg(msg2);
     }
 }
 bool checkBan(const Channel& channel, Client& client)

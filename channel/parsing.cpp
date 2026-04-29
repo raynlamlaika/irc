@@ -23,10 +23,10 @@ std::string	Channel::displayTimestamp()
 	return buffer;
 }
 
-// time_t Channel::getTopicSetTime() const
-// {
-//     return this->_topicSetTime;
-// }
+time_t Channel::getTopicSetTime() const
+{
+    return this->_topicSetTime;
+}
 
 Channel *Parsing::searchForChannelref(std::string channelName)
 {
@@ -194,7 +194,11 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
     {
         client.setAuth();
-        client.sendMsg("wellcome to server\r\n");
+        client.sendMsg(":ircserv 001 " + client.getNick() + " :Welcome to the IRC Network hamza!user@localhost\r\n");
+        client.sendMsg(":ircserv 002 " + client.getNick() + " :Your host is ircserv, running version 1.0\r\n");
+        client.sendMsg(":ircserv 003 " + client.getNick() + " :This server was created today\r\n");
+        client.sendMsg(":ircserv 004 " + client.getNick() + " ircserv 1.0 o o\r\n");
+        // client.sendMsg("wellcome to server\r\n");
     }
     return (true);
 }
