@@ -20,7 +20,7 @@ private:
 
     
 public:
-    void printListOfClients();
+    // void printListOfClients();
     bool newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients);
     void join(Client &clinet, std::string line);
     void kick(std::string line, Client& client);
@@ -29,9 +29,7 @@ public:
     // void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
     void prvmsg(std::string line, Client& client,  std::map<int, Client*> _allClients);
     static std::vector<std::string> HelperSplit(std::string line, char del);
-    
-    // void addChannel(Client *client);
-    // void listAllChannel();
+    std::string printListOfUsers(std::map<int, Client*> clients);
     
     ~Parsing();
     static std::string _gethostname();

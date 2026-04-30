@@ -23,15 +23,16 @@ std::string Parsing::_gethostname()
 {
     // return "localhost";
     char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) == 0)
-    {
-        // std::cout << "Hostname: " << hostname << std::endl;
-        return std::string(hostname);
-    }
-    else {
-        return "localhost";
-    }
-    return std::string(hostname);
+    // if (gethostname(hostname, sizeof(hostname)) == 0)
+    // {
+    //     // std::cout << "Hostname: " << hostname << std::endl;
+    //     return std::string(hostname);
+    // }
+    // else {
+    //     
+    return "localhost";
+    // }
+    // return std::string(hostname);
 }
     
 void Parsing::kick(std::string line, Client& client)
@@ -64,14 +65,14 @@ void Parsing::kick(std::string line, Client& client)
     if (!channel->isOperator(client))
     {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
-        std::string msg = "ircserv 482:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
+        std::string msg = "ircserv 482:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :You're not channel operator\r\n";
         client.sendMsg(msg);
         return;
     }
     // check client is part of the channel
     if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::string msg = "ircserv 441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
+        std::string msg = "ircserv 441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :They aren't on that channel \r\n";
         client.sendMsg(msg);
         return;
     }
@@ -95,11 +96,16 @@ void Parsing::kick(std::string line, Client& client)
                 }
                 //check
                 channel->removeClient(targetClient);
+                
+                if (channel->getMembers().empty())
+                    chs.erase(it++); 
+                else
+                    ++it;
                 std::string msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
                 client.sendMsg(msg);
                 if (!reason.empty())
                 {
-                    msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
+                    msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK " + channelname + " " + usertarget + " " + reason + "\r\n";
                     client.sendMsg(msg);
                 }
                 break;

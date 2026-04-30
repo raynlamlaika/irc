@@ -45,7 +45,8 @@ int Client::receive(char *buffer, size_t size)
 
 void Client::sendMsg(const std::string &msg)
 {
-    send(_fd, msg.c_str(), msg.size(), 0);
+   
+    if(-1 == send(_fd, msg.c_str(), msg.size(), 0)){ std::cout << "33333333\n";exit(1);}
 }
 
 

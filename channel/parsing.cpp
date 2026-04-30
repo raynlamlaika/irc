@@ -184,12 +184,15 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             //:<server> 421 <nick> <command> :Unknown command
             std::string msg =  "ircserv 421:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :Unknown command\r\n";
             client.sendMsg(msg);
+            std::cout << "test test test3" << std::endl;
         }
     }
     else
     { 
         std::string msg = "ircserv 421:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have not registered\r\n";
         client.sendMsg(msg);
+        std::cout << "test test test2" << std::endl;
+        
     }
     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
     {
@@ -199,6 +202,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         client.sendMsg(":ircserv 003 " + client.getNick() + " :This server was created today\r\n");
         client.sendMsg(":ircserv 004 " + client.getNick() + " ircserv 1.0 o o\r\n");
         // client.sendMsg("wellcome to server\r\n");
+            std::cout << "test test test 1" << std::endl;
     }
     return (true);
 }

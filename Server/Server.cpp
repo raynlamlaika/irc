@@ -114,6 +114,7 @@ void Server::handleClient(size_t index)
             std::string m = msg.substr(0, msg.find("\n"));
             msg.erase(msg.begin(), msg.begin() + msg.find("\n") + 1);
             newMessage(m, *client, _clients);
+            
         }
     }
 }
