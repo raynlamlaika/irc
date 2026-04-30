@@ -239,8 +239,10 @@ void Parsing::join(Client &client, std::string line)
             {
                 channel.removeClient(&client);
                 
-                // std::string msg = "ircserv 331:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " PART " + channel.getName() + "\r\n";
-                std::string msg = MSG_KICK("ircserv", client.getNick(), client.getName(), channel.getName(), "Leaving channel\r\n");
+                std::string msg = "ircserv 331:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " PART " + channel.getName() + "\r\n";
+                //(nick, user, host, target, channel, reason)
+                // std::string msg = MSG_KICK(this.getNick(), client.getName(), Parsing::_gethostname(), client.getName() ,channel.getName(), "Leaving channel\r\n");
+
                 client.sendMsg(msg);
                 if (channel.getMembers().empty())
                     chs.erase(it++); 
