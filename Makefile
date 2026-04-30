@@ -8,7 +8,7 @@ SERVER_SRC = ./Server/main.cpp ./Server/Server.cpp ./channel/parsing.cpp ./chann
 				./channel/nick.cpp ./channel/user.cpp ./channel/getfile.cpp ./channel/sendfile.cpp ./channel/boot.cpp \
 				./channel/invite.cpp
 
-HEADERS = ./Server/Server.hpp ./Server/client.hpp ./channel/parsing.hpp
+HEADERS = ./Server/Server.hpp ./Server/client.hpp ./channel/parsing.hpp ./channel/replices.hpp
 
 SERVER_OBJ = $(SERVER_SRC:.cpp=.o)
 

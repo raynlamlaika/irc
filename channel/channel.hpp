@@ -8,6 +8,7 @@
 #include <string>
 #include <set>
 #include <algorithm>
+#include "replices.hpp"
 #include  "../Server/Client.hpp"
 
 class Client;

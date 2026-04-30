@@ -40,7 +40,7 @@ void Parsing::kick(std::string line, Client& client)
     std::vector<std::string> holder = HelperSplit(line, ' ');
     if (holder.size() < 3){
         // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
-        std::string msg = "ircserv 461:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :Not enough parameters\r\n";
+        std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[0]);
         client.sendMsg(msg);
         return ;
     }
@@ -58,21 +58,21 @@ void Parsing::kick(std::string line, Client& client)
     {
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
         
-        std::string msg = "ircserv 403:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :No such channel\r\n";
+        std::string msg = MSG_ERR_NOSUCHCHANNEL("ircserv", client.getNick(), channelname);
         client.sendMsg(msg);
         return;
     }
     if (!channel->isOperator(client))
     {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
-        std::string msg = "ircserv 482:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :You're not channel operator\r\n";
+        std::string msg = MSG_ERR_CHANOPRIVSNEEDED("ircserv", client.getNick(), channelname);
         client.sendMsg(msg);
         return;
     }
     // check client is part of the channel
     if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-        std::string msg = "ircserv 441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :They aren't on that channel \r\n";
+        std::string msg = MSG_ERR_USERNOTINCHANNEL("ircserv", client.getNick(), usertarget, channelname);
         client.sendMsg(msg);
         return;
     }
@@ -98,14 +98,18 @@ void Parsing::kick(std::string line, Client& client)
                 channel->removeClient(targetClient);
                 
                 // if (channel->getMembers().empty())
-                //     chs.erase(it++); 
+                //     chs.erase(it++); ALLO AKLLO ALALAO
                 // else
                 //     ++it;
-                std::string msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
-                client.sendMsg(msg);
+                
                 if (!reason.empty())
                 {
-                    msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK " + channelname + " " + usertarget + " " + reason + "\r\n";
+                    std::string msg = MSG_KICK("ircserv", client.getNick(), usertarget, channelname, reason);
+                    client.sendMsg(msg);
+                }
+                else
+                {
+                    std::string msg = MSG_KICK_WITHOUT_REASON("ircserv", client.getNick(), usertarget, channelname);
                     client.sendMsg(msg);
                 }
                 break;
@@ -114,7 +118,7 @@ void Parsing::kick(std::string line, Client& client)
         if (!targetClient)
         {
             // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
-            std::string msg = "ircserv 441:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
+            std::string msg = MSG_ERR_USERNOTINCHANNEL("ircserv", client.getNick(), usertarget, channelname);
             client.sendMsg(msg);
             // return;
         }

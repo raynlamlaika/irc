@@ -30,20 +30,21 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
             {
                 if(!searchForChannel(target))
                 {
-                    std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    // std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    std::string errorMsg = MSG_ERR_NOSUCHCHANNEL("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
                     continue;
                 }
                 Channel *channelHolder = searchForChannelref(target);
                 if (channelHolder == NULL)
                 {
-                    std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    std::string errorMsg = MSG_ERR_NOSUCHCHANNEL("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
                     continue;
                 }
                 if (channelHolder->isBanned(client) || !channelHolder->isOperator(client) || !channelHolder->hasClient(&client))
                 {
-                    std::string errorMsg = "ircserv 404:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :Cannot send to channel\r\n";
+                    std::string errorMsg = MSG_ERR_CANNOTSENDTOCHAN("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
                     continue;
                 }
