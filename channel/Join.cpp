@@ -292,6 +292,7 @@ void Parsing::join(Client &client, std::string line)
                 client.sendMsg(MSG_ERR_TOOMANYCHANNELS("ircserv", client.getNick(), channel.getName()));
                 return;
             }
+            // check if invited the order get firsteven if the  channel +k +l
             if (channel.hasKey())
             {
                 if (!key.empty())

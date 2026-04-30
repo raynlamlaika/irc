@@ -189,7 +189,7 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     }
     else
     { 
-        std::cout << "HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLO\n";
+        // std::cout << "HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLO\n";
          // ERR_NOTREGISTERED (451)  ":You have not registered"
         std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
         client.sendMsg(msg);
