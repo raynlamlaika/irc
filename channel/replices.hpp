@@ -160,4 +160,84 @@
 #define MSG_KICK_WITHOUT_REASON(nick, user, host, target, channel) \
     (std::string(":") + nick + "!" + user + "@" + host + " KICK " + channel + " " + target + " :Kicked\r\n")
 
+
+
+/*
+** =========================
+** MODE NUMERICS
+** =========================
+*/
+#define RPL_UMODEIS        "221"
+#define RPL_CHANNELMODEIS  "324"
+#define RPL_CREATIONTIME   "329"
+
+#define ERR_USERSDONTMATCH "502"
+#define ERR_UMODEUNKNOWNFLAG "501"
+
+/*
+** =========================
+** MODE ERRORS
+** =========================
+*/
+
+#define MSG_ERR_USERSDONTMATCH(server, nick) \
+    (std::string(":") + server + " 502 " + nick + " :Cannot change mode for other users\r\n")
+
+#define MSG_ERR_UMODEUNKNOWNFLAG(server, nick) \
+    (std::string(":") + server + " 501 " + nick + " :Unknown MODE flag\r\n")
+
+/*
+** =========================
+** MODE REPLIES
+** =========================
+*/
+
+#define MSG_ERR_UNKNOWNMODE(server, nick, mode) \
+    (std::string(":") + server + " 472 " + nick + " " + mode + " :is unknown mode char to me\r\n")
+#define MSG_ERR_INVALIDTOPIC(server, nick, channel) \
+    (std::string(":") + server + " 461 " + nick + " " + channel + " :Invalid topic format (contains non-printable characters)\r\n")
+
+/* User mode (e.g. MODE nick) */
+#define MSG_RPL_UMODEIS(server, nick, modes) \
+    (std::string(":") + server + " 221 " + nick + " " + modes + "\r\n")
+
+/* Channel mode query (MODE #chan) */
+#define MSG_RPL_CHANNELMODEIS(server, nick, channel, modes) \
+    (std::string(":") + server + " 324 " + nick + " " + channel + " " + modes + "\r\n")
+
+#define MSG_RPL_CREATIONTIME(server, nick, channel, timestamp) \
+    (std::string(":") + server + " 329 " + nick + " " + channel + " " + timestamp + "\r\n")
+
+/*
+** =========================
+** MODE COMMAND BROADCAST
+** =========================
+** Sent to users when modes change
+*/
+
+#define MSG_MODE_T_SET(nick, user, host, channel, topic) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " +t :" + topic + "\r\n")
+/* +i (invite-only) */
+#define MSG_MODE_I(nick, user, host, channel, sign) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " " + sign + "i\r\n")
+
+/* +l (user limit) */
+#define MSG_MODE_L_SET(nick, user, host, channel, limit) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " +l " + limit + "\r\n")
+
+#define MSG_MODE_L_UNSET(nick, user, host, channel) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " -l\r\n")
+
+/* +k (channel key) */
+#define MSG_MODE_K_SET(nick, user, host, channel, key) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " +k " + key + "\r\n")
+
+#define MSG_MODE_K_UNSET(nick, user, host, channel) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " -k\r\n")
+
+/* +o (operator) */
+#define MSG_MODE_O(nick, user, host, channel, sign, target) \
+    (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " " + sign + "o " + target + "\r\n")
+
+
 #endif

@@ -80,7 +80,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
     if (it == chs.end())
     {
         // irc.example.com 403 <nick> <channel> :No such channel
-        std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel\r\n";
+        // std::string msg = clinet.getName() + " " + splitMode[1] + " :No such channel\r\n";
+        std::string msg = MSG_ERR_NOSUCHCHANNEL("ircserv", clinet.getNick(), splitMode[1]);
         clinet.sendMsg(msg);
         return;
     }
@@ -109,7 +110,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         // Enable invite-only mode
                         it->second.setInviteOnly(true);
                         //broadcast to all the client in channel
-                        std::string msg = clinet.getName() + " has set the channel to invite-only.\r\n";
+                        // std::string msg = clinet.getName() + " has set the channel to invite-only.\r\n";
+                        std::string msg = MSG_MODE_I("ircserv", clinet.getNick(), clinet.getName(), it->first, "+");
                         it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
@@ -124,7 +126,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4) // Check if topic is provided and is printable
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -133,7 +136,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         {
                             if (!std::isprint(static_cast<unsigned char>(splitMode[3][i])))
                             {
-                                std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Invalid topic format (contains non-printable characters)\n";
+                                // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Invalid topic format (contains non-printable characters)\n";
+                                std::string msg = MSG_ERR_INVALIDTOPIC("ircserv", clinet.getNick(), it->first);
                                 clinet.sendMsg(msg);
                                 return ;
                             }
@@ -150,7 +154,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         it->second.setTopicOwner(clinet.getName());
                         it->second.setTopicSetTime(time(NULL));
                         //broadcast to all the client in channel
-                        std::string msg = clinet.getName() + " has set the topic to: " + topic + "\r\n";
+                        // std::string msg = clinet.getName() + " has set the topic to: " + topic + "\r\n";
+                        std::string msg = MSG_MODE_T_SET("ircserv", clinet.getNick(), clinet.getName(), it->first, topic);
                         it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
@@ -167,7 +172,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -199,14 +205,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         { 
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                             clinet.sendMsg(msg);
                             return ;
                         }
                         std::string operatorName = splitMode[3];
                         if (!searchForClient(operatorName, _allClients))
                         {
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = MSG_ERR_NOSUCHNICK("ircserv", clinet.getNick(), operatorName);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -214,7 +220,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         // check if the client is already an operator
                         if (it->second.isOperator(*operatorClient))
                         {
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' is already an operator\n";
+                            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' is already an operator\n";
+                            std::string msg = MSG_ERR_USERNOTINCHANNEL("ircserv", clinet.getNick(), operatorName, it->first);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -224,7 +231,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         }
                         else
                         {
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = MSG_ERR_NOSUCHNICK("ircserv", clinet.getNick(), operatorName);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -235,14 +243,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         { 
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                             clinet.sendMsg(msg);
                             return ;
                         }
                         std::string operatorName = splitMode[3];
                         if (!searchForClient(operatorName, _allClients))
                         {
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Client with nickname '" + operatorName + "' not found\n";
+                            std::string msg = MSG_ERR_NOSUCHNICK("ircserv", clinet.getNick(), operatorName);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -264,7 +272,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         if (splitMode.size() < 4)
                         {
                             // ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
-                            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Not enough parameters\n";
+                            std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                             clinet.sendMsg(msg);
                             return ;
                         }
@@ -273,7 +282,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                             userLimit = std::strtoul(splitMode[3].c_str(), NULL, 10);
                             if (userLimit == 0)
                             {
-                                std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit must be greater than 0\n";
+                                // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit must be greater than 0\n";
+                                std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
                                 clinet.sendMsg(msg);
                                 return ;
                             }
@@ -285,7 +295,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         }
                         it->second.setUserLimit(userLimit);
                         
-                        std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
+                        // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
+                        std::string msg = MSG_MODE_L_SET("ircserv", clinet.getNick(), clinet.getName(), it->first, splitMode[3]);
                         it->second.broadcastMsg(msg, it->second.getMembers());
                     }
                     else
@@ -300,7 +311,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
         }
         else
         {
-            std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Unknown mode character '" + c + "'\n";
+            // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :Unknown mode character '" + c + "'\n";
+            std::string msg = MSG_ERR_UNKNOWNMODE("ircserv", clinet.getNick(), c);
             clinet.sendMsg(msg);
             return ;
         }
