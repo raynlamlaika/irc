@@ -22,7 +22,7 @@ ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
 std::string Parsing::_gethostname()
 {
     // return "localhost";
-    char hostname[256];
+    // char hostname[256];
     // if (gethostname(hostname, sizeof(hostname)) == 0)
     // {
     //     // std::cout << "Hostname: " << hostname << std::endl;
@@ -97,10 +97,10 @@ void Parsing::kick(std::string line, Client& client)
                 //check
                 channel->removeClient(targetClient);
                 
-                if (channel->getMembers().empty())
-                    chs.erase(it++); 
-                else
-                    ++it;
+                // if (channel->getMembers().empty())
+                //     chs.erase(it++); 
+                // else
+                //     ++it;
                 std::string msg = "ircserv 367:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + " :KICK "+ channelname + " " + usertarget +   "\r\n";
                 client.sendMsg(msg);
                 if (!reason.empty())
