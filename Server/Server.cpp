@@ -18,6 +18,9 @@ Server::Server(int port, std::string password) : password(password)
     if (bind(_serverFd, (sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
 
+    int flags = fcntl(_serverFd, F_GETFL, 0);
+    fcntl(_serverFd, F_SETFL, flags | O_NONBLOCK);
+
     if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
 
@@ -48,6 +51,9 @@ void Server::acceptClient(size_t index)
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
         return;
+    int flags = fcntl(clientFd, F_GETFL, 0);
+    fcntl(clientFd, F_SETFL, flags | O_NONBLOCK);
+
     pollfd p;
     p.fd = clientFd;
     p.events = POLLIN;
@@ -57,7 +63,6 @@ void Server::acceptClient(size_t index)
     _clients[clientFd] = client;
     std::cout << GREEN << "New connection "<< clientFd << RESET << std::endl;
 }
-
 void Server::removeClient(size_t index)
 {
     int fd = _pollFds[index].fd;
@@ -76,7 +81,7 @@ void Server::handleClient(size_t index)
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
     char buffer[1024];
-    int bytes = recv(fd, buffer, sizeof(buffer) - 1, MSG_DONTWAIT); // or 0 
+    int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0); // or 0 MSG_DONTWAIT
     if (bytes > 0)
     {
         buffer[bytes] = '\0';

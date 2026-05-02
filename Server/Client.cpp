@@ -46,7 +46,22 @@ int Client::receive(char *buffer, size_t size)
 void Client::sendMsg(const std::string &msg)
 {
    
-    if(-1 == send(_fd, msg.c_str(), msg.size(), 0)){ std::cout << "33333333\n";exit(1);}
+    ssize_t n = send(_fd, msg.c_str(), msg.size(), 0);
+
+    if (n < 0)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        {
+            // 🔥 socket buffer full → cannot send now
+            // just ignore OR buffer the message (better)
+            return;
+        }
+        else
+        {
+            perror("send");
+            // ❌ don't exit(1) → kills whole server
+        }
+    }
 }
 
 
