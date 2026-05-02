@@ -52,14 +52,15 @@ void Client::sendMsg(const std::string &msg)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            // 🔥 socket buffer full → cannot send now
-            // just ignore OR buffer the message (better)
             return;
+        }
+        else if (errno == EPIPE || errno == ECONNRESET)
+        {
+            throw std::runtime_error("Client disconnected error in (EPIPE || ECONNRESET)");
         }
         else
         {
-            perror("send");
-            // ❌ don't exit(1) → kills whole server
+            throw std::runtime_error("send error");
         }
     }
 }
