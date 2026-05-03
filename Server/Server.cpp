@@ -18,6 +18,9 @@ Server::Server(int port, std::string password) : password(password)
     if (bind(_serverFd, (sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
 
+    // int flags = fcntl(_serverFd, F_GETFL, 0);
+    // fcntl(_serverFd, F_SETFL, flags | O_NONBLOCK);
+
     if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
 
@@ -48,6 +51,9 @@ void Server::acceptClient(size_t index)
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
         return;
+    int flags = fcntl(clientFd, F_GETFL, 0);
+    fcntl(clientFd, F_SETFL, flags | O_NONBLOCK);
+
     pollfd p;
     p.fd = clientFd;
     p.events = POLLIN;
@@ -57,7 +63,6 @@ void Server::acceptClient(size_t index)
     _clients[clientFd] = client;
     std::cout << GREEN << "New connection "<< clientFd << RESET << std::endl;
 }
-
 void Server::removeClient(size_t index)
 {
     int fd = _pollFds[index].fd;
@@ -76,7 +81,7 @@ void Server::handleClient(size_t index)
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
     char buffer[1024];
-    int bytes = recv(fd, buffer, sizeof(buffer) - 1, MSG_DONTWAIT); // or 0 
+    int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0); // or 0 MSG_DONTWAIT
     if (bytes > 0)
     {
         buffer[bytes] = '\0';
@@ -89,7 +94,7 @@ void Server::handleClient(size_t index)
     }
     else
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
             return;
         else
         {
@@ -98,25 +103,32 @@ void Server::handleClient(size_t index)
         }
     }
     std::cout << msg << std::endl;
-    if (msg.find("\r\n") != std::string::npos)
-    {
-        while (msg.find("\r\n") != std::string::npos)
+    try {
+        if (msg.find("\r\n") != std::string::npos)
         {
-            std::string m = msg.substr(0, msg.find("\r\n"));
-            msg.erase(msg.begin(), msg.begin() + msg.find("\r\n") + 2);
-            newMessage(m, *client, _clients);
+            while (msg.find("\r\n") != std::string::npos)
+            {
+                std::string m = msg.substr(0, msg.find("\r\n"));
+                msg.erase(msg.begin(), msg.begin() + msg.find("\r\n") + 2);
+                newMessage(m, *client, _clients);
+            }
         }
-    }
-    else
-    {
-        while (msg.find("\n") != std::string::npos)
+        else
         {
-            std::string m = msg.substr(0, msg.find("\n"));
-            msg.erase(msg.begin(), msg.begin() + msg.find("\n") + 1);
-            newMessage(m, *client, _clients);
-            
-        }
+            while (msg.find("\n") != std::string::npos)
+            {
+                std::string m = msg.substr(0, msg.find("\n"));
+                msg.erase(msg.begin(), msg.begin() + msg.find("\n") + 1);
+                newMessage(m, *client, _clients);
+                
+            }
+        }  
+    } catch (std::exception &e)
+    {
+        std::cerr << RED <<  e.what() << RESET << std::endl;
+        removeClient(index);
     }
+    
 }
 
 void Server::run()
