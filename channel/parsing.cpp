@@ -173,10 +173,10 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             prvmsg(line, client,_allClients);
         else if (holder[0] == "INVITE")
             invite(line, client,_allClients);
-        else if (holder[0] == "GET" || holder[0] == "DONE")
-            getfile(client, line, _allClients);
-        else if (holder[0] == "SEND")
-            sendfile(client, line, _allClients);
+        // else if (holder[0] == "GET" || holder[0] == "DONE")
+        //     getfile(client, line, _allClients);
+        // else if (holder[0] == "SEND")
+        //     sendfile(client, line, _allClients);
         else if (holder[0] == "BOOT")
             boot(client, line);
         else
