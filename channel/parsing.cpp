@@ -201,16 +201,33 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
     {
         client.setAuth();
-        client.sendMsg(":ircserv 001 " + client.getNick() + " :Welcome to the IRC Network hamza!user@localhost\r\n");
-        client.sendMsg(":ircserv 002 " + client.getNick() + " :Your host is ircserv, running version 1.0\r\n");
-        client.sendMsg(":ircserv 003 " + client.getNick() + " :This server was created today\r\n");
-        client.sendMsg(":ircserv 004 " + client.getNick() + " ircserv 1.0 o o\r\n");
+        sendWelcome(client);
         // client.sendMsg("wellcome to server\r\n");
             std::cout << "test test test 1" << std::endl;
     }
     return (true);
 }
 
+void Parsing::sendWelcome(Client& client)
+{
+    std::string server = "ircserv";
+    std::string nick = client.getNick();
+    std::string user = client.getName();
+    std::string host = "localhost";
+
+    client.sendMsg(":ircserv 001 " + nick +
+        " :Welcome to the IRC Network " + nick +
+        "!" + user + "@localhost\r\n");
+
+    client.sendMsg(":ircserv 002 " + nick +
+        " :Your host is ircserv, running version 1.0\r\n");
+
+    client.sendMsg(":ircserv 003 " + nick +
+        " :This server was created today\r\n");
+
+    client.sendMsg(":ircserv 004 " + nick +
+        " ircserv 1.0 o o\r\n");
+}
 
 
 

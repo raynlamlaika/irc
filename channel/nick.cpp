@@ -1,15 +1,22 @@
 
 #include "parsing.hpp"
 
-bool isStringPrintable(const std::string& str) {
-    for (size_t i = 0; i < str.length(); ++i) {
-        if (!std::isprint(str[i])) {
+bool isValidNick(const std::string& nick)
+{
+    if (nick.empty())
+        return false;
+
+    if (nick[0] == '#' || nick[0] == ':')
+        return false;
+
+    for (size_t i = 0; i < nick.size(); i++)
+    {
+        if (nick[i] == ' ' || !std::isprint(nick[i]))
             return false;
-        }
     }
+
     return true;
 }
-
 bool Parsing::checkNick(std::map<int, Client*> _allClients, std::string& value)
 {
     for (std::map<int, Client*>::iterator it = _allClients.begin(); it != _allClients.end(); ++it)
@@ -23,21 +30,43 @@ bool Parsing::checkNick(std::map<int, Client*> _allClients, std::string& value)
 
 void Parsing::nick(Client &client, std::string line, std::map<int, Client*> _allClients)
 {
-    std::string cmd, value;
     std::stringstream ss(line);
+    std::string cmd, value;
     ss >> cmd >> value;
-    if (!client.getPass())
-        client.sendMsg(": You may not reregister\r\n");
-    else
+
+    std::string server = "ircserv";
+    std::string nick = client.getNick().empty() ? "*" : client.getNick();
+
+    if (value.empty())
     {
-        if (value.empty())
-            client.sendMsg(": No nickname given\r\n");
-        else if (!isStringPrintable(value))
-            client.sendMsg(": Erroneus nickname\r\n");
-        else if (!checkNick(_allClients, value))
-            client.sendMsg(": Nickname is already in use\r\n");
-        else
-            client.setNick(value);
+        client.sendMsg(":" + server + " 431 " + nick +
+            " :No nickname given\r\n");
+        return;
+    }
+
+    if (!isValidNick(value))
+    {
+        client.sendMsg(":" + server + " 432 " + nick +
+            " " + value + " :Erroneus nickname\r\n");
+        return;
+    }
+
+    if (!checkNick(_allClients, value))
+    {
+        client.sendMsg(":" + server + " 433 " + nick +
+            " " + value + " :Nickname is already in use\r\n");
+        return;
+    }
+
+    std::string oldNick = client.getNick();
+
+    client.setNick(value);
+
+    if (!oldNick.empty())
+    {
+        std::string msg = ":" + oldNick + "!" +
+            client.getName() + "@localhost NICK :" + value + "\r\n";
+        client.sendMsg(msg);
     }
 }
 

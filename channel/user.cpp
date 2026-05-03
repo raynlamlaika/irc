@@ -4,37 +4,33 @@
 
 void Parsing::user(Client &client, std::string line)
 {
-    std::string cmd, value, hostname, servername, realname;
     std::stringstream ss(line);
-    ss >> cmd >> value >> hostname >> servername >> realname;
+    std::string cmd, username, mode, unused, realname;
 
-    if (!client.getPass())
-        client.sendMsg(": You may not reregister\r\n");
-    else
+    ss >> cmd >> username >> mode >> unused >> realname;
+
+    std::string server = "ircserv";
+    std::string nick = client.getNick().empty() ? "*" : client.getNick();
+
+    size_t pos = line.find(" :");
+
+    if (client.getAuth())
     {
-        if (value.empty() || hostname.empty() || servername.empty() || realname.empty())
-            client.sendMsg(": Not enough parameters\r\n");
-        else if (!client.getName().empty())
-            client.sendMsg(": You may not reregister\r\n");
-        else
-        {
-            if (realname[0] == ':')
-            {
-                if (realname.size() == 1)
-                {
-                    client.sendMsg(": Error in realname");
-                    return;
-                }
-                std::string newvalue = line.substr(line.find(realname) + 1);
-                client.setrealname(newvalue);
-                client.setname(value);
-            } else
-            {
-                client.setrealname(realname);
-                client.setname(value);
-            }
-        }
+        client.sendMsg(":" + server + " 462 " + nick +
+            " :You may not reregister\r\n");
+        return;
     }
+    if (username.empty() || mode.empty() || unused.empty() || realname.empty())
+    {
+        client.sendMsg(":" + server + " 461 " + nick +
+            " USER :Not enough parameters\r\n");
+        return;
+    }
+    if (std::string::npos != pos)
+    {
+        realname = line.substr(pos + 2);
+    }
+    client.setname(username);
+    client.setrealname(realname);
 }
-
 

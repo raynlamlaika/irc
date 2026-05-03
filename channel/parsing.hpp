@@ -54,7 +54,7 @@ public:
     void user(Client &client, std::string line);
     void nick(Client &client, std::string line, std::map<int, Client*> _allClients);
     bool checkNick(std::map<int, Client*> _allClients, std::string& value);
-
+    void sendWelcome(Client& client);
     void printer();
 };
 
