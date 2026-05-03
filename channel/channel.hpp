@@ -46,6 +46,10 @@ public:
     void setTopicOwner(std::string name);
     void setTopicSetTime(time_t time);
 
+
+    std::string getModes();
+    std::string getModeParams();
+
     // Basic info
     const std::string& getName() const;
     const std::string& getTopic() const;

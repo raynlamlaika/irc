@@ -5,10 +5,11 @@ echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
   sleep 0.2;echo "NICK r2lamlaik\n"
   sleep 0.2;echo "USER 42ayon 0 * :rlamlaik\n"
 
+  sleep 0.2;echo "JOIN #tst \n"
 
-  sleep 0.2;echo "JOIN #test \n"
+  sleep 0.2;echo "TOPIC #tst \n"
 
 
 
-} | nc 127.0.0.1 1234
+} | netcat 127.0.0.1 1234
 

@@ -138,7 +138,10 @@ void Parsing::topic(std::string line, Client& client)
         channel->setTopicOwner(client.getName());
         channel->setTopicSetTime(time(NULL));
         // breadcast for all of the channel members
-        std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has changed the topic to: " + topicUse + "\r\n";
+        // std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has changed the topic to: " + topicUse + "\r\n";
+        std::string msg = MSG_RPL_TOPIC("ircserv", client.getNick(), holder[1], topicUse);
+        channel->broadcastMsg(msg, channel->getMembers());
+        msg = MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), holder[1], channel->getTopicOwner(), channel->displayTimestamp());
         channel->broadcastMsg(msg, channel->getMembers());
     }
 }
@@ -182,14 +185,13 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         else
         {
             //:<server> 421 <nick> <command> :Unknown command
-            std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[1]);
+            std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[0]);
             client.sendMsg(msg);
             // std::cout << "test test test3" << std::endl;
         }
     }
     else
-    { 
-        // std::cout << "HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLO\n";
+    {
          // ERR_NOTREGISTERED (451)  ":You have not registered"
         std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
         client.sendMsg(msg);

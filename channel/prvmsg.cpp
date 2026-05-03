@@ -23,7 +23,8 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
             std::string target = targets[i];
             if (target.empty())
             {
-                std::cout << "Empty target in PRIVMSG command\n";
+                std::string errorMsg = MSG_ERR_NORECIPIENT("ircserv", client.getNick(), "PRIVMSG");
+                client.sendMsg(errorMsg);
                 continue;
             }
             if (target[0] == '#')
@@ -50,12 +51,14 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 }
                 if (message.empty())
                 {
-                    std::string errorMsg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No text to send\r\n";
+                    // std::string errorMsg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No text to send\r\n";
+                    std::string errorMsg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
-                // std::cout << "Broadcasting message to channel: " << target << " - " << message << std::endl;
+                // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
+                std::string msg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
+                
                 channelHolder->broadcastMsg(msg, channelHolder->getMembers());
             }
             else if (isalpha(target[0]))
@@ -63,18 +66,21 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 if(!searchForClient(target, _allClients))
                 {
                     // ERR_NOSUCHNICK (401)  "<client> <nickname> :No such nick/channel"
-                    std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    // std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    std::string errorMsg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
                     continue;
                 }
                 Client *clientHolder = searchForClientref(target, _allClients);
                 if (clientHolder == NULL)
                 {
-                    std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    // std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
+                    std::string errorMsg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
+                // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
+                std::string msg = MSG_PRIVMSG(client.getNick(), client.getName(), _gethostname(), target, message);
                 clientHolder->sendMsg(msg);
             }
             else

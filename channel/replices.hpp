@@ -240,4 +240,71 @@
     (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " " + sign + "o " + target + "\r\n")
 
 
+// #define MSG_RPL_CHANNELMODEIS(server, nick, channel, modes, params) \
+//     (std::string(":") + server + " 324 " + nick + " " + channel + " " + modes + (params.empty() ? "" : " " + params) + "\r\n")
+
+
+/*
+** =========================
+** PRIVMSG NUMERICS
+** =========================
+*/
+#define ERR_NOSUCHNICK      "401"
+#define ERR_NOSUCHSERVER    "402"
+#define ERR_CANNOTSENDTOCHAN "404"
+#define ERR_TOOMANYTARGETS  "407"
+#define ERR_NORECIPIENT     "411"
+#define ERR_NOTEXTTOSEND    "412"
+#define ERR_NOTOPLEVEL      "413"
+#define ERR_WILDTOPLEVEL    "414"
+
+#define RPL_AWAY            "301"
+
+/*
+** =========================
+** PRIVMSG ERRORS
+** =========================
+*/
+
+#define MSG_ERR_NOSUCHNICK(server, nick, target) \
+    (std::string(":") + server + " 401 " + nick + " " + target + " :No such nick/channel\r\n")
+
+#define MSG_ERR_NOSUCHSERVER(server, nick, target) \
+    (std::string(":") + server + " 402 " + nick + " " + target + " :No such server\r\n")
+
+#define MSG_ERR_CANNOTSENDTOCHAN(server, nick, channel) \
+    (std::string(":") + server + " 404 " + nick + " " + channel + " :Cannot send to channel\r\n")
+
+#define MSG_ERR_TOOMANYTARGETS(server, nick, target) \
+    (std::string(":") + server + " 407 " + nick + " " + target + " :Too many targets\r\n")
+
+#define MSG_ERR_NORECIPIENT(server, nick, command) \
+    (std::string(":") + server + " 411 " + nick + " :No recipient given (" + command + ")\r\n")
+
+#define MSG_ERR_NOTEXTTOSEND(server, nick) \
+    (std::string(":") + server + " 412 " + nick + " :No text to send\r\n")
+
+#define MSG_ERR_NOTOPLEVEL(server, nick, mask) \
+    (std::string(":") + server + " 413 " + nick + " " + mask + " :No toplevel domain specified\r\n")
+
+#define MSG_ERR_WILDTOPLEVEL(server, nick, mask) \
+    (std::string(":") + server + " 414 " + nick + " " + mask + " :Wildcard in toplevel domain\r\n")
+
+/*
+** =========================
+** PRIVMSG REPLY
+** =========================
+*/
+
+#define MSG_RPL_AWAY(server, nick, target, message) \
+    (std::string(":") + server + " 301 " + nick + " " + target + " :" + message + "\r\n")
+
+/*
+** =========================
+** PRIVMSG DELIVERY (not numeric)
+** =========================
+*/
+
+#define MSG_PRIVMSG(nick, user, host, target, message) \
+    (std::string(":") + nick + "!" + user + "@" + host + " PRIVMSG " + target + " :" + message + "\r\n")
 #endif

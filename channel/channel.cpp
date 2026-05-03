@@ -158,6 +158,38 @@ bool Channel::getInviteOnly() const
 }
 
 
+std::string Channel::getModes()
+{
+    std::string modes = "";
+    if (this->_inviteOnly)
+        modes += "i";
+    if (this->_topicRestricted)
+        modes += "t";
+    if (this->hasKey())
+        modes += "k";
+    if (!this->_operators.empty())
+        modes += "o";
+    if (this->hasUserLimit())
+        modes += "l";
+    return modes;
+}
+std::string Channel::getModeParams()
+{
+    std::string params = "";
+    if (this->hasKey())
+        params += " " + this->_key;
+    if (!this->_operators.empty())
+    {
+        for (std::set<Client*>::iterator it = this->_operators.begin(); it != this->_operators.end(); ++it)
+        {
+            params += " " + (*it)->getNick();
+        }
+    }
+    if (this->hasUserLimit())
+        params += " " + std::to_string(this->_userLimit);
+    return params;
+}
+
 std::set<Client*> Channel::getoperators() const
 {
     return this->_operators;

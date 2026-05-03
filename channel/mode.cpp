@@ -93,6 +93,13 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
 
     int sign = 0 ;
 
+    if (splitMode.size() < 3)
+    {
+        // RPL_CHANNELMODEIS (324)  "<client> <channel> <mode> <mode params>"
+        std::string msg = MSG_RPL_CHANNELMODEIS("ircserv", clinet.getNick(), it->first, it->second.getModes());
+        clinet.sendMsg(msg);
+        return ;
+    }
     for (size_t j = 0 ; splitMode[2].size() > j ; j++)
     {
         char c = splitMode[2][j];
