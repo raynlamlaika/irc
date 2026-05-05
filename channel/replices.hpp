@@ -307,4 +307,5 @@
 
 #define MSG_PRIVMSG(nick, user, host, target, message) \
     (std::string(":") + nick + "!" + user + "@" + host + " PRIVMSG " + target + " :" + message + "\r\n")
+    
 #endif

@@ -14,7 +14,7 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
         size_t index = line.find(":");
         if (index == std::string::npos)
             {std::cout <<"invalid format\n";return;}
-        std::string message = line.substr(index + 2);
+        std::string message = line.substr(index + 1);
         if (holder[0] != "PRIVMSG")
             return;
         std::vector<std::string> targets = HelperSplit(target, ',');
@@ -81,6 +81,17 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 }
                 // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
                 std::string msg = MSG_PRIVMSG(client.getNick(), client.getName(), _gethostname(), target, message);
+                // std::string msg = ":" + client.getNick() + "!" +
+                //           client.getName() + "@" +
+                //           _gethostname() +
+                //           " PRIVMSG " + target +
+                //           " :" + message + "\r\n";
+                // std::cout << "Message to send: " << message << std::endl;
+                // std::cout << "Msg to send: " << msg << std::endl;
+                // for (int i = 0 ; msg[i];i++)
+                // {
+                //     std::cout << "i = " << i << " " << (int)msg[i] << " ";
+                // }
                 clientHolder->sendMsg(msg);
             }
             else
@@ -90,3 +101,4 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
         }
     }
 }
+
