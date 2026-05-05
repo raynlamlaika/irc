@@ -43,7 +43,7 @@ bool Parsing::searchForClient(std::string name, std::map<int, Client*> _allClien
 
     for (it2 = _allClients.begin(); it2 != _allClients.end(); ++it2)
     {
-        if (it2->second && it2->second->getName() == name)
+        if (it2->second && it2->second->getNick() == name)
             return true;
     }
 
@@ -54,7 +54,7 @@ bool Parsing::searchForClient(std::string name, std::map<int, Client*> _allClien
         for ( Cit =  ClientList.begin(); Cit !=  ClientList.end(); Cit++)
         {   
             // Check if Client pointer is valid before dereferencing
-            if (Cit->second != NULL && Cit->second->getName() == name)
+            if (Cit->second != NULL && Cit->second->getNick() == name)
                 return true;
         }
     }

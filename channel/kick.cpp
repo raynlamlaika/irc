@@ -85,7 +85,7 @@ void Parsing::kick(std::string line, Client& client)
         usertarget = usersTargeted[y];
         for (std::map<int, Client *>::iterator it = members.begin(); it != members.end(); ++it)
         {
-            if (it->second && it->second->getName() == usertarget)
+            if (it->second && it->second->getNick() == usertarget)
             {
                 targetClient = it->second;
                 std::string reason = "";

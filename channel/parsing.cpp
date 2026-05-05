@@ -40,7 +40,7 @@ Channel *Parsing::searchForChannelref(std::string channelName)
     return NULL;
 }
 
-Client *Parsing::searchForClientref(std::string name , std::map<int, Client*> _allClients)
+Client *Parsing::searchForClientref(std::string Nick , std::map<int, Client*> _allClients)
 {
     std::map<std::string, Channel> chns = Getchannel();
     std::map<std::string, Channel>::iterator it;
@@ -48,7 +48,7 @@ Client *Parsing::searchForClientref(std::string name , std::map<int, Client*> _a
 
     for (it2 = _allClients.begin(); it2 != _allClients.end(); ++it2)
     {
-        if (it2->second && it2->second->getName() == name)
+        if (it2->second && it2->second->getNick() == Nick)
             return it2->second;
     }
 
@@ -58,7 +58,7 @@ Client *Parsing::searchForClientref(std::string name , std::map<int, Client*> _a
         std::map<int, Client*>::iterator  Cit;
         for ( Cit =  ClientList.begin(); Cit !=  ClientList.end(); Cit++)
         {   
-            if (Cit->second->getName() == name)
+            if (Cit->second->getNick() == Nick)
                 return Cit->second;
         }
     }

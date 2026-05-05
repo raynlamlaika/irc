@@ -14,7 +14,7 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
         size_t index = line.find(":");
         if (index == std::string::npos)
             {std::cout <<"invalid format\n";return;}
-        std::string message = line.substr(index + 1);
+        std::string message = line.substr(index + 2);
         if (holder[0] != "PRIVMSG")
             return;
         std::vector<std::string> targets = HelperSplit(target, ',');
@@ -27,7 +27,7 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 client.sendMsg(errorMsg);
                 continue;
             }
-            if (target[0] == '#')
+            if (target[0] == '#' || target[0] == '&' || target[0] == '+' || target[0] == '!')
             {
                 if(!searchForChannel(target))
                 {
@@ -43,7 +43,7 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                if (channelHolder->isBanned(client) || !channelHolder->isOperator(client) || !channelHolder->hasClient(&client))
+                if (channelHolder->isBanned(client)|| !channelHolder->hasClient(&client))
                 {
                     std::string errorMsg = MSG_ERR_CANNOTSENDTOCHAN("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
