@@ -119,10 +119,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         //broadcast to all the client in channel
                         // std::string msg = clinet.getName() + " has set the channel to invite-only.\r\n";
                         std::string msg = MSG_MODE_I("ircserv", clinet.getNick(), clinet.getName(), it->first, "+");
-                        it->second.broadcastMsg(msg, it->second.getMembers());
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                     }
                     else
+                    {
                         it->second.setInviteOnly(false);
+                        std::string msg = MSG_MODE_I("ircserv", clinet.getNick(), clinet.getName(), it->first, "-");
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
+                    }
                 }
                 // t
                 if (c == 't')
@@ -163,12 +167,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         //broadcast to all the client in channel
                         // std::string msg = clinet.getName() + " has set the topic to: " + topic + "\r\n";
                         std::string msg = MSG_MODE_T_SET("ircserv", clinet.getNick(), clinet.getName(), it->first, topic);
-                        it->second.broadcastMsg(msg, it->second.getMembers());
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                     }
                     else
                     {
-                        // Disable topic restriction mode
+
                         it->second.setTopic("");
+                        std::string msg = MSG_MODE_T_SET("ircserv", clinet.getNick(), clinet.getName(), it->first, "");
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                     }
                 }
                 // k
@@ -201,6 +207,8 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         // Disable channel key mode
                         if (it->second.hasKey())
                             it->second.setKey("");
+                        std::string msg = MSG_MODE_K_UNSET("ircserv", clinet.getNick(), clinet.getName(), it->first);
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                     }
                 }
                 // o
@@ -232,9 +240,12 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                             clinet.sendMsg(msg);
                             return ;
                         }
-                        if (operatorClient)
+                        else if (operatorClient)
                         {
                             it->second.getoperators().insert(operatorClient);
+                            //(server, nick, channel, mode, target)
+                            std::string msg = RPL_MODE("ircserv", clinet.getNick(), it->first, "+o ", operatorName);
+                            it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                         }
                         else
                         {
@@ -304,12 +315,14 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
                         
                         // std::string msg = "ircserv 461:" + clinet.getNick() + "!" + clinet.getName() + "@" + Parsing::_gethostname() + " " + it->first + " :User limit set to " + splitMode[3] + "\r\n";
                         std::string msg = MSG_MODE_L_SET("ircserv", clinet.getNick(), clinet.getName(), it->first, splitMode[3]);
-                        it->second.broadcastMsg(msg, it->second.getMembers());
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);                 
                     }
                     else
                     {
                         // Disable user limit mode
                         it->second.setUserLimit(0);
+                        std::string msg = MSG_MODE_L_UNSET("ircserv", clinet.getNick(), clinet.getName(), it->first);
+                        it->second.broadcastMsg(msg, it->second.getMembers(), &clinet);
                     }
                 }
 

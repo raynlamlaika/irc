@@ -129,7 +129,7 @@ void Parsing::topic(std::string line, Client& client)
         channel->setTopic("");
          // breadcast for all of the channel members
         std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has removed the topic\r\n";
-        channel->broadcastMsg(msg, channel->getMembers());
+        channel->broadcastMsg(msg, channel->getMembers(), &client);
         return;
     }
     else
@@ -140,9 +140,9 @@ void Parsing::topic(std::string line, Client& client)
         // breadcast for all of the channel members
         // std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has changed the topic to: " + topicUse + "\r\n";
         std::string msg = MSG_RPL_TOPIC("ircserv", client.getNick(), holder[1], topicUse);
-        channel->broadcastMsg(msg, channel->getMembers());
+        channel->broadcastMsg(msg, channel->getMembers(), &client);
         msg = MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), holder[1], channel->getTopicOwner(), channel->displayTimestamp());
-        channel->broadcastMsg(msg, channel->getMembers());
+        channel->broadcastMsg(msg, channel->getMembers(), &client);
     }
 }
 

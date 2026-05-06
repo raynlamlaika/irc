@@ -247,13 +247,15 @@ bool Channel::isOperator(const Client& client) const
 
 
 
-void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members)
+void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members, Client* sender)
 {
     std::map<int, Client*>::const_iterator it = members.begin();
 
     for ( ;it != members.end(); it++)
     {
-        if (it->second)
+        if (sender && it->second->getFd() == sender->getFd())
+            continue; // Skip the sender
+        else if (it->second)
         {
             it->second->sendMsg(msg);
         }
