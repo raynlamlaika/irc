@@ -45,22 +45,24 @@ int Client::receive(char *buffer, size_t size)
 
 void Client::sendMsg(const std::string &msg)
 {
-   
-    ssize_t n = send(_fd, msg.c_str(), msg.size(), 0);
+    size_t lenght = 0;
 
-    if (n < 0)
+    while (lenght < msg.size())
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
+
+        if (n > 0)
         {
-            return;
+            lenght += n;
         }
-        else if (errno == EPIPE || errno == ECONNRESET)
+        else if (n < 0)
         {
-            throw std::runtime_error("Client disconnected error in (EPIPE || ECONNRESET)");
-        }
-        else
-        {
-            throw std::runtime_error("send error");
+            if (errno == EINTR)
+                continue;
+            else if (errno == EAGAIN || errno == EWOULDBLOCK)
+                return;
+            else
+                throw std::runtime_error("send failed");
         }
     }
 }

@@ -8,3 +8,10 @@ e1r3p5% docker run -d \
 
 e1r3p5% docker exec -it ollama ollama pull gemma:2b
 
+-----
+
+docker run -d \
+  --name ollama \
+  -p 11434:11434 \
+  -v /goinfre/khairi/ollama:/root/.ollama \
+  ollama/ollama

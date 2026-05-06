@@ -18,8 +18,9 @@ Server::Server(int port, std::string password) : password(password)
     if (bind(_serverFd, (sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
 
-    // int flags = fcntl(_serverFd, F_GETFL, 0);
-    // fcntl(_serverFd, F_SETFL, flags | O_NONBLOCK);
+
+    if (fcntl(_serverFd, F_SETFL, O_NONBLOCK) == -1)
+        throw std::runtime_error("fcntl set failed");
 
     if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
@@ -27,6 +28,7 @@ Server::Server(int port, std::string password) : password(password)
     pollfd p1;
     p1.fd = STDIN_FILENO;
     p1.events = POLLIN;
+    p1.revents = 0;
     _pollFds.push_back(p1);
     pollfd p;
     p.fd = _serverFd;
@@ -37,6 +39,8 @@ Server::Server(int port, std::string password) : password(password)
     std::cout << BLUE << "Server running on port " << port << "..." << RESET << std::endl;
 }
 
+    // int flags = fcntl(_serverFd, F_GETFL, 0);
+    // fcntl(_serverFd, F_SETFL, O_NONBLOCK);
 Server::~Server()
 {
     for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
@@ -45,23 +49,34 @@ Server::~Server()
 }
 
 void Server::acceptClient(size_t index)
-{   
+{
     (void)index;
 
-    int clientFd = accept(_serverFd, NULL, NULL);
-    if (clientFd < 0)
-        return;
-    int flags = fcntl(clientFd, F_GETFL, 0);
-    fcntl(clientFd, F_SETFL, flags | O_NONBLOCK);
+    while (true)
+    {
+        int clientFd = accept(_serverFd, NULL, NULL);
 
-    pollfd p;
-    p.fd = clientFd;
-    p.events = POLLIN;
-    p.revents = 0;
-    _pollFds.push_back(p);
-    Client *client = new Client(clientFd, password);
-    _clients[clientFd] = client;
-    std::cout << GREEN << "New connection "<< clientFd << RESET << std::endl;
+        if (clientFd < 0)
+        {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                break;
+            else
+            {
+                throw std::runtime_error("accept failed");
+            }
+        }
+        fcntl(clientFd, F_SETFL, O_NONBLOCK);
+        pollfd p;
+        p.fd = clientFd;
+        p.events = POLLIN;
+        p.revents = 0;
+        _pollFds.push_back(p);
+
+        Client *client = new Client(clientFd, password);
+        _clients[clientFd] = client;
+
+        std::cout << GREEN << "New connection " << clientFd << RESET << std::endl;
+    }
 }
 void Server::removeClient(size_t index)
 {
@@ -80,29 +95,33 @@ void Server::handleClient(size_t index)
     int fd = _pollFds[index].fd;
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
-    char buffer[1024];
-    int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0); // or 0 MSG_DONTWAIT
-    if (bytes > 0)
+    while (true)
     {
-        buffer[bytes] = '\0';
-        msg.append(buffer, bytes);
-    }
-    else if (bytes == 0)
-    {
-        removeClient(index);
-        return;
-    }
-    else
-    {
-        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-            return;
-        else
+        char buffer[1024];
+        int bytes = recv(fd, buffer, sizeof(buffer), 0);
+
+        if (bytes > 0)
+        {
+            msg.append(buffer, bytes);
+        }
+        else if (bytes == 0)
         {
             removeClient(index);
-            return;
+            break;
+        }
+        else
+        {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                break;
+            else if (errno == EINTR)
+                continue;
+            else
+            {
+                removeClient(index);
+                break;
+            }
         }
     }
-    std::cout << msg << std::endl;
     try {
         if (msg.find("\r\n") != std::string::npos)
         {
@@ -139,7 +158,11 @@ void Server::run()
             throw std::runtime_error("poll failed");
         for (size_t i = 0; i < _pollFds.size(); i++)
         {
-            if (_pollFds[i].revents & POLLIN)
+            if (_pollFds[i].revents & (POLLHUP | POLLERR))
+            {
+                removeClient(i);
+            }
+            else if (_pollFds[i].revents & POLLIN)
             {
                 if (_pollFds[i].fd == _serverFd)
                     acceptClient(i);
@@ -153,9 +176,9 @@ void Server::run()
                 else
                 {
                     handleClient(i);
-                    // break;
                 }
             }
+            
         }
 
     }
