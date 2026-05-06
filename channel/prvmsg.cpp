@@ -43,7 +43,7 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                if (channelHolder->isBanned(client)|| !channelHolder->hasClient(&client))
+                if (channelHolder->isBanned(client) || !channelHolder->hasClient(&client))
                 {
                     std::string errorMsg = MSG_ERR_CANNOTSENDTOCHAN("ircserv", client.getNick(), target);
                     client.sendMsg(errorMsg);
@@ -53,13 +53,12 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 {
                     // std::string errorMsg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No text to send\r\n";
                     std::string errorMsg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
+                    std::cout << message << std::endl;
                     client.sendMsg(errorMsg);
                     continue;
                 }
-                // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
-                std::string msg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
-                
-                channelHolder->broadcastMsg(msg, channelHolder->getMembers());
+                std::string msg = MSG_PRIVMSG(client.getNick(), client.getName(), _gethostname(), target, message);
+                channelHolder->broadcastMsg(msg, channelHolder->getMembers(), &client);
             }
             else if (isalpha(target[0]))
             {
@@ -81,17 +80,6 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 }
                 // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
                 std::string msg = MSG_PRIVMSG(client.getNick(), client.getName(), _gethostname(), target, message);
-                // std::string msg = ":" + client.getNick() + "!" +
-                //           client.getName() + "@" +
-                //           _gethostname() +
-                //           " PRIVMSG " + target +
-                //           " :" + message + "\r\n";
-                // std::cout << "Message to send: " << message << std::endl;
-                // std::cout << "Msg to send: " << msg << std::endl;
-                // for (int i = 0 ; msg[i];i++)
-                // {
-                //     std::cout << "i = " << i << " " << (int)msg[i] << " ";
-                // }
                 clientHolder->sendMsg(msg);
             }
             else

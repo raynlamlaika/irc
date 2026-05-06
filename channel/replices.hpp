@@ -110,7 +110,9 @@
 
 #define MSG_RPL_ENDOFNAMES(server, nick, channel) \
     (std::string(":") + server + " 366 " + nick + " " + channel + " :End of /NAMES list\r\n")
-
+#define RPL_MODE(server, nick, channel, mode, target) \
+    (std::string(":") + nick + " MODE " + channel + " " + mode + \
+    (target.empty() ? "" : " " + target) + "\r\n")
 /*
 ** =========================
 ** MESSAGING ERRORS

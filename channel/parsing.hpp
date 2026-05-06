@@ -12,6 +12,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <cctype>
+#include <sstream>
 
 class Parsing
 {
@@ -30,7 +35,7 @@ public:
     // void prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient);
     void prvmsg(std::string line, Client& client,  std::map<int, Client*> _allClients);
     static std::vector<std::string> HelperSplit(std::string line, char del);
-    std::string printListOfUsers(std::map<int, Client*> clients);
+    std::string printListOfUsers(std::map<int, Client*> clients, const Channel& channel);
     
     ~Parsing();
     static std::string _gethostname();

@@ -1,65 +1,14 @@
 #!/bin/bash
-echo "\033[0;31m TEST JOIN COMMAND  \033[0m\n"
+echo -e "\033[0;34m TEST: User 1 Script  \033[0m"
 {
-  sleep 0.4;echo "PASS ra\n"
-  sleep 0.4;echo "NICK ray\n"
-  sleep 0.4;echo "USER ray 0 * :rlamlaik\n"
+  sleep 0.2; echo "PASS ra"
+  sleep 0.2; echo "NICK n1"
+  sleep 0.2; echo "USER test1 0 * :N1 Client"
 
-  sleep 0.4;echo "JOIN #te3st,&rerre,ererer\n"
-  sleep 0.4;echo "JOIN #test,&helo,#ULTRA WIN,WIN,WIN\n"
-  sleep 0.4;echo "JOIN 0\n"
-  sleep 0.4;echo "JOIN #te3st,&rerre,ererer\n"
-  sleep 0.4;echo "JOIN #test,&helo,#ULTRA WIN,WIN,WIN\n"
+  sleep 0.2; echo "JOIN #pele"
+  sleep 0.2; echo "MODE #pele +i"   # Make channel invite-only
+  sleep 0.2; echo "INVITE n2 #pele" # Invite user 2
 
-
-  sleep 0.4;echo "TOPIC #te3st :ray hello eloeihvean fhr s,rg gzldf f,\n"
-  sleep 0.4;echo "TOPIC ererer :ray hello eloeihvean fhr s,rg gzldf f,\n"
-  sleep 0.4;echo "TOPIC &rerre :ray hello eloeihvean fhr s,rg gzldf f,\n"
-
-
-  sleep 0.4;echo "MODE \n"
-  sleep 0.4;echo "MODE 0\n"
-  sleep 0.4;echo "MODE 0\n"
-  sleep 0.4;echo "MODE 0\n"
-  sleep 0.4;echo "MODE 0\n"
-
-
-
-  # sleep 0.4;echo "KICK #te3st ray\n"
-  # sleep 0.4;echo "KICK ererer ray\n"
-  # sleep 0.4;echo "KICK &rerre ray\n"
-  # sleep 0.4;echo "KICK TTTTTTTTTTTTTTTT ray\n"
-  # sleep 0.4;echo "KICK 34343434 ray\n"
-  # sleep 0.4;echo "KICK #1 ray\n"
-
-
-
-
-  # sleep 0.4;echo "INVITE  ray   ererer \n"
-  # sleep 0.4;echo "INVITE  ray   &rerre \n"
-  # sleep 0.4;echo "INVITE #te3st ray    \n"
-  # sleep 0.4;echo "INVITE ray   #1     \n"
-
-
-
-
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG 4ayon :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  # sleep 0.4;echo "PRIVMSG rlamlaik :hejeje khrvkn vir kstrbowt .tnw ;wn ltnpwrtbnbrj b\n"
-  sleep 0.4;echo "/dev/random\n"
-
-
+  sleep 0.2; echo "TOPIC #pele :Test Topic"
+  sleep 2;   echo "QUIT :Leaving"
 } | nc 127.0.0.1 1234
-
