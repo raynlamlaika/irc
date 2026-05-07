@@ -1,7 +1,6 @@
 #include "Client.hpp"
 
 
-
 int Client::getFd() const
 {
     return _fd;
@@ -17,16 +16,13 @@ void Client::setname(std::string nameHolder)
     name = nameHolder;
 }
 
-void Client::setrealname(std::string _realname)
+Client::Client() {}
+
+Client::Client(int fd, std::string password)
+    : _fd(fd), numberOfChannelsJoined(0), name(""), nick(""), pass(false), auth(false), password(password)
 {
-    realname = _realname;
+    std::cout << "Client connected fd[" << _fd << "]\n";
 }
-
-Client::Client(){}
-
-Client::Client(int fd, std::string password) 
-    : _fd(fd), numberOfChannelsJoined(0), realname(""), name(""), nick(""), pass(false), auth(false), statusFile(false), headerIsGet(false), fileSize(0), password(password), buffer("")
-{}
 
 Client::~Client()
 {
@@ -78,8 +74,6 @@ void Client::decrementChannels()
     numberOfChannelsJoined--;
 }
 
-
-
 bool Client::getAuth()
 {
     return auth;
@@ -108,59 +102,4 @@ void Client::setAuth()
 void Client::setNick(std::string &value)
 {
     nick = value;
-}
-
-std::string Client::getfileout()
-{
-    return this->fileout;
-}
-
-void Client::setfileout(std::string path)
-{
-    this->fileout = path;
-}
-
-bool Client::getstatusFile()
-{
-    return this->statusFile;
-}
-
-void Client::setstatusFile(bool val)
-{
-    this->statusFile = val;
-}
-
-
-bool Client::getheaderIsGet()
-{
-    return this->headerIsGet;
-}
-
-void Client::setheaderIsGet(bool val)
-{
-    this->headerIsGet = val;
-}
-
-size_t Client::getsizeFile()
-{
-    return this->fileSize;
-}
-
-void Client::setsizeFile(size_t size)
-{
-    this->fileSize = size;
-}
-
-void Client::setBufferEmpty()
-{
-        _sendBuffer = "";
-};
-void Client::appendToSendBuffer(const std::string &data)
-{
-    _sendBuffer += data;
-}
-
-std::string& Client::getSendBuffer()
-{
-    return _sendBuffer;
 }
