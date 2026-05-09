@@ -23,9 +23,7 @@ This project recreates the core behavior of an IRC server using sockets, non-blo
 ## Technologies
 
 * C++98
-* BSD sockets
 * TCP/IP
-* `poll()`
 * UNIX system calls
 
 ---
