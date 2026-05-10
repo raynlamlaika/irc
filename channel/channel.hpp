@@ -8,6 +8,7 @@
 #include <string>
 #include <set>
 #include <algorithm>
+#include <sstream>
 #include "replices.hpp"
 #include  "../Server/Client.hpp"
 
