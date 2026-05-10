@@ -30,7 +30,7 @@ Server::Server(int port, std::string password) : password(password)
     p1.events = POLLIN;
     p1.revents = 0;
     _pollFds.push_back(p1);
-    pollfd p;
+    pollfd p; 
     p.fd = _serverFd;
     p.events = POLLIN;
     p.revents = 0;

@@ -213,7 +213,7 @@ void Parsing::sendWelcome(Client& client)
     std::string server = "ircserv";
     std::string nick = client.getNick();
     std::string user = client.getName();
-    std::string host = "localhost";
+    std::string host = _gethostname();
 
     client.sendMsg(":ircserv 001 " + nick +
         " :Welcome to the IRC Network " + nick +

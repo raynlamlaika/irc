@@ -19,6 +19,7 @@ private:
     bool auth;
 public:
     std::vector<std::string> invitedChannels;
+    std::string buffer;
     std::string password;
     Client();
     Client(int fd, std::string password);
