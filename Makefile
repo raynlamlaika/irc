@@ -19,7 +19,8 @@ all: $(SERVER)
 $(SERVER): $(SERVER_OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-%.o: %.cpp $(HEADERS)	$(CXX) $(CXXFLAGS) -c $<
+%.o: %.cpp $(HEADERS)	
+	$(CXX) $(CXXFLAGS) -c $<
 
 clean:
 	rm -f  $(SERVER_OBJ)
