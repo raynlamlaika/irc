@@ -127,7 +127,7 @@ bool validName(std::string name, Client *client)
     if (name[0] != '#' && name[0] != '&' && name[0] != '!'&& name[0] != '+'){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->sendMsg(msg);return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
-        if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#')
+        if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#' && name[0] != '&' && name[0] != '!'&& name[0] != '+')
         {std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->sendMsg(msg);return false;}
     }
     return true;
@@ -240,7 +240,7 @@ void Parsing::join(Client &client, std::string line)
         else if (chIt == chs.end())
         {
             // Channel does not exist, create it
-            if(!validName(channelName, &client)) return;
+            if(!validName(channelName, &client)) continue;
             Channel newChannel(channelName);
             if (!key.empty())
                 newChannel.setKey(key);
@@ -268,12 +268,12 @@ void Parsing::join(Client &client, std::string line)
         else
         {
             Channel& channel = chIt->second;
-            if (!canJoin(channel, client)) return;
+            if (!canJoin(channel, client)) continue;
             if (client.numberOfChannels() >= 10)
             {
                 // std::string msg = "ircserv 405:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have joined too many channels\r\n";
                 client.sendMsg(MSG_ERR_TOOMANYCHANNELS("ircserv", client.getNick(), channel.getName()));
-                return ;
+                continue;
             }
             // check if invited the order get firsteven if the  channel +k +l
             if (channel.hasKey())
@@ -282,7 +282,7 @@ void Parsing::join(Client &client, std::string line)
                 {
                     if (channel.getKey() == key)
                     {
-                        if (checkBan(channel, client)) {client.sendMsg(MSG_ERR_BANNEDFROMCHAN("ircserv", client.getNick(), channel.getName()));return;};
+                        if (checkBan(channel, client)) {client.sendMsg(MSG_ERR_BANNEDFROMCHAN("ircserv", client.getNick(), channel.getName()));continue;};
                         channel.addClient(&client);
                         channel.removeInvited(&client);
                         std::string prefix = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname();

@@ -31,6 +31,6 @@ void Parsing::user(Client &client, std::string line)
         realname = line.substr(pos + 2);
     }
     client.setname(username);
-    client.setrealname(realname);
+    // client.setrealname(realname);
 }
 

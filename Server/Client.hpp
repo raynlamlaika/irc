@@ -14,12 +14,14 @@ private:
     int numberOfChannelsJoined; 
     std::string name;
     std::string nick;
+    // std::string realname;
 
     bool pass;
     bool auth;
 public:
     std::vector<std::string> invitedChannels;
     std::string password;
+    std::string buffer;
     Client();
     Client(int fd, std::string password);
     ~Client();
@@ -35,7 +37,7 @@ public:
     bool getPass();
     void setNick(std::string &value);
     void setname(std::string nameHolder);
-    void setrealname(std::string realname);
+    // void setrealname(std::string realname);
     void setAuth();
     void setpass();
 };
