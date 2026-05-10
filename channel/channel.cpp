@@ -186,7 +186,11 @@ std::string Channel::getModeParams()
         }
     }
     if (this->hasUserLimit())
-        params += " " + std::to_string(this->_userLimit);
+    {
+        std::stringstream ss;
+        ss << this->_userLimit;
+        params += " " + ss.str();
+    }
     return params;
 }
 
