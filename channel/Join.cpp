@@ -255,6 +255,8 @@ void Parsing::join(Client &client, std::string line)
 
             // list of users in here
             std::string names = printListOfUsers(newChannel.getMembers(), newChannel);
+            std::string owner = MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", newChannel.getName(), names);
+            client.sendMsg(owner);
             if (names.empty())
                 MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", newChannel.getName(), names);//client.sendMsg("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + newChannel.getName() + " :" + names + "\r\n");
             // std::string msg2 = "ircserv 332:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " :End of /NAMES list\r\n";
@@ -276,6 +278,7 @@ void Parsing::join(Client &client, std::string line)
                 continue;
             }
             // check if invited the order get firsteven if the  channel +k +l
+            
             if (channel.hasKey())
             {
                 if (!key.empty())
@@ -323,15 +326,8 @@ void Parsing::join(Client &client, std::string line)
             else 
             {
                 channel.addClient(&client);
-                std::string names = printListOfUsers(channel.getMembers(), channel);
-                if (!names.empty())
-                    client.sendMsg(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names)); //client.sendMsg("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + channel.getName() + " :" + names + "\r\n");
-                std::string msg2 = MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName());
-                channel.removeInvited(&client);
                 std::string prefix = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname();
                 std::string msg = prefix + " JOIN " + channelName + "\r\n";
-                // client.sendMsg(msg);
-                channel.broadcastMsg(msg, channel.getMembers(), &client);
                 if (!channel.getTopic().empty())
                 {
                     printTopic(channel, &client);
@@ -341,6 +337,17 @@ void Parsing::join(Client &client, std::string line)
                     //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
                     client.sendMsg(MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime));
                 }
+                client.sendMsg(msg);
+                std::string names = printListOfUsers(channel.getMembers(), channel);
+                if (!names.empty())
+                    client.sendMsg(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names)); //client.sendMsg("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + channel.getName() + " :" + names + "\r\n");
+                std::string msg2 = MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName());
+                client.sendMsg(msg2);
+                channel.removeInvited(&client);
+                
+                
+                channel.broadcastMsg(msg, channel.getMembers(), &client);
+                
             }
         }
     }

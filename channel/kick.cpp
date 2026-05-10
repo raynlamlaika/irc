@@ -105,6 +105,7 @@ void Parsing::kick(std::string line, Client& client)
                 if (!reason.empty())
                 {
                     std::string msg = MSG_KICK(client.getNick(), client.getName(), Parsing::_gethostname(), targetClient->getNick(), channelname, reason);
+                    channel->broadcastMsg(msg, channel->getMembers(),&client);
                     client.sendMsg(msg);
                 }
                 else
@@ -112,6 +113,7 @@ void Parsing::kick(std::string line, Client& client)
                     // (nick, user, host, target, channel)
                     std::string msg = MSG_KICK_WITHOUT_REASON(client.getNick(), client.getName(), Parsing::_gethostname(), targetClient->getNick(), channelname);
                     client.sendMsg(msg);
+                    channel->broadcastMsg(msg, channel->getMembers(),&client);
                 }
                 break;
             }

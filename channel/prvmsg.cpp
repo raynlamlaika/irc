@@ -10,11 +10,15 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
         {std::cout << " invalid number of args";return;}
     else
     {
+        std::string message;
         std::string target = holder[1];
         size_t index = line.find(":");
-        if (index == std::string::npos)
-            {std::cout <<"invalid format\n";return;}
-        std::string message = line.substr(index + 1);
+        if (index == std::string::npos && holder.size() < 2)
+            {std::cout<< line <<":\tinvalid format\n";return;}
+        if (index != std::string::npos)
+            message = line.substr(index + 1);
+        else
+            message = holder[2];
         if (holder[0] != "PRIVMSG")
             return;
         std::vector<std::string> targets = HelperSplit(target, ',');
