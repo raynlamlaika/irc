@@ -19,7 +19,7 @@ void Client::setname(std::string nameHolder)
 Client::Client() {}
 
 Client::Client(int fd, std::string password)
-    : _fd(fd), numberOfChannelsJoined(0), name(""), nick(""), pass(false), auth(false), password(password)
+    : _fd(fd), numberOfChannelsJoined(0), name(""), nick(""),pass(false), auth(false), password(password)
 {
     std::cout << "Client connected fd[" << _fd << "]\n";
 }
@@ -103,3 +103,7 @@ void Client::setNick(std::string &value)
 {
     nick = value;
 }
+// void Client::setrealname(std::string _realname)
+// {
+//     realname = _realname;
+// }
