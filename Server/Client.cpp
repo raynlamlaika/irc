@@ -45,21 +45,12 @@ void Client::sendMsg(const std::string &msg)
 
     while (lenght < msg.size())
     {
-        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
+        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, MSG_NOSIGNAL);
 
         if (n > 0)
-        {
             lenght += n;
-        }
         else if (n < 0)
-        {
-            if (errno == EINTR)
-                continue;
-            else if (errno == EAGAIN || errno == EWOULDBLOCK)
-                return;
-            else
-                throw std::runtime_error("send failed");
-        }
+            throw std::runtime_error("send failed");
     }
 }
 

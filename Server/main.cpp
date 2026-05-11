@@ -3,16 +3,11 @@
 
 int parsingPort(std::string port)
 {
-    int lenght = port.length();
-    if (lenght > 1 && !isdigit(port[0]))
-        throw std::runtime_error("port should be intger");
-    if (lenght > 2 && port[0] == '0')
-        throw std::runtime_error("port can't start by 0");
-    else if (lenght == 0 || lenght > 5)
-        throw std::runtime_error("port to larg");
+    if (port.length() == 0)
+        throw std::runtime_error("port is empty");
     char *end;
     long number = strtol(port.c_str(), &end, 10);
-    if (number > 65535)
+    if (number <= 0 || number > 65535)
         throw std::runtime_error("port is greater than max size of port");
     else if (*end != '\0')
         throw std::runtime_error("port should be intger");
@@ -21,11 +16,17 @@ int parsingPort(std::string port)
 
 std::string parsingPassword(std::string pass)
 {
-    int lenght = pass.length();
-    if (lenght == 0)
+    if (pass.empty())
         throw std::runtime_error("password can't be empty");
-    if (pass.find(' ') != std::string::npos)
-        throw std::runtime_error("password can't have space");
+
+    for (size_t i = 0; i < pass.length(); i++)
+    {
+        if (!isprint(pass[i]))
+            throw std::runtime_error("password contains non printable characters");
+        if (pass[i] == ' ' || pass[i] == '\t')
+            throw std::runtime_error("password can't contain spaces or tabs");
+    }
+
     return pass;
 }
 
@@ -38,8 +39,8 @@ int main(int argc, char *argv[])
     }
     try
     {
-        std::signal(SIGINT, SIG_IGN);
-        std::signal(SIGPIPE, SIG_IGN);
+        // std::signal(SIGINT, SIG_IGN);
+        // std::signal(SIGPIPE, SIG_IGN);
         std::string pass = parsingPassword(argv[2]);
         int port = parsingPort(argv[1]);
         Server server(port, pass);

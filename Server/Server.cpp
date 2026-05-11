@@ -26,11 +26,6 @@ Server::Server(int port, std::string password) : password(password)
     if (listen(_serverFd, SOMAXCONN) < 0)
         throw std::runtime_error("listen failed");
 
-    pollfd p1;
-    p1.fd = STDIN_FILENO;
-    p1.events = POLLIN;
-    p1.revents = 0;
-    _pollFds.push_back(p1);
     pollfd p; 
     p.fd = _serverFd;
     p.events = POLLIN;
@@ -40,12 +35,13 @@ Server::Server(int port, std::string password) : password(password)
     std::cout << BLUE << "Server running on port " << port << "..." << RESET << std::endl;
 }
 
-    // int flags = fcntl(_serverFd, F_GETFL, 0);
-    // fcntl(_serverFd, F_SETFL, O_NONBLOCK);
 Server::~Server()
 {
     for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+        close(it->first);
         delete it->second;
+    }
     close(_serverFd);
 }
 
@@ -110,32 +106,17 @@ void Server::handleClient(size_t index)
     int fd = _pollFds[index].fd;
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
-    while (true)
-    {
-        char buffer[1024];
-        int bytes = recv(fd, buffer, sizeof(buffer), 0);
+    char buffer[1024];
+    int bytes = recv(fd, buffer, sizeof(buffer), MSG_NOSIGNAL);
 
-        if (bytes > 0)
-        {
-            msg.append(buffer, bytes);
-        }
-        else if (bytes == 0)
-        {
-            removeClient(index);
-            return;
-        }
-        else
-        {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                break;
-            else if (errno == EINTR)
-                continue;
-            else
-            {
-                removeClient(index);
-                return;
-            }
-        }
+    if (bytes > 0)
+    {
+        msg.append(buffer, bytes);
+    }
+    else if (bytes == 0)
+    {
+        removeClient(index);
+        return;
     }
     try {
         if (msg.find("\r\n") != std::string::npos)
@@ -169,7 +150,7 @@ void Server::run()
 {
     while (true)
     {
-        if (poll(&_pollFds[0], _pollFds.size(), -1) < 0)
+        if (poll(_pollFds.data(), _pollFds.size(), -1) < 0)
             throw std::runtime_error("poll failed");
         for (size_t i = 0; i < _pollFds.size(); i++)
         {
@@ -182,13 +163,6 @@ void Server::run()
             {
                 if (_pollFds[i].fd == _serverFd)
                     acceptClient(i);
-                else if (_pollFds[i].fd == STDIN_FILENO)
-                {
-                    char buf[128];
-                    int n = read(STDIN_FILENO, buf, sizeof(buf));
-                    if (n == 0)
-                        throw std::runtime_error("\nShutting down server...");
-                }
                 else
                 {
                     size_t prevSize = _pollFds.size();
