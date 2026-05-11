@@ -10,8 +10,7 @@
 #include "channel.hpp"
 #include <fstream>
 #include <unistd.h>
-#include <sys/wait.h>
-#include <sstream>
+
 #include <sstream>
 #include <vector>
 #include <algorithm>

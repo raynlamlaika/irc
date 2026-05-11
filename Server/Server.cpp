@@ -107,7 +107,7 @@ void Server::handleClient(size_t index)
     Client *client = _clients[fd];
     std::string &msg = client->buffer;
     char buffer[1024];
-    int bytes = recv(fd, buffer, sizeof(buffer), MSG_NOSIGNAL);
+    int bytes = recv(fd, buffer, sizeof(buffer), 0);
 
     if (bytes > 0)
     {

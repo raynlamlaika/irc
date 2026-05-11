@@ -39,8 +39,7 @@ int main(int argc, char *argv[])
     }
     try
     {
-        // std::signal(SIGINT, SIG_IGN);
-        // std::signal(SIGPIPE, SIG_IGN);
+        signal(SIGPIPE, SIG_IGN);
         std::string pass = parsingPassword(argv[2]);
         int port = parsingPort(argv[1]);
         Server server(port, pass);

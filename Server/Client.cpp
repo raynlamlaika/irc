@@ -45,7 +45,7 @@ void Client::sendMsg(const std::string &msg)
 
     while (lenght < msg.size())
     {
-        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, MSG_NOSIGNAL);
+        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
 
         if (n > 0)
             lenght += n;
