@@ -242,8 +242,7 @@
     (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " " + sign + "o " + target + "\r\n")
 
 
-// #define MSG_RPL_CHANNELMODEIS(server, nick, channel, modes, params) \
-//     (std::string(":") + server + " 324 " + nick + " " + channel + " " + modes + (params.empty() ? "" : " " + params) + "\r\n")
+
 
 
 /*

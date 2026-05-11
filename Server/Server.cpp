@@ -84,8 +84,20 @@ void Server::acceptClient(size_t index)
 void Server::removeClient(size_t index)
 {
     int fd = _pollFds[index].fd;
+    Client *client = _clients[fd];
 
-    delete _clients[fd];
+    std::map<std::string, Channel>& channels = Getchannel();
+    for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
+    {
+        if (it->second.hasClient(client))
+        {
+            it->second.removeClient(client);
+            it->second.removeOperator(client);
+            it->second.removeInvited(client);
+        }
+    }
+
+    delete client;
     _clients.erase(fd);
 
     _pollFds.erase(_pollFds.begin() + index);
@@ -110,7 +122,7 @@ void Server::handleClient(size_t index)
         else if (bytes == 0)
         {
             removeClient(index);
-            break;
+            return;
         }
         else
         {
@@ -121,7 +133,7 @@ void Server::handleClient(size_t index)
             else
             {
                 removeClient(index);
-                break;
+                return;
             }
         }
     }
@@ -164,6 +176,7 @@ void Server::run()
             if (_pollFds[i].revents & (POLLHUP | POLLERR))
             {
                 removeClient(i);
+                i--;
             }
             else if (_pollFds[i].revents & POLLIN)
             {
@@ -178,10 +191,12 @@ void Server::run()
                 }
                 else
                 {
+                    size_t prevSize = _pollFds.size();
                     handleClient(i);
+                    if (_pollFds.size() < prevSize)
+                        i--;
                 }
             }
-            
         }
 
     }

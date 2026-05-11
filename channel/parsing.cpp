@@ -162,6 +162,8 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
         nick(client, line, _allClients);
     else if (holder[0] == "USER")
         user(client, line);
+    else if (holder[0] == "QUIT")
+        throw std::runtime_error("Client quit");
     else if (client.getAuth())
     {
         if (holder[0] == "JOIN")
@@ -176,34 +178,24 @@ bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, 
             prvmsg(line, client,_allClients);
         else if (holder[0] == "INVITE")
             invite(line, client,_allClients);
-        // else if (holder[0] == "GET" || holder[0] == "DONE")
-        //     getfile(client, line, _allClients);
-        // else if (holder[0] == "SEND")
-        //     sendfile(client, line, _allClients);
         else if (holder[0] == "BOOT")
             boot(client, line);
         else
         {
-            //:<server> 421 <nick> <command> :Unknown command
             std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[0]);
             client.sendMsg(msg);
-            // std::cout << "test test test3" << std::endl;
         }
     }
     else
     {
-         // ERR_NOTREGISTERED (451)  ":You have not registered"
         std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
         client.sendMsg(msg);
-        std::cout << "test test test2" << std::endl;
-        
+        throw std::runtime_error("Client not registered, closing connection");
     }
     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
     {
         client.setAuth();
         sendWelcome(client);
-        // client.sendMsg("wellcome to server\r\n");
-            std::cout << "test test test 1" << std::endl;
     }
     return (true);
 }
