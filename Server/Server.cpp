@@ -12,6 +12,7 @@ Server::Server(int port, std::string password) : password(password)
 
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
 
@@ -60,6 +61,8 @@ void Server::acceptClient(size_t index)
         {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
                 break;
+            else if (errno == EINTR)
+                continue;
             else
             {
                 throw std::runtime_error("accept failed");

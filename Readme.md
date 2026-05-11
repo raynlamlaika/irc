@@ -120,6 +120,7 @@ Each connected client stores:
 * Socket FD
 * Nickname
 * Username
+* Realname
 * Authentication state
 * Buffers
 
@@ -156,24 +157,10 @@ This prevents blocking operations on:
 The main loop continuously monitors sockets:
 
 ```cpp
-poll(pollfds.data(), pollfds.size(), -1);
+poll(pollfds[0], pollfds.size(), -1);
 ```
 
 This allows one thread to handle many clients efficiently.
-
----
-
-## Error Handling
-
-Handled cases include:
-
-* Client disconnection
-* Partial reads
-* `EAGAIN`
-* `EWOULDBLOCK`
-* `SIGPIPE`
-* Invalid commands
-* Duplicate nicknames
 
 ---
 
