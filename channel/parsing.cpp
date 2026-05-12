@@ -146,59 +146,154 @@ void Parsing::topic(std::string line, Client& client)
     }
 }
 
-bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
+bool Parsing::newMessage(const std::string &line,
+                         Client &client,
+                         std::map<int, Client*> _allClients)
 {
     if (line.empty())
         return false;
-
     std::vector<std::string> holder;
     std::stringstream ss(line);
     std::string word;
+
     while (ss >> word)
         holder.push_back(word);
-    if (holder[0] == "PASS")
+
+    if (holder.empty())
+        return false;
+
+    const std::string &cmd = holder[0];
+
+    if (cmd == "PASS")
+    {
         pass(client, line);
-    else if (holder[0] == "NICK")
+    }
+    else if (cmd == "NICK")
+    {
         nick(client, line, _allClients);
-    else if (holder[0] == "USER")
+    }
+    else if (cmd == "USER")
+    {
         user(client, line);
-    else if (holder[0] == "QUIT")
+    }
+    else if (cmd == "QUIT")
+    {
         throw std::runtime_error("Client quit");
+    }
     else if (client.getAuth())
     {
-        if (holder[0] == "JOIN")
+        if (cmd == "JOIN")
+        {
             join(client, line);
-        else if (holder[0] == "MODE")
-            mode(client, line,_allClients);
-        else if (holder[0] == "KICK")
+        }
+        else if (cmd == "MODE")
+        {
+            mode(client, line, _allClients);
+        }
+        else if (cmd == "KICK")
+        {
             kick(line, client);
-        else if (holder[0] == "TOPIC")
+        }
+        else if (cmd == "TOPIC")
+        {
             topic(line, client);
-        else if (holder[0] == "PRIVMSG")
-            prvmsg(line, client,_allClients);
-        else if (holder[0] == "INVITE")
-            invite(line, client,_allClients);
-        else if (holder[0] == "BOOT")
+        }
+        else if (cmd == "PRIVMSG")
+        {
+            prvmsg(line, client, _allClients);
+        }
+        else if (cmd == "INVITE")
+        {
+            invite(line, client, _allClients);
+        }
+        else if (cmd == "BOOT")
+        {
             boot(client, line);
+        }
         else
         {
-            std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[0]);
+            std::string msg =
+                MSG_ERR_UNKNOWNCOMMAND("ircserv",
+                                       client.getNick(),
+                                       cmd);
+
             client.sendMsg(msg);
         }
     }
+
     else
     {
-        std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
+        std::string msg =
+            MSG_ERR_NOTREGISTERED("ircserv",
+                                  client.getNick());
+
         client.sendMsg(msg);
-        throw std::runtime_error("Client not registered, closing connection");
     }
-    if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
+    if (!client.getAuth()
+        && client.getPass()
+        && !client.getNick().empty()
+        && !client.getName().empty())
     {
         client.setAuth();
         sendWelcome(client);
     }
-    return (true);
+
+    return true;
 }
+
+// bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
+// {
+//     if (line.empty())
+//         return false;
+
+//     std::vector<std::string> holder;
+//     std::stringstream ss(line);
+//     std::string word;
+//     while (ss >> word)
+//         holder.push_back(word);
+//     if (!holder[0].empty() && holder[0] == "PASS")
+//         pass(client, line);
+//     else if (!holder[0].empty() && holder[0] == "NICK")
+//         nick(client, line, _allClients);
+//     else if (!holder[0].empty() && holder[0] == "USER")
+//         user(client, line);
+//     else if (!holder[0].empty() && holder[0] == "QUIT")
+//         throw std::runtime_error("Client quit");
+//     else if (!holder[0].empty() && client.getAuth())
+//     {
+//         if (!holder[0].empty() && holder[0] == "JOIN")
+//             join(client, line);
+//         else if (!holder[0].empty() && holder[0] == "MODE")
+//             mode(client, line,_allClients);
+//         else if (!holder[0].empty() && holder[0] == "KICK")
+//             kick(line, client);
+//         else if (!holder[0].empty() && holder[0] == "TOPIC")
+//             topic(line, client);
+//         else if (!holder[0].empty() && holder[0] == "PRIVMSG")
+//             prvmsg(line, client,_allClients);
+//         else if (!holder[0].empty() && holder[0] == "INVITE")
+//             invite(line, client,_allClients);
+//         else if (!holder[0].empty() && holder[0] == "BOOT")
+//             boot(client, line);
+//         else
+//         {
+//             std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[0]);
+//             client.sendMsg(msg);
+//         }
+//     }
+//     else
+//     {
+//         std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
+//         client.sendMsg(msg);
+//         // throw std::runtime_error("Client not registered, closing connection");
+//     }
+//     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
+//     {
+//         client.setAuth();
+//         sendWelcome(client);
+//     }
+//     return (true);
+// }
 
 void Parsing::sendWelcome(Client& client)
 {
