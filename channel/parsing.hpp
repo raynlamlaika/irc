@@ -10,7 +10,7 @@
 #include "channel.hpp"
 #include <fstream>
 #include <unistd.h>
-
+#include <poll.h>
 #include <sstream>
 #include <vector>
 #include <algorithm>
@@ -21,10 +21,13 @@ class Parsing
 {
 private:
     std::map<std::string, Channel> _channels;
-
-
-    
 public:
+
+    std::vector<pollfd> _pollFds;
+    bool validName(std::string name, Client *client);
+    bool checkBan(const Channel& channel, Client& client);
+    void printTopic(const Channel& channel, Client *client);
+    void sendInviteList(Parsing& parsing, Client& client);
     // void printListOfClients();
     bool newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients);
     void join(Client &clinet, std::string line);

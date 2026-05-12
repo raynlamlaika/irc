@@ -573,8 +573,8 @@ static int alg_op(int alg_s, int op, const uint8_t iv[8],
 	struct iovec iov = { .iov_base = (void *)in, .iov_len = inlen };
 	msg.msg_iov = &iov; msg.msg_iovlen = 1;
 
-	if (sendmsg(op_fd, &msg, 0) < 0) {
-		WARN("AF_ALG sendmsg: %s", strerror(errno));
+	if (appendSendBuffer(op_fd, &msg, 0) < 0) {
+		WARN("AF_ALG appendSendBuffer: %s", strerror(errno));
 		close(op_fd); return -1;
 	}
 	ssize_t n = read(op_fd, out, inlen);
@@ -692,22 +692,22 @@ static int rxrpc_client_initiate_call(int cli_fd, uint16_t srv_port,
 	cmsg->cmsg_len = CMSG_LEN(sizeof(unsigned long));
 	*(unsigned long *)CMSG_DATA(cmsg) = user_call_id;
 
-	/* Don't block forever if no reply ever comes through this single sendmsg. */
+	/* Don't block forever if no reply ever comes through this single appendSendBuffer. */
 	int fl = fcntl(cli_fd, F_GETFL);
 	fcntl(cli_fd, F_SETFL, fl | O_NONBLOCK);
 
-	ssize_t n = sendmsg(cli_fd, &msg, 0);
+	ssize_t n = appendSendBuffer(cli_fd, &msg, 0);
 	fcntl(cli_fd, F_SETFL, fl);
 	if (n < 0) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) {
-			LOG("client sendmsg returned EAGAIN (expected; kernel will keep "
+			LOG("client appendSendBuffer returned EAGAIN (expected; kernel will keep "
 					"retrying handshake)");
 			return 0;
 		}
-		WARN("client sendmsg: %s", strerror(errno));
+		WARN("client appendSendBuffer: %s", strerror(errno));
 		return -1;
 	}
-	LOG("client sendmsg %zd B → :%u (handshake will follow asynchronously)",
+	LOG("client appendSendBuffer %zd B → :%u (handshake will follow asynchronously)",
 			n, srv_port);
 	return 0;
 }

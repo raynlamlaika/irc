@@ -1,6 +1,6 @@
 #include "parsing.hpp"
 
-void sendInviteList(Parsing& parsing, Client& client)
+void Parsing::sendInviteList(Parsing& parsing, Client& client)
 {
     std::map<std::string, Channel>& channels = parsing.Getchannel();
     for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
@@ -11,7 +11,7 @@ void sendInviteList(Parsing& parsing, Client& client)
             // std::string msg = "ircserv 336: " + client.getName() + " " + it->second.getName() + "\r\n";
             //(server, nick, target, channel)
             std::string msg = MSG_RPL_INVITING("ircserv", client.getNick(), client.getName(), it->second.getName());
-            client.sendMsg(msg);
+            client.appendSendBuffer(msg, _pollFds);
         }
     }
 }
@@ -26,7 +26,7 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
     {
         //ERR_NEEDMOREPARAMS (461)  "<client> <command> :Not enough parameters"
         std::string msg =  MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[0]);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     
@@ -38,7 +38,7 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
     {
         //ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
         std::string msg = MSG_ERR_NOSUCHCHANNEL("ircserv", client.getNick(), channelName);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     Channel *channel = searchForChannelref(channelName);
@@ -46,14 +46,14 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
     {
         //ERR_NOTONCHANNEL (442)  "<client> <channel> :You're not on that channel"
         std::string msg = MSG_ERR_NOTONCHANNEL("ircserv", client.getNick(), channelName);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     if (!channel->isOperator(client) && channel->getInviteOnly())
     {
         //ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
         std::string msg = MSG_ERR_CHANOPRIVSNEEDED("ircserv", client.getNick(), channelName);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
 
@@ -61,7 +61,7 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
     {
         //ERR_NOSUCHNICK (401)  "<client> <nick> :No such nick"
         std::string msg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     Client *targetClient = searchForClientref(target, _allClients);
@@ -69,24 +69,24 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
     {
         //ERR_NOSUCHNICK (401)  "<client> <nick> :No such nick"
         std::string msg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     if (channel->hasClient(targetClient))
     {
         //ERR_USERONCHANNEL (443)  "<client> <nick> <channel> :User is already in the channel"
         std::string msg = MSG_ERR_USERONCHANNEL("ircserv", client.getNick(), target, channelName);
-        client.sendMsg(msg);
+        client.appendSendBuffer(msg, _pollFds);
         return;
     }
     channel->addInvited(targetClient);
     // channel->addClient(targetClient);
     // RPL_INVITING (341)  "<client> <nick> <channel>"
     std::string reply = MSG_RPL_INVITING("ircserv", client.getNick(), target, channelName);
-    client.sendMsg(reply);
+    client.appendSendBuffer(reply,_pollFds);
     std::string msg = MSG_RPL_INVITING("ircserv", client.getNick(), targetClient->getName(), channelName);
     client.invitedChannels.push_back(channel->getName());
-    targetClient->sendMsg(msg);
+    targetClient->appendSendBuffer(msg, _pollFds);
 
 
 }

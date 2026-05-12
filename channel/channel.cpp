@@ -251,7 +251,7 @@ bool Channel::isOperator(const Client& client) const
 
 
 
-void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members, Client* sender)
+void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members, Client* sender, std::vector<pollfd> _pollFds)
 {
     std::map<int, Client*>::const_iterator it = members.begin();
 
@@ -261,7 +261,7 @@ void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>&
             continue; // Skip the sender
         else if (it->second)
         {
-            it->second->sendMsg(msg);
+            it->second->appendSendBuffer(msg, _pollFds);
         }
     }
 }

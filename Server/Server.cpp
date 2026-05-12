@@ -171,7 +171,46 @@ void Server::run()
                         i--;
                 }
             }
+            else if (_pollFds[i].revents & POLLOUT)
+            {
+                handleWrite(i);
+            }
         }
 
+    }
+}
+
+void Server::handleWrite(size_t i)
+{
+    int fd = _pollFds[i].fd;
+
+    Client *client = _clients[fd];
+
+    if (!client)
+        return;
+
+    std::string &buffer = client->getSendBuffer();
+
+    if (buffer.empty())
+    {
+        _pollFds[i].events &= ~POLLOUT;
+        return;
+    }
+
+    ssize_t n = send(fd,
+                     buffer.c_str(),
+                     buffer.size(),
+                     0);
+    if (n <= 0)
+    {
+        removeClient(i);
+        return;
+    }
+
+    buffer.erase(0, n);
+
+    if (buffer.empty())
+    {
+        _pollFds[i].events &= ~POLLOUT;
     }
 }

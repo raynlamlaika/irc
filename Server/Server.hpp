@@ -10,7 +10,6 @@
 #include "Client.hpp"
 #include <vector>
 #include <map>
-#include <poll.h>
 #include <cstring>
 #include "../channel/parsing.hpp"
 #include <csignal>
@@ -21,7 +20,6 @@ class Server : public Parsing
 private:
     std::string password;
     int _serverFd;
-    std::vector<pollfd> _pollFds;
     std::map<int, Client*> _clients;
 
 public:
@@ -33,21 +31,21 @@ private:
     void acceptClient(size_t index);
     void handleClient(size_t index);
     void removeClient(size_t index);
-    void printClients();
+    // void printClients();
+    void handleWrite(size_t i);
+    // std::map<int, Client*>  getClient() const
+    // {
+    //     return (_clients);
+    // }
 
-    std::map<int, Client*>  getClient() const
-    {
-        return (_clients);
-    }
+    // void addClient(Client* client)
+    // {
+    //     if (!client)
+    //         return;
 
-    void addClient(Client* client)
-    {
-        if (!client)
-            return;
-
-        _clients[client->getFd()] = client;
-    }
-    std::string readLine(Client *client);
+    //     _clients[client->getFd()] = client;
+    // }
+    // std::string readLine(Client *client);
 };
 
 #endif

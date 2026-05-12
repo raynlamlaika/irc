@@ -19,24 +19,24 @@ void Parsing::sendfile(Client &client, std::string line, std::map<int, Client*> 
 
     if (cmd.empty() || nick.empty() || path.empty())
     {
-        client.sendMsg(": USAGE <SENDFILE> <NICK> </PATH/TO/FILE>\n");
+        client.appendSendBuffer(": USAGE <SENDFILE> <NICK> </PATH/TO/FILE>\n");
         return;
     }
     if (checkNick(_allClients, nick))
     {
-        client.sendMsg(": Sorry no user with this nick " + nick + "\n");
+        client.appendSendBuffer(": Sorry no user with this nick " + nick + "\n");
         return;
     }
     Client *target = getClientByNick(_allClients, nick);
     if (!target)
     {
-        client.sendMsg(": Internal error: client not found\n");
+        client.appendSendBuffer(": Internal error: client not found\n");
         return;
     }
     std::ifstream filein(path.c_str(), std::ios::binary | std::ios::ate);
     if (!filein.is_open())
     {
-        client.sendMsg(": can't open this file\n");
+        client.appendSendBuffer(": can't open this file\n");
         return;
     }
     std::streamsize filesize = filein.tellg();
@@ -54,8 +54,8 @@ void Parsing::sendfile(Client &client, std::string line, std::map<int, Client*> 
         target->appendToSendBuffer(std::string(buffer, bytes));
     }
     filein.close();
-    client.sendMsg(": File sent successfully\n");
-    target->sendMsg(": Write DONE\n");
+    client.appendSendBuffer(": File sent successfully\n");
+    target->appendSendBuffer(": Write DONE\n");
 }
 
 

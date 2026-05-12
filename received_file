@@ -42,7 +42,7 @@ int Client::receive(char *buffer, size_t size)
     return recv(_fd, buffer, size, 0);
 }
 
-void Client::sendMsg(const std::string &msg)
+void Client::appendSendBuffer(const std::string &msg)
 {
     send(_fd, msg.c_str(), msg.size(), 0);
 }

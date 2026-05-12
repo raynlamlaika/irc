@@ -9,14 +9,14 @@ void Parsing::handleFirstCommand(Client &client, std::string line, std::map<int,
 
     if (cmd.empty() || nick.empty() || path.empty())
     {
-        client.sendMsg(": USAGE <GETFILE> <NICK> </PATH/TO/FILE>\n");
+        client.appendSendBuffer(": USAGE <GETFILE> <NICK> </PATH/TO/FILE>\n", _pollFds);
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         return;
     }
     if (!checkNick(_allClients, nick))
     {
-        client.sendMsg(": Internal error: client not found\n");
+        client.appendSendBuffer(": Internal error: client not found\n", _pollFds);
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         return;
@@ -37,14 +37,14 @@ void handelGetHeader(Client &client, std::string& line)
     {
         client.setheaderIsGet(false);
         client.setstatusFile(false);
-        client.sendMsg(": Invalid file header\n");
+        client.appendSendBuffer(": Invalid file header\n", _pollFds);
         return;
     }
     else
     {
         client.setsizeFile(filesize);
         client.setheaderIsGet(true);
-        client.sendMsg(": GET Header \n");
+        client.appendSendBuffer(": GET Header \n");
     }
 }
 
@@ -61,7 +61,7 @@ void Parsing::getfile(Client &client, std::string line, std::map<int, Client*> _
         std::ofstream fileout(client.getfileout().c_str(), std::ios::binary);
         if (!fileout.is_open())
         {
-            client.sendMsg(": can't open this file\n");
+            client.appendSendBuffer(": can't open this file\n");
             client.setheaderIsGet(false);
             client.setstatusFile(false);
             return;
@@ -70,7 +70,7 @@ void Parsing::getfile(Client &client, std::string line, std::map<int, Client*> _
         std::string content = buffer.substr(client.getSendBuffer().find('\n'));
         fileout.write(content.c_str(), client.getsizeFile());
         fileout.close();
-        client.sendMsg(": File received successfully\n");
+        client.appendSendBuffer(": File received successfully\n");
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         client.setsizeFile(0);

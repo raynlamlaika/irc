@@ -22,22 +22,22 @@ void Parsing::boot(Client &client, std::string msg)
 {
     if (msg.empty()) 
     {
-        client.sendMsg(":BOOTBOT PRIVMSG " + client.getNick()
-            + " :Usage: BOOT <TEXT>");
+        client.appendSendBuffer(":BOOTBOT PRIVMSG " + client.getNick()
+            + " :Usage: BOOT <TEXT>", _pollFds);
         return;
     }
 
     std::string encoded = rot13(msg);
 
-    client.sendMsg(":BOOTBOT PRIVMSG " + client.getNick()
-        + " :" + encoded);
+    client.appendSendBuffer(":BOOTBOT PRIVMSG " + client.getNick()
+        + " :" + encoded, _pollFds);
 }
 
 // void Parsing::boot(Client &client, std::string msg)
 // {
 //     if (msg.empty())
 //     {
-//         client.sendMsg(": Empty message | BOOT <message>");
+//         client.appendSendBuffer(": Empty message | BOOT <message>");
 //         return ;
 //     }
 //     std::string cmd;
@@ -54,14 +54,14 @@ void Parsing::boot(Client &client, std::string msg)
 //     pid_t pid = fork();
 
 //     if (pid < 0) {
-//         client.sendMsg(": Fork failed");
+//         client.appendSendBuffer(": Fork failed");
 //         return ;
 //     }
 //     else if (pid == 0) {
 //         FILE* pipe = popen(command.c_str(), "r");
 //         if (!pipe)
 //         {
-//             client.sendMsg(": popen failed!");
+//             client.appendSendBuffer(": popen failed!");
 //             exit(1);
 //         }
 
@@ -72,7 +72,7 @@ void Parsing::boot(Client &client, std::string msg)
 //             result += buffer;
 
 //         pclose(pipe);
-//         client.sendMsg("[AI] : " + result);
+//         client.appendSendBuffer("[AI] : " + result);
 //     }
 //     else {
 //         wait(NULL);

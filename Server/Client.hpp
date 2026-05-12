@@ -6,6 +6,8 @@
 #include <vector>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <poll.h>
+
 
 class Client
 {
@@ -22,12 +24,13 @@ public:
     std::vector<std::string> invitedChannels;
     std::string password;
     std::string buffer;
+    std::string sendBuffer;
     Client();
     Client(int fd, std::string password);
     ~Client();
     int getFd() const;
     int receive(char *buffer, size_t size);
-    void sendMsg(const std::string &msg);
+    void appendSendBuffer(const std::string &msg, std::vector<pollfd> &addClientaddClient);
     int numberOfChannels() const;
     void incrementChannels();
     void decrementChannels();
@@ -40,6 +43,7 @@ public:
     void setrealname(std::string &_realname);
     void setAuth();
     void setpass();
+    std::string& getSendBuffer();
 };
 
 #endif

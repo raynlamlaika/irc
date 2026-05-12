@@ -39,20 +39,54 @@ int Client::receive(char *buffer, size_t size)
     return recv(_fd, buffer, size, 0);
 }
 
-void Client::sendMsg(const std::string &msg)
+void Client::appendSendBuffer(const std::string &msg, std::vector<pollfd> &_pollFds)
 {
-    size_t lenght = 0;
-
-    while (lenght < msg.size())
+    sendBuffer += msg;
+    for (size_t i = 0; i < _pollFds.size(); i++)
     {
-        ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
-
-        if (n > 0)
-            lenght += n;
-        else if (n < 0)
-            throw std::runtime_error("send failed");
+        if (_pollFds[i].fd == _fd)
+        {
+            _pollFds[i].events |= POLLOUT;
+            break;
+        }
     }
+    // size_t lenght = 0;
+
+    // while (lenght < msg.size())
+    // {
+    //     ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
+
+    //     if (n > 0)
+    //         lenght += n;
+    //     else if (n < 0)
+    //         throw std::runtime_error("send failed");
+    // }
 }
+
+
+std::string &Client::getSendBuffer()
+{
+    return sendBuffer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void Client::incrementChannels()
