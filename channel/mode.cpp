@@ -171,7 +171,6 @@ bool itNeedsParam(const t_mode& modeer)
 
 void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allClients)
 {
-    (void)clinet;
     std::map<std::string, Channel>& chs = Getchannel();
     std::vector<std::string> splitMode = Parsing::HelperSplit(line, ' ');
     if (splitMode.size() < 2) {
@@ -215,7 +214,13 @@ void Parsing::mode(Client &clinet, std::string line,std::map<int, Client*> _allC
         std::string mdg = MSG_ERR_NEEDMOREPARAMS("ircserv", clinet.getNick(), splitMode[0]);
         clinet.appendSendBuffer(mdg, _pollFds);
     }
-    (void)_allClients;
+    // check is client is operator in channel
+    if (!it->second.isOperator(clinet))
+    {
+        std::string msg = MSG_ERR_CHANOPRIVSNEEDED("ircserv", clinet.getNick(), it->first);
+        clinet.appendSendBuffer(msg, _pollFds);
+        return ;
+    }
 
    std::string ModesSigns = splitMode[2];
 
