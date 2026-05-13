@@ -49,34 +49,25 @@ void Server::acceptClient(size_t index)
 {
     (void)index;
 
-    while (true)
+    int clientFd = accept(_serverFd, NULL, NULL);
+
+    if (clientFd < 0)
     {
-        int clientFd = accept(_serverFd, NULL, NULL);
-
-        if (clientFd < 0)
-        {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                break;
-            else if (errno == EINTR)
-                continue;
-            else
-            {
-                throw std::runtime_error("accept failed");
-            }
-        }
-        fcntl(clientFd, F_SETFL, O_NONBLOCK);
-        pollfd p;
-        p.fd = clientFd;
-        p.events = POLLIN;
-        p.revents = 0;
-        _pollFds.push_back(p);
-
-        Client *client = new Client(clientFd, password);
-        _clients[clientFd] = client;
-
-        std::cout << GREEN << "New connection " << clientFd << RESET << std::endl;
+        throw std::runtime_error("accept failed");
     }
+    fcntl(clientFd, F_SETFL, O_NONBLOCK);
+    pollfd p;
+    p.fd = clientFd;
+    p.events = POLLIN;
+    p.revents = 0;
+    _pollFds.push_back(p);
+
+    Client *client = new Client(clientFd, password);
+    _clients[clientFd] = client;
+
+    std::cout << GREEN << "New connection " << clientFd << RESET << std::endl;
 }
+
 void Server::removeClient(size_t index)
 {
     int fd = _pollFds[index].fd;
@@ -150,7 +141,7 @@ void Server::run()
 {
     while (true)
     {
-        if (poll(_pollFds.data(), _pollFds.size(), -1) < 0)
+        if (poll(&_pollFds[0], _pollFds.size(), -1) < 0)
             throw std::runtime_error("poll failed");
         for (size_t i = 0; i < _pollFds.size(); i++)
         {
@@ -158,6 +149,11 @@ void Server::run()
             {
                 removeClient(i);
                 i--;
+            }
+            else if (_pollFds[i].revents & POLLOUT)
+            {
+                std::cout << "index "<< _pollFds[i].fd << std::endl;
+                handleWrite(i);
             }
             else if (_pollFds[i].revents & POLLIN)
             {
@@ -171,12 +167,8 @@ void Server::run()
                         i--;
                 }
             }
-            else if (_pollFds[i].revents & POLLOUT)
-            {
-                handleWrite(i);
-            }
+            
         }
-
     }
 }
 
@@ -196,11 +188,7 @@ void Server::handleWrite(size_t i)
         _pollFds[i].events &= ~POLLOUT;
         return;
     }
-
-    ssize_t n = send(fd,
-                     buffer.c_str(),
-                     buffer.size(),
-                     0);
+    ssize_t n = send(fd, buffer.c_str(), buffer.size(), 0);
     if (n <= 0)
     {
         removeClient(i);

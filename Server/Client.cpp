@@ -20,9 +20,7 @@ Client::Client() {}
 
 Client::Client(int fd, std::string password)
     : _fd(fd), numberOfChannelsJoined(0), name(""), nick(""), realname("") ,pass(false), auth(false), password(password) , buffer("")
-{
-    std::cout << "Client connected fd[" << _fd << "]\n";
-}
+{}
 
 Client::~Client()
 {
@@ -50,17 +48,6 @@ void Client::appendSendBuffer(const std::string &msg, std::vector<pollfd> &_poll
             break;
         }
     }
-    // size_t lenght = 0;
-
-    // while (lenght < msg.size())
-    // {
-    //     ssize_t n = send(_fd, msg.c_str() + lenght, msg.size() - lenght, 0);
-
-    //     if (n > 0)
-    //         lenght += n;
-    //     else if (n < 0)
-    //         throw std::runtime_error("send failed");
-    // }
 }
 
 

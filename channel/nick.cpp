@@ -65,7 +65,7 @@ void Parsing::nick(Client &client, std::string line, std::map<int, Client*> _all
     if (!oldNick.empty())
     {
         std::string msg = ":" + oldNick + "!" +
-            client.getName() + "@localhost NICK :" + value + "\r\n";
+            client.getName() + "@"+ _gethostname() +" NICK :" + value + "\r\n";
         client.appendSendBuffer(msg, _pollFds);
     }
 }

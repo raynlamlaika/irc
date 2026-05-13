@@ -304,7 +304,7 @@ void Parsing::sendWelcome(Client& client)
 
     client.appendSendBuffer(":ircserv 001 " + nick +
         " :Welcome to the IRC Network " + nick +
-        "!" + user + "@localhost\r\n", _pollFds);
+        "!" + user + "@"+ _gethostname() +"\r\n", _pollFds);
 
     client.appendSendBuffer(":ircserv 002 " + nick +
         " :Your host is ircserv, running version 1.0\r\n", _pollFds);
