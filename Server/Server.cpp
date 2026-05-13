@@ -90,6 +90,10 @@ void Server::removeClient(size_t index)
             it->second.removeClient(client);
             it->second.removeOperator(client);
             it->second.removeInvited(client);
+            if (it->second.getMembers().empty())
+                channels.erase(it++);
+            else
+                ++it;
         }
     }
 

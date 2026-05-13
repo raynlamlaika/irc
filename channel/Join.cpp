@@ -40,38 +40,74 @@ std::vector<std::string> parceCammandJoin(std::string line)
     return holder;
 }
 
+// std::vector<std::string> Parsing::HelperSplit(std::string line, char del)
+// {
+//     std::vector<std::string> result;
+//     std::string token;
+//     std::string::size_type start = 0;
+//     std::string::size_type pos;
+
+//     while ((pos = line.find(del, start)) != std::string::npos)
+//     {
+//         std::string token = line.substr(start, pos - start);
+//         // Trim whitespace from token
+//         size_t token_start = token.find_first_not_of(" \t\n\r");
+//         if (token_start != std::string::npos) {
+//             size_t token_end = token.find_last_not_of(" \t\n\r");
+//             token = token.substr(token_start, token_end - token_start + 1);
+//         } else {
+//             token = ""; // Token is all whitespace
+//         }
+//         result.push_back(token);
+//         start = pos + 1;
+//     }
+    
+//     // Handle last token
+//     std::string last_token = line.substr(start);
+//     size_t token_start = last_token.find_first_not_of(" \t\n\r");
+//     if (token_start != std::string::npos) {
+//         size_t token_end = last_token.find_last_not_of(" \t\n\r");
+//         last_token = last_token.substr(token_start, token_end - token_start + 1);
+//     } else {
+//         last_token = ""; // Token is all whitespace
+//     }
+//     result.push_back(last_token);
+
+//     return result;
+// }
+
 std::vector<std::string> Parsing::HelperSplit(std::string line, char del)
 {
     std::vector<std::string> result;
-    std::string token;
+
+    if (line.find_first_not_of(" \t\r\n") == std::string::npos)
+        return result; // EMPTY OR ONLY SPACES
+
     std::string::size_type start = 0;
     std::string::size_type pos;
 
     while ((pos = line.find(del, start)) != std::string::npos)
     {
         std::string token = line.substr(start, pos - start);
-        // Trim whitespace from token
-        size_t token_start = token.find_first_not_of(" \t\n\r");
-        if (token_start != std::string::npos) {
-            size_t token_end = token.find_last_not_of(" \t\n\r");
-            token = token.substr(token_start, token_end - token_start + 1);
-        } else {
-            token = ""; // Token is all whitespace
+
+        size_t first = token.find_first_not_of(" \t\r\n");
+        if (first != std::string::npos)
+        {
+            size_t last = token.find_last_not_of(" \t\r\n");
+            result.push_back(token.substr(first, last - first + 1));
         }
-        result.push_back(token);
+
         start = pos + 1;
     }
-    
-    // Handle last token
-    std::string last_token = line.substr(start);
-    size_t token_start = last_token.find_first_not_of(" \t\n\r");
-    if (token_start != std::string::npos) {
-        size_t token_end = last_token.find_last_not_of(" \t\n\r");
-        last_token = last_token.substr(token_start, token_end - token_start + 1);
-    } else {
-        last_token = ""; // Token is all whitespace
+
+    std::string token = line.substr(start);
+
+    size_t first = token.find_first_not_of(" \t\r\n");
+    if (first != std::string::npos)
+    {
+        size_t last = token.find_last_not_of(" \t\r\n");
+        result.push_back(token.substr(first, last - first + 1));
     }
-    result.push_back(last_token);
 
     return result;
 }
@@ -213,11 +249,18 @@ void Parsing::join(Client &client, std::string line)
         {std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), parsed[0]);client.appendSendBuffer(msg, _pollFds);return;}
     std::vector<std::pair<std::string, std::string> > NamesKeys = key_name(parsed);
     for (std::vector<std::pair<std::string, std::string> >::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it)
-    {        
+    {
         const std::string& channelName = it->first;
         const std::string& key = it->second;
         std::map<std::string, Channel>::iterator chIt = chs.find(channelName);
-        if (channelName == "0")
+        // client all erady exist in the channel
+        if (chIt != chs.end() && chIt->second.hasClient(&client))
+        {
+            std::string msg = "ircserv 443:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channelName + " :is already on channel\r\n";
+            client.appendSendBuffer(msg, _pollFds);
+            continue;
+        }
+        else if (channelName == "0")
         {
             std::map<std::string, Channel>::iterator it2 = chs.begin();
             while (it2 != chs.end())
@@ -306,8 +349,6 @@ void Parsing::join(Client &client, std::string line)
                             std::string msg = "ircserv 333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
                             client.appendSendBuffer(msg, _pollFds);
                         }
-                        
-                        
                     }
                     else
                     {
@@ -331,11 +372,11 @@ void Parsing::join(Client &client, std::string line)
                 if (!channel.getTopic().empty())
                 {
                     printTopic(channel, &client);
-                    std::stringstream ss;
-                    ss << channel.getTopicSetTime();
-                    std::string topicSetTime = ss.str();
-                    //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-                    client.appendSendBuffer(MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime), _pollFds);
+                    // std::stringstream ss;
+                    // ss << channel.getTopicSetTime();
+                    // std::string topicSetTime = ss.str();
+                    // //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
+                    // client.appendSendBuffer(MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime), _pollFds);
                 }
                 client.appendSendBuffer(msg, _pollFds);
                 std::string names = printListOfUsers(channel.getMembers(), channel);
