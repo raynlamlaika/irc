@@ -9,14 +9,14 @@ void Parsing::handleFirstCommand(Client &client, std::string line, std::map<int,
 
     if (cmd.empty() || nick.empty() || path.empty())
     {
-        client.appendSendBuffer(": USAGE <GETFILE> <NICK> </PATH/TO/FILE>\n", _pollFds);
+        client.appendSendBuffer(": USAGE <GETFILE> <NICK> </PATH/TO/FILE>\n", _pollFds, 0);
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         return;
     }
     if (!checkNick(_allClients, nick))
     {
-        client.appendSendBuffer(": Internal error: client not found\n", _pollFds);
+        client.appendSendBuffer(": Internal error: client not found\n", _pollFds, 0);
         client.setheaderIsGet(false);
         client.setstatusFile(false);
         return;
@@ -37,7 +37,7 @@ void handelGetHeader(Client &client, std::string& line)
     {
         client.setheaderIsGet(false);
         client.setstatusFile(false);
-        client.appendSendBuffer(": Invalid file header\n", _pollFds);
+        client.appendSendBuffer(": Invalid file header\n", _pollFds, 0);
         return;
     }
     else

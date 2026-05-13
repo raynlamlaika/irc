@@ -13,21 +13,21 @@ void Parsing::pass(Client &client, std::string line)
     if (client.getAuth())
     {
         client.appendSendBuffer(":" + server + " 462 " + nick +
-            " :You may not reregister\r\n", _pollFds);
+            " :You may not reregister\r\n", _pollFds, 0);
         return;
     }
 
     if (value.empty())
     {
         client.appendSendBuffer(":" + server + " 461 " + nick +
-            " PASS :Not enough parameters\r\n", _pollFds);
+            " PASS :Not enough parameters\r\n", _pollFds, 0);
         return;
     }
 
     if (value != client.password)
     {
         client.appendSendBuffer(":" + server + " 464 " + nick +
-            " :Password incorrect\r\n", _pollFds);
+            " :Password incorrect\r\n", _pollFds, 0);
         return;
     }
 

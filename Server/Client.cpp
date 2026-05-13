@@ -39,16 +39,19 @@ int Client::receive(char *buffer, size_t size)
     return recv(_fd, buffer, size, 0);
 }
 
-void Client::appendSendBuffer(const std::string &msg, std::vector<pollfd> &_pollFds)
+void Client::appendSendBuffer(const std::string &msg, std::vector<pollfd> &_pollFds, int isbroadcast)
 {
     sendBuffer += msg;
-    for (size_t i = 0; i < _pollFds.size(); i++)
+    if (!isbroadcast)
     {
-        if (_pollFds[i].fd == _fd)
+        for (size_t i = 0; i < _pollFds.size(); i++)
         {
-            _pollFds[i].events |= POLLOUT;
-            break;
+            if (_pollFds[i].fd == _fd)
+            {
+                _pollFds[i].events |= POLLOUT;
+            }
         }
+        return ;
     }
     // size_t lenght = 0;
 

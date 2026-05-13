@@ -141,7 +141,7 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     if (channel.isInviteOnly() && !channel.isInvited(client))
     {
         std::string msg = MSG_ERR_INVITEONLYCHAN("ircserv", client.getNick(), channel.getName());
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return false;
     }
     // check if the channel has a user limit and if it's reached
@@ -149,7 +149,7 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     if (channel.hasUserLimit() && channel.getMembers().size() >= channel.getUserLimit())
         {
             std::string msg = MSG_ERR_CHANNELISFULL("ircserv", client.getNick(), channel.getName());
-            client.appendSendBuffer(msg, _pollFds);
+            client.appendSendBuffer(msg, _pollFds, 0);
             return false;
         }
     return true;
@@ -158,13 +158,13 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
 bool Parsing::validName(std::string name, Client *client)
 {
     // ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-    if (name.empty()){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds);return false;}
-    if (name.length() > 50){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds);return false;}
-    if (name[0] != '#' && name[0] != '&' && name[0] != '!'&& name[0] != '+'){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds);return false;}
+    if (name.empty()){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds, 0);return false;}
+    if (name.length() > 50){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds, 0);return false;}
+    if (name[0] != '#' && name[0] != '&' && name[0] != '!'&& name[0] != '+'){std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds, 0);return false;}
     for (size_t i = 0; i < name.length(); ++i)
     {
         if (!std::isalnum(name[i]) && name[i] != '-' && name[i] != '_' && name[i] != '#' && name[0] != '&' && name[0] != '!'&& name[0] != '+')
-        {std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds);return false;}
+        {std::string msg = MSG_ERR_BADCHANMASK("ircserv", client->getNick(), name);client->appendSendBuffer(msg, _pollFds, 0);return false;}
     }
     return true;
 }
@@ -181,14 +181,14 @@ void Parsing::printTopic(const Channel& channel, Client *client)
         // std::string msg = MSG_RPL_TOPICWHOTIME("ircserv", client->getNick(), channel.getName(), channel.getTopicOwner(), std::to_string(channel.getTopicSetTime()));
 
         std::string msg = MSG_RPL_TOPIC("ircserv", client->getNick(), channel.getName(), "No topic is set");
-        client->appendSendBuffer(msg, _pollFds);
+        client->appendSendBuffer(msg, _pollFds, 0);
     }
     else
     {
         // std::string msg = MSG_RPL_TOPICWHOTIME("ircserv", client->getNick(), channel.getName(), channel.getTopicOwner(), std::to_string(channel.getTopicSetTime()));
 
         std::string msg = MSG_RPL_TOPIC("ircserv", client->getNick(), channel.getName(), channel.getTopic());
-        client->appendSendBuffer(msg, _pollFds);
+        client->appendSendBuffer(msg, _pollFds, 0);
 
         std::stringstream ss;
         ss << channel.getTopicSetTime();
@@ -198,7 +198,7 @@ void Parsing::printTopic(const Channel& channel, Client *client)
         //     " " + channel.getName() + " " +
         //     ss.str() + "\r\n";
 
-        client->appendSendBuffer(msg2, _pollFds);
+        client->appendSendBuffer(msg2, _pollFds, 0);
     }
 }
 
@@ -208,7 +208,7 @@ bool Parsing::checkBan(const Channel& channel, Client& client)
     if (channel.isBanned(client))
     {
         std::string msg = MSG_ERR_BANNEDFROMCHAN("ircserv", client.getNick(), channel.getName());
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return true;
     }
     return false;
@@ -246,7 +246,7 @@ void Parsing::join(Client &client, std::string line)
 
     std::vector<std::string> parsed = parceCammandJoin(line);
     if (parsed.size() < 2)
-        {std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), parsed[0]);client.appendSendBuffer(msg, _pollFds);return;}
+        {std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), parsed[0]);client.appendSendBuffer(msg, _pollFds, 0);return;}
     std::vector<std::pair<std::string, std::string> > NamesKeys = key_name(parsed);
     for (std::vector<std::pair<std::string, std::string> >::iterator it = NamesKeys.begin(); it != NamesKeys.end(); ++it)
     {
@@ -257,7 +257,7 @@ void Parsing::join(Client &client, std::string line)
         if (chIt != chs.end() && chIt->second.hasClient(&client))
         {
             std::string msg = "ircserv 443:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channelName + " :is already on channel\r\n";
-            client.appendSendBuffer(msg, _pollFds);
+            client.appendSendBuffer(msg, _pollFds, 0);
             continue;
         }
         else if (channelName == "0")
@@ -270,7 +270,7 @@ void Parsing::join(Client &client, std::string line)
                 {
                     channel.removeClient(&client);
                     std::string msg = "ircserv 331:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " PART " + channel.getName() + "\r\n";
-                    client.appendSendBuffer(msg, _pollFds);
+                    client.appendSendBuffer(msg, _pollFds, 0);
                     if (channel.getMembers().empty())
                         chs.erase(it2++); 
                     else
@@ -293,17 +293,17 @@ void Parsing::join(Client &client, std::string line)
             // std::string msg = ":ircserv " + client.getNick()  + " :JOIN " + newChannel.getName() +"\r\n"; // fix this one
             std::string prefix = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname();
             std::string msg = prefix + " JOIN " + newChannel.getName() + "\r\n";
-            client.appendSendBuffer(msg, _pollFds);
+            client.appendSendBuffer(msg, _pollFds, 0);
             // newvchannel.broadcastMsg(msg, channel.getMembers());
 
             // list of users in here
             std::string names = printListOfUsers(newChannel.getMembers(), newChannel);
             std::string owner = MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", newChannel.getName(), names);
-            client.appendSendBuffer(owner, _pollFds);
+            client.appendSendBuffer(owner, _pollFds, 0);
             if (names.empty())
                 MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", newChannel.getName(), names);//client.appendSendBuffer("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + newChannel.getName() + " :" + names + "\r\n");
             // std::string msg2 = "ircserv 332:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " :End of /NAMES list\r\n";
-            client.appendSendBuffer(MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), newChannel.getName()), _pollFds);
+            client.appendSendBuffer(MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), newChannel.getName()), _pollFds, 0);
             if (!newChannel.getTopic().empty())
             {
                 printTopic(newChannel, &client);
@@ -317,7 +317,7 @@ void Parsing::join(Client &client, std::string line)
             if (client.numberOfChannels() >= 10)
             {
                 // std::string msg = "ircserv 405:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + " :You have joined too many channels\r\n";
-                client.appendSendBuffer(MSG_ERR_TOOMANYCHANNELS("ircserv", client.getNick(), channel.getName()), _pollFds);
+                client.appendSendBuffer(MSG_ERR_TOOMANYCHANNELS("ircserv", client.getNick(), channel.getName()), _pollFds, 0);
                 continue;
             }
             // check if invited the order get firsteven if the  channel +k +l
@@ -328,17 +328,17 @@ void Parsing::join(Client &client, std::string line)
                 {
                     if (channel.getKey() == key)
                     {
-                        if (checkBan(channel, client)) {client.appendSendBuffer(MSG_ERR_BANNEDFROMCHAN("ircserv", client.getNick(), channel.getName()), _pollFds);continue;};
+                        if (checkBan(channel, client)) {client.appendSendBuffer(MSG_ERR_BANNEDFROMCHAN("ircserv", client.getNick(), channel.getName()), _pollFds, 0);continue;};
                         channel.addClient(&client);
                         channel.removeInvited(&client);
                         std::string prefix = ":" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname();
                         std::string msg = prefix + " JOIN " + channelName + "\r\n";
-                        client.appendSendBuffer(msg, _pollFds);
+                        client.appendSendBuffer(msg, _pollFds, 0);
                         // list of users in here
                         std::string names = printListOfUsers(channel.getMembers(), channel);
                         if (!names.empty())
-                            client.appendSendBuffer(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names), _pollFds);
-                        client.appendSendBuffer(MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName()), _pollFds);
+                            client.appendSendBuffer(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names), _pollFds, 0);
+                        client.appendSendBuffer(MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName()), _pollFds, 0);
                         if (!channel.getTopic().empty())
                         {    
                             printTopic(channel, &client);
@@ -347,21 +347,21 @@ void Parsing::join(Client &client, std::string line)
                             ss << channel.getTopicSetTime();
                             std::string topicSetTime = ss.str();//// chheeekc
                             std::string msg = "ircserv 333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
-                            client.appendSendBuffer(msg, _pollFds);
+                            client.appendSendBuffer(msg, _pollFds, 0);
                         }
                     }
                     else
                     {
                         // std::cout << "Incorrect key for channel: " << channelName << " with key: " << key << " this is the correct key: " << channel.getKey() << "\n";
                         std::string msg = MSG_ERR_BADCHANNELKEY("ircserv", client.getNick(), channel.getName());
-                        client.appendSendBuffer(msg, _pollFds);
+                        client.appendSendBuffer(msg, _pollFds, 0);
                     }
                 }
                 else
                 {
                     // ERR_CANNOTJOINCHANNEL (475)   "<client> <channel> :Cannot join channel (+k)"
                     std::string msg = MSG_ERR_BADCHANNELKEY("ircserv", client.getNick(), channel.getName());
-                    client.appendSendBuffer(msg, _pollFds);
+                    client.appendSendBuffer(msg, _pollFds, 0);
                 }
             }
             else 
@@ -376,14 +376,14 @@ void Parsing::join(Client &client, std::string line)
                     // ss << channel.getTopicSetTime();
                     // std::string topicSetTime = ss.str();
                     // //RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
-                    // client.appendSendBuffer(MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime), _pollFds);
+                    // client.appendSendBuffer(MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime), _pollFds, 0);
                 }
-                client.appendSendBuffer(msg, _pollFds);
+                client.appendSendBuffer(msg, _pollFds, 0);
                 std::string names = printListOfUsers(channel.getMembers(), channel);
                 if (!names.empty())
-                    client.appendSendBuffer(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names), _pollFds); //client.appendSendBuffer("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + channel.getName() + " :" + names + "\r\n");
+                    client.appendSendBuffer(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names), _pollFds, 0); //client.appendSendBuffer("ircserv 353:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " = " + channel.getName() + " :" + names + "\r\n");
                 std::string msg2 = MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName());
-                client.appendSendBuffer(msg2, _pollFds);
+                client.appendSendBuffer(msg2, _pollFds, 0);
                 channel.removeInvited(&client);
                 
                 

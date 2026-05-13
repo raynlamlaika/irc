@@ -17,13 +17,13 @@ void Parsing::user(Client &client, std::string line)
     if (client.getAuth())
     {
         client.appendSendBuffer(":" + server + " 462 " + nick +
-            " :You may not reregister\r\n", _pollFds);
+            " :You may not reregister\r\n", _pollFds, 0);
         return;
     }
     if (username.empty() || mode.empty() || unused.empty() || realname.empty())
     {
         client.appendSendBuffer(":" + server + " 461 " + nick +
-            " USER :Not enough parameters\r\n", _pollFds);
+            " USER :Not enough parameters\r\n", _pollFds, 0);
         return;
     }
     if (std::string::npos != pos)
