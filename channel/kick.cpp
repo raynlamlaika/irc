@@ -41,7 +41,7 @@ void Parsing::kick(std::string line, Client& client)
     if (holder.size() < 3){
         // ERR_NEEDMOREPARAMS (461) "<client> <command> :Not enough parameters"
         std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[0]);
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return ;
     }
 
@@ -59,21 +59,21 @@ void Parsing::kick(std::string line, Client& client)
         // ERR_NOSUCHCHANNEL (403)  "<client> <channel> :No such channel"
         
         std::string msg = MSG_ERR_NOSUCHCHANNEL("ircserv", client.getNick(), channelname);
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return;
     }
     if (!channel->isOperator(client))
     {
         // ERR_CHANOPRIVSNEEDED (482)  "<client> <channel> :You're not channel operator"
         std::string msg = MSG_ERR_CHANOPRIVSNEEDED("ircserv", client.getNick(), channelname);
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return;
     }
     // check client is part of the channel
     if (!channel->hasClient(&client)) {
         // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
         std::string msg = MSG_ERR_USERNOTINCHANNEL("ircserv", client.getNick(), usertarget, channelname);
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
         return;
     }
 
@@ -106,13 +106,13 @@ void Parsing::kick(std::string line, Client& client)
                 {
                     std::string msg = MSG_KICK(client.getNick(), client.getName(), Parsing::_gethostname(), targetClient->getNick(), channelname, reason);
                     channel->broadcastMsg(msg, channel->getMembers(),&client,_pollFds);
-                    client.appendSendBuffer(msg, _pollFds);
+                    client.appendSendBuffer(msg, _pollFds, 0);
                 }
                 else
                 {
                     // (nick, user, host, target, channel)
                     std::string msg = MSG_KICK_WITHOUT_REASON(client.getNick(), client.getName(), Parsing::_gethostname(), targetClient->getNick(), channelname);
-                    client.appendSendBuffer(msg, _pollFds);
+                    client.appendSendBuffer(msg, _pollFds, 0);
                     channel->broadcastMsg(msg, channel->getMembers(),&client, _pollFds);
                 }
                 break;
@@ -122,7 +122,7 @@ void Parsing::kick(std::string line, Client& client)
         {
             // ERR_USERNOTINCHANNEL (441) "<client> <nick> <channel> :They aren't on that channel"
             std::string msg = MSG_ERR_USERNOTINCHANNEL("ircserv", client.getNick(), usertarget, channelname);
-            client.appendSendBuffer(msg, _pollFds);
+            client.appendSendBuffer(msg, _pollFds, 0);
             // return;
         }
     }

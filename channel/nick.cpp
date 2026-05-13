@@ -40,21 +40,21 @@ void Parsing::nick(Client &client, std::string line, std::map<int, Client*> _all
     if (value.empty())
     {
         client.appendSendBuffer(":" + server + " 431 " + nick +
-            " :No nickname given\r\n", _pollFds);
+            " :No nickname given\r\n", _pollFds, 0);
         return;
     }
 
     if (!isValidNick(value))
     {
         client.appendSendBuffer(":" + server + " 432 " + nick +
-            " " + value + " :Erroneus nickname\r\n", _pollFds);
+            " " + value + " :Erroneus nickname\r\n", _pollFds, 0);
         return;
     }
 
     if (!checkNick(_allClients, value))
     {
         client.appendSendBuffer(":" + server + " 433 " + nick +
-            " " + value + " :Nickname is already in use\r\n", _pollFds);
+            " " + value + " :Nickname is already in use\r\n", _pollFds, 0);
         return;
     }
 
@@ -66,7 +66,7 @@ void Parsing::nick(Client &client, std::string line, std::map<int, Client*> _all
     {
         std::string msg = ":" + oldNick + "!" +
             client.getName() + "@"+ _gethostname() +" NICK :" + value + "\r\n";
-        client.appendSendBuffer(msg, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
     }
 }
 

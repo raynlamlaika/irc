@@ -17,6 +17,13 @@
 #include <cctype>
 #include <sstream>
 
+typedef struct s_mode
+{
+    char mode;
+    char sign;
+    std::string param;
+} t_mode;
+
 class Parsing
 {
 private:
@@ -63,6 +70,13 @@ public:
     bool checkNick(std::map<int, Client*> _allClients, std::string& value);
     void sendWelcome(Client& client);
     void printer();
+
+    //mode 
+    void modeInviteOnly(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
+    void modeKey(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
+    void modeOperator(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds,std::map<int, Client*> _allClients);
+    void modeTopic(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
+    void modeUserLimit(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
 };
 
 

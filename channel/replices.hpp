@@ -308,5 +308,14 @@
 
 #define MSG_PRIVMSG(nick, user, host, target, message) \
     (std::string(":") + nick + "!" + user + "@" + host + " PRIVMSG " + target + " :" + message + "\r\n")
+
+#define MSG_MODE_K(server, nick, user, channel, sign, key) \
+    (std::string(":") + server + " MODE " + channel + " " + sign + "k " + key + "\r\n")
+
+#define MSG_MODE_L(server, nick, user, channel, sign, param) \
+    (std::string(":") + server + " MODE " + channel + " " + sign + "l " + param + "\r\n")
+
+#define MSG_MODE_T(server, nick, user, channel, sign) \
+    (std::string(":") + server + " MODE " + channel + " " + sign + "t\r\n")
     
 #endif

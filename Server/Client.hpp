@@ -30,7 +30,7 @@ public:
     ~Client();
     int getFd() const;
     int receive(char *buffer, size_t size);
-    void appendSendBuffer(const std::string &msg, std::vector<pollfd> &addClientaddClient);
+    void appendSendBuffer(const std::string &msg, std::vector<pollfd> &addClientaddClient, int isbroadcast);
     int numberOfChannels() const;
     void incrementChannels();
     void decrementChannels();

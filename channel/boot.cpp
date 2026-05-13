@@ -23,14 +23,14 @@ void Parsing::boot(Client &client, std::string msg)
     if (msg.empty()) 
     {
         client.appendSendBuffer(":BOOTBOT PRIVMSG " + client.getNick()
-            + " :Usage: BOOT <TEXT>", _pollFds);
+            + " :Usage: BOOT <TEXT>", _pollFds, 0);
         return;
     }
 
     std::string encoded = rot13(msg);
 
     client.appendSendBuffer(":BOOTBOT PRIVMSG " + client.getNick()
-        + " :" + encoded, _pollFds);
+        + " :" + encoded, _pollFds, 0);
 }
 
 // void Parsing::boot(Client &client, std::string msg)
