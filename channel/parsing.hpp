@@ -85,7 +85,7 @@ public:
     void modeTopic(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
     void modeUserLimit(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds);
 };
-
+bool isPrintS(const std::string& s);
 
 
 #endif

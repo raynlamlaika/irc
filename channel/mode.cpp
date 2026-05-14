@@ -34,12 +34,16 @@ void Parsing::modeInviteOnly(Client &client, std::map<std::string, Channel>::ite
         it->second.setInviteOnly(true);
         std::string msg = MSG_MODE_I("ircserv", client.getNick(), client.getName(), it->first, "+");
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     else
     {
         it->second.setInviteOnly(false);
         std::string msg = MSG_MODE_I("ircserv", client.getNick(), client.getName(), it->first, "-");
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     return ;
 }
@@ -50,15 +54,20 @@ void Parsing::modeKey(Client &client, std::map<std::string, Channel>::iterator& 
         it->second.setKey(mode.param);
         std::string msg = MSG_MODE_K("ircserv", client.getNick(), client.getName(), it->first, "+", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     else
     {
         it->second.setKey("");
         std::string msg = MSG_MODE_K("ircserv", client.getNick(), client.getName(), it->first, "-", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     return ;
 }
+
 void Parsing::modeOperator(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds,std::map<int, Client*> _allClients)
 {
     Client* targetClient = searchForClientref(mode.param, _allClients);
@@ -73,15 +82,19 @@ void Parsing::modeOperator(Client &client, std::map<std::string, Channel>::itera
         it->second.addOperator(targetClient);
         std::string msg = MSG_MODE_O("ircserv", client.getNick(), client.getName(), it->first, "+", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
     }
     else
     {
         it->second.removeOperator(targetClient);
         std::string msg = MSG_MODE_O("ircserv", client.getNick(), client.getName(), it->first, "-", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     return ;
 }
+
 void Parsing::modeTopic(Client &client, std::map<std::string, Channel>::iterator& it, t_mode& mode, std::vector<pollfd>& _pollFds)
 {   
     if (mode.sign == '+')
@@ -89,12 +102,16 @@ void Parsing::modeTopic(Client &client, std::map<std::string, Channel>::iterator
         it->second.setTopic(mode.param);
         std::string msg = MSG_MODE_T("ircserv",client.getNick(),client.getName(),it->first,std::string(1, mode.sign));
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     else
     {
         it->second.setTopic("");
         std::string msg = MSG_MODE_T("ircserv",client.getNick(),client.getName(),it->first,std::string(1, mode.sign));
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     return ;
 }
@@ -102,16 +119,27 @@ void Parsing::modeUserLimit(Client &client, std::map<std::string, Channel>::iter
 {
     if (mode.sign == '+')
     {
-        int limit = std::atoi(mode.param.c_str());
+        int limit;
+        std::stringstream ss(mode.param.c_str());
+        ss >> limit;
+        if (ss.fail() || limit <= 0)
+        {
+            std::string msg = MSG_ERR_UNKNOWNMODE("ircserv", client.getNick(), std::string(1, mode.mode));
+            client.appendSendBuffer(msg, _pollFds, 0);
+            return ;
+        }
         it->second.setUserLimit(limit);
         std::string msg = MSG_MODE_L("ircserv", client.getNick(), client.getName(), it->first, "+", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
+
     }
     else
     {
-        it->second.setUserLimit(0);
+        it->second.setUserLimit(-1);
         std::string msg = MSG_MODE_L("ircserv", client.getNick(), client.getName(), it->first, "-", mode.param);
         it->second.broadcastMsg(msg, it->second.getMembers(), &client, _pollFds);
+        client.appendSendBuffer(msg, _pollFds, 0);
     }
     return ;
 }

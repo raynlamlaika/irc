@@ -126,6 +126,12 @@ void Parsing::topic(std::string line, Client& client)
     }
 }
 
+bool isPrintS(const std::string& s)
+{
+    for (std::string::size_type i = 0; i < s.size(); ++i) {if (!std::isprint((s[i]))) {return false;}}
+    return true;
+}
+
 bool Parsing::newMessage(const std::string &line,
                          Client &client,
                          std::map<int, Client*> _allClients)
@@ -192,12 +198,14 @@ bool Parsing::newMessage(const std::string &line,
         }
         else
         {
-            std::string msg =
-                MSG_ERR_UNKNOWNCOMMAND("ircserv",
-                                       client.getNick(),
-                                       cmd);
-
+            if (isPrintS(cmd))
+            {
+                std::string msg = MSG_ERR_UNKNOWNCOMMAND("ircserv",client.getNick(),cmd);
+                client.appendSendBuffer(msg, _pollFds, 0);
+            }
+            std::string msg = MSG_ERR_UNKNOWNCOMMAND("ircserv",client.getNick(),"");
             client.appendSendBuffer(msg, _pollFds, 0);
+            
         }
     }
 

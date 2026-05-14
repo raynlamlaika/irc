@@ -68,23 +68,56 @@ void Server::acceptClient(size_t index)
     std::cout << GREEN << "New connection " << clientFd << RESET << std::endl;
 }
 
+// void Server::removeClient(size_t index)
+// {
+//     int fd = _pollFds[index].fd;
+//     Client *client = _clients[fd];
+
+//     std::map<std::string, Channel>& channels = Getchannel();
+//     for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
+//     {
+//         if (it->second.hasClient(client))
+//         {
+//             it->second.removeClient(client);
+//             it->second.removeOperator(client);
+//             it->second.removeInvited(client);
+//             if (it->second.getMembers().empty())
+//                 channels.erase(it++);
+//             else
+//                 ++it;
+//         }
+//     }
+
+//     delete client;
+//     _clients.erase(fd);
+
+//     _pollFds.erase(_pollFds.begin() + index);
+//     close(fd);
+// }
 void Server::removeClient(size_t index)
 {
     int fd = _pollFds[index].fd;
     Client *client = _clients[fd];
 
     std::map<std::string, Channel>& channels = Getchannel();
-    for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
+
+    for (std::map<std::string, Channel>::iterator it = channels.begin();
+         it != channels.end(); )
     {
         if (it->second.hasClient(client))
         {
             it->second.removeClient(client);
             it->second.removeOperator(client);
             it->second.removeInvited(client);
+
             if (it->second.getMembers().empty())
-                channels.erase(it++);
+                it = channels.erase(it);
             else
                 ++it;
+        }
+        else
+        {
+            ++it;
         }
     }
 
@@ -94,7 +127,6 @@ void Server::removeClient(size_t index)
     _pollFds.erase(_pollFds.begin() + index);
     close(fd);
 }
-
 void Server::handleClient(size_t index)
 {
 

@@ -107,11 +107,12 @@ bool Parsing::canJoin(const Channel& channel, Client& client)
     }
     // ERR_CHANNELISFULL (471)  "<client> <channel> :Cannot join channel (+l)"
     if (channel.hasUserLimit() && channel.getMembers().size() >= channel.getUserLimit())
-        {
-            std::string msg = MSG_ERR_CHANNELISFULL("ircserv", client.getNick(), channel.getName());
-            client.appendSendBuffer(msg, _pollFds, 0);
-            return false;
-        }
+    {
+        std::cout << " ''''''"<< channel.hasUserLimit()<< " the check is :" << channel.getMembers().size() << " and the limit is :" << channel.getUserLimit() << std::endl;
+        std::string msg = MSG_ERR_CHANNELISFULL("ircserv", client.getNick(), channel.getName());
+        client.appendSendBuffer(msg, _pollFds, 0);
+        return false;
+    }
     return true;
 }
 

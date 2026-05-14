@@ -22,6 +22,12 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
             message = holder[2];
         if (holder[0] != "PRIVMSG")
             return;
+        if (!isPrintS(message))
+        {
+            std::string errorMsg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
+            client.appendSendBuffer(errorMsg, _pollFds, 0);
+            return;
+        }
         std::vector<std::string> targets = HelperSplit(target, ',');
         for (size_t i = 0; i < targets.size(); i++)
         {
