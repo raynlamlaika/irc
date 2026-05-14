@@ -258,15 +258,8 @@ void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>&
     for ( ;it != members.end(); it++)
     {
         if (sender && it->second->getFd() == sender->getFd())
-            continue; // Skip the sender
+            continue;
         else if (it->second)
             it->second->appendSendBuffer(msg, _pollFds, 0);
     }
-    // for (it = members.begin() ;it != members.end(); it++)
-    // {
-    //     if (sender && it->second->getFd() == sender->getFd())
-    //         continue; // Skip the sender
-    //     else if (it->second)
-    //         it->second->appendSendBuffer("", _pollFds, 0);
-    // }
 }

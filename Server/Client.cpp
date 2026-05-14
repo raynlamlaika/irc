@@ -42,17 +42,14 @@ void Client::appendSendBuffer(const std::string &msg, std::vector<pollfd> &_poll
     (void)isbroadcast;
     sendBuffer += msg;
     std::cout << "i have buffer -> " << _fd << std::endl;
-    // if (!isbroadcast)
-    // {
-        for (size_t i = 0; i < _pollFds.size(); i++)
+
+    for (size_t i = 0; i < _pollFds.size(); i++)
+    {
+        if (_pollFds[i].fd == _fd)
         {
-            if (_pollFds[i].fd == _fd)
-            {
-                _pollFds[i].events |= POLLOUT;
-            }
+            _pollFds[i].events |= POLLOUT;
         }
-        return ;
-    // }
+    }
 }
 
 
@@ -60,25 +57,6 @@ std::string &Client::getSendBuffer()
 {
     return sendBuffer;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void Client::incrementChannels()

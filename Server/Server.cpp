@@ -156,7 +156,7 @@ void Server::run()
             }
             else if (_pollFds[i].revents & POLLOUT)
             {
-                std::cout << "index "<< _pollFds[i].fd << std::endl;
+                // std::cout << "index "<< _pollFds[i].fd << std::endl;
                 handleWrite(i);
             }
             else if (_pollFds[i].revents & POLLIN)
