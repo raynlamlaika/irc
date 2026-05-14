@@ -146,10 +146,12 @@ void Parsing::printTopic(const Channel& channel, Client *client)
         std::string msg = MSG_RPL_TOPIC("ircserv", client->getNick(), channel.getName(), channel.getTopic());
         client->appendSendBuffer(msg, _pollFds, 0);
 
-        std::stringstream ss;
-        ss << channel.getTopicSetTime();
-
-        std::string msg2 = MSG_RPL_TOPICWHOTIME("ircserv", client->getNick(), channel.getName(), channel.getTopicOwner(), ss.str());
+        time_t timer = channel.getTopicSetTime();
+        struct tm *timeinfo = localtime(&timer);
+        char buffer[80];
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+        std::string topicSetTime(buffer);
+        std::string msg2 = MSG_RPL_TOPICWHOTIME("ircserv", client->getNick(), channel.getName(), channel.getTopicOwner(), topicSetTime);
         client->appendSendBuffer(msg2, _pollFds, 0);
     }
 }
@@ -277,12 +279,8 @@ void Parsing::join(Client &client, std::string line)
                             client.appendSendBuffer(MSG_RPL_NAMREPLY("ircserv", client.getNick(), "=", channel.getName(), names), _pollFds, 0);
                         client.appendSendBuffer(MSG_RPL_ENDOFNAMES("ircserv", client.getNick(), channel.getName()), _pollFds, 0);
                         if (!channel.getTopic().empty())
-                        {    
-                            printTopic(channel, &client);
-                            std::stringstream ss;
-                            ss << channel.getTopicSetTime();
-                            std::string topicSetTime = ss.str();//// chheeekc
-                            std::string msg = "ircserv 333:" + client.getNick() + "!" + client.getName() + "@" + Parsing::_gethostname() + " " + channel.getName() + " " + channel.getTopicOwner() + " " + topicSetTime + "\r\n";
+                        {
+                            printTopic(channel, &client); 
                             client.appendSendBuffer(msg, _pollFds, 0);
                         }
                     }
