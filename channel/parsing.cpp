@@ -1,11 +1,5 @@
+#include "replices.hpp"
 #include "parsing.hpp"
-#include <sstream>
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <cctype>
-
-
 
 std::string Channel::getTopicOwner() const
 {
@@ -65,11 +59,9 @@ Client *Parsing::searchForClientref(std::string Nick , std::map<int, Client*> _a
     return NULL;
 }
 
-Parsing::~Parsing()
-{}
+Parsing::~Parsing(){}
 
 
-#include "replices.hpp"
 //check for this  : RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
 void Parsing::topic(std::string line, Client& client)
 {
@@ -96,11 +88,8 @@ void Parsing::topic(std::string line, Client& client)
     }
     size_t index = line.find(':');
     if (index == std::string::npos) {
-        // No ':' found, just print the current topic
-        // RPL_TOPIC (332)  "<client> <channel> :<topic>"
         if (channel->getTopic().empty())
         {
-            // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
             std::string msg = MSG_RPL_NOTOPIC("ircserv", client.getNick(), holder[1]);
             client.appendSendBuffer(msg, _pollFds, 0);
         }
@@ -113,21 +102,16 @@ void Parsing::topic(std::string line, Client& client)
     }
     if (!channel->isOperator(client))
     {
-        // ERR_CHANOPRIVSNEEDED (482) "<client> <channel> :You're not channel operator"
         std::string msg = MSG_ERR_CHANOPRIVSNEEDED("ircserv", client.getNick(), holder[1]);
         client.appendSendBuffer(msg, _pollFds, 0);
         return;
     }
-    std::string topicUse = line.substr(index + 1); // skip the ':'
+    std::string topicUse = line.substr(index + 1);
     std::cout << "line is : " << line << std::endl;
     std::cout << "topicUse: " << topicUse << std::endl;
     if (topicUse.empty())
     {
-        // RPL_NOTOPIC (331)   "<client> <channel> :No topic is set"
-        // std::string msg = client.getName() + " " + holder[1] + " :No topic is set\n";
-        // client.appendSendBuffer(msg, _pollFds, 0);
         channel->setTopic("");
-         // breadcast for all of the channel members
         std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has removed the topic\r\n";
         channel->broadcastMsg(msg, channel->getMembers(), &client,_pollFds);
         return;
@@ -137,8 +121,6 @@ void Parsing::topic(std::string line, Client& client)
         channel->setTopic(topicUse);
         channel->setTopicOwner(client.getName());
         channel->setTopicSetTime(time(NULL));
-        // breadcast for all of the channel members
-        // std::string msg = MSG_ERR_NEEDMOREPARAMS("ircserv", client.getNick(), holder[1]) + " :has changed the topic to: " + topicUse + "\r\n";
         std::string msg = MSG_RPL_TOPIC("ircserv", client.getNick(), holder[1], topicUse);
         channel->broadcastMsg(msg, channel->getMembers(), &client,_pollFds);
         msg = MSG_RPL_TOPICWHOTIME("ircserv", client.getNick(), holder[1], channel->getTopicOwner(), channel->displayTimestamp());
@@ -241,60 +223,6 @@ bool Parsing::newMessage(const std::string &line,
     return true;
 }
 
-// bool Parsing::newMessage(const std::string &line, Client &client, std::map<int, Client*> _allClients)
-// {
-//     if (line.empty())
-//         return false;
-
-//     std::vector<std::string> holder;
-//     std::stringstream ss(line);
-//     std::string word;
-//     while (ss >> word)
-//         holder.push_back(word);
-//     if (!holder[0].empty() && holder[0] == "PASS")
-//         pass(client, line);
-//     else if (!holder[0].empty() && holder[0] == "NICK")
-//         nick(client, line, _allClients);
-//     else if (!holder[0].empty() && holder[0] == "USER")
-//         user(client, line);
-//     else if (!holder[0].empty() && holder[0] == "QUIT")
-//         throw std::runtime_error("Client quit");
-//     else if (!holder[0].empty() && client.getAuth())
-//     {
-//         if (!holder[0].empty() && holder[0] == "JOIN")
-//             join(client, line);
-//         else if (!holder[0].empty() && holder[0] == "MODE")
-//             mode(client, line,_allClients);
-//         else if (!holder[0].empty() && holder[0] == "KICK")
-//             kick(line, client);
-//         else if (!holder[0].empty() && holder[0] == "TOPIC")
-//             topic(line, client);
-//         else if (!holder[0].empty() && holder[0] == "PRIVMSG")
-//             prvmsg(line, client,_allClients);
-//         else if (!holder[0].empty() && holder[0] == "INVITE")
-//             invite(line, client,_allClients);
-//         else if (!holder[0].empty() && holder[0] == "BOOT")
-//             boot(client, line);
-//         else
-//         {
-//             std::string msg =  MSG_ERR_UNKNOWNCOMMAND("ircserv", client.getNick(), holder[0]);
-//             client.appendSendBuffer(msg, _pollFds, 0);
-//         }
-//     }
-//     else
-//     {
-//         std::string msg = MSG_ERR_NOTREGISTERED("ircserv", client.getNick());
-//         client.appendSendBuffer(msg, _pollFds, 0);
-//         // throw std::runtime_error("Client not registered, closing connection");
-//     }
-//     if (!client.getAuth() && client.getPass() && !client.getNick().empty() && !client.getName().empty())
-//     {
-//         client.setAuth();
-//         sendWelcome(client);
-//     }
-//     return (true);
-// }
-
 void Parsing::sendWelcome(Client& client)
 {
     std::string server = "ircserv";
@@ -316,23 +244,3 @@ void Parsing::sendWelcome(Client& client)
         " ircserv 1.0 o o\r\n", _pollFds, 0);
 }
 
-
-
-
-/*
-the numrical reply i should handel
-
-ERR_NEEDMOREPARAMS (461)
-ERR_NOSUCHCHANNEL (403)
-ERR_TOOMANYCHANNELS (405)
-ERR_BADCHANNELKEY (475)
-ERR_BANNEDFROMCHAN (474)
-ERR_CHANNELISFULL (471)
-ERR_INVITEONLYCHAN (473)
-ERR_BADCHANMASK (476)
-RPL_TOPIC (332)
-RPL_TOPICWHOTIME (333)
-RPL_NAMREPLY (353)
-RPL_ENDOFNAMES (366)
-
-*/

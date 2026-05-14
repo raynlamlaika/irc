@@ -1,7 +1,4 @@
-
 #include "parsing.hpp"
-
-// void Parsing::prvmsghelpre(bool flag, std::string message, Channel &ref, Client& refClient) // 1 for users, 0 for channels
 
 void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _allClients)
 {
@@ -14,7 +11,11 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
         std::string target = holder[1];
         size_t index = line.find(":");
         if (index == std::string::npos && holder.size() < 2)
-            {std::cout<< line <<":\tinvalid format\n";return;}
+        {
+            std::string errorMsg = MSG_ERR_NOTEXTTOSEND("ircserv", client.getNick());
+            client.appendSendBuffer(errorMsg, _pollFds, 0);
+            return;
+        }
         if (index != std::string::npos)
             message = line.substr(index + 1);
         else
@@ -69,7 +70,6 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 if(!searchForClient(target, _allClients))
                 {
                     // ERR_NOSUCHNICK (401)  "<client> <nickname> :No such nick/channel"
-                    // std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
                     std::string errorMsg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
                     client.appendSendBuffer(errorMsg, _pollFds, 0);
                     continue;
@@ -77,18 +77,18 @@ void Parsing::prvmsg(std::string line, Client& client,std::map<int, Client*> _al
                 Client *clientHolder = searchForClientref(target, _allClients);
                 if (clientHolder == NULL)
                 {
-                    // std::string errorMsg = "ircserv 401:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " +  " :No such nick/channel\r\n";
                     std::string errorMsg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
                     client.appendSendBuffer(errorMsg, _pollFds, 0);
                     continue;
                 }
-                // std::string msg = "ircserv 412:" + client.getNick() + "!" + client.getName() + "@" + _gethostname() + " " + "PRIVMSG " + target + " :" + message + "\r\n";
                 std::string msg = MSG_PRIVMSG(client.getNick(), client.getName(), _gethostname(), target, message);
                 clientHolder->appendSendBuffer(msg, _pollFds, 0);
             }
             else
             {
-                std::cout << "Invalid target: " << target << std::endl;
+                std::string errorMsg = MSG_ERR_NOSUCHNICK("ircserv", client.getNick(), target);
+                client.appendSendBuffer(errorMsg, _pollFds, 0);
+                continue;
             }
         }
     }

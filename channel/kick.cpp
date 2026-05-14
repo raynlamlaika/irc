@@ -13,26 +13,11 @@ bool Parsing::searchForChannel(std::string channelName)
 }
 
 
-// check on 
-/*
-ERR_BADCHANMASK (476)  "<client> <channel> :Bad Channel Mask"
-*/
-
-
 std::string Parsing::_gethostname()
 {
-    // return "localhost";
     char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) == 0)
-    {
-        // std::cout << "Hostname: " << hostname << std::endl;
-        return std::string(hostname);
-    }
-    else {
-        
-    return "localhost";
-    }
-    return std::string(hostname);
+    if (gethostname(hostname, sizeof(hostname)) == 0) return std::string(hostname);
+    else return "localhost";
 }
     
 void Parsing::kick(std::string line, Client& client)

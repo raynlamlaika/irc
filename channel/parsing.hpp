@@ -16,6 +16,13 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
+#include "parsing.hpp"
+#include <sstream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cctype>
+
 
 typedef struct s_mode
 {

@@ -8,8 +8,6 @@ void Parsing::sendInviteList(Parsing& parsing, Client& client)
         if (it->second.isInvited(client))
         {
             // RPL_INVITELIST (336)  "<client> <channel>"
-            // std::string msg = "ircserv 336: " + client.getName() + " " + it->second.getName() + "\r\n";
-            //(server, nick, target, channel)
             std::string msg = MSG_RPL_INVITING("ircserv", client.getNick(), client.getName(), it->second.getName());
             client.appendSendBuffer(msg, _pollFds, 0);
         }
@@ -80,7 +78,6 @@ void Parsing::invite(std::string line, Client& client, std::map<int, Client*> _a
         return;
     }
     channel->addInvited(targetClient);
-    // channel->addClient(targetClient);
     // RPL_INVITING (341)  "<client> <nick> <channel>"
     std::string reply = MSG_RPL_INVITING("ircserv", client.getNick(), target, channelName);
     client.appendSendBuffer(reply,_pollFds, 0);

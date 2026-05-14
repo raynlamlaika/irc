@@ -3,11 +3,7 @@
 
 #include <string>
 
-/*
-** =========================
-** NUMERIC CODES
-** =========================
-*/
+
 #define ERR_NEEDMOREPARAMS "461"
 #define ERR_NOSUCHCHANNEL  "403"
 #define ERR_TOOMANYCHANNELS "405"
@@ -38,12 +34,25 @@
 #define RPL_NOTOPIC        "331"
 #define RPL_AWAY           "301"
 #define RPL_INVITING       "341"
+#define RPL_UMODEIS        "221"
+#define RPL_CHANNELMODEIS  "324"
+#define RPL_CREATIONTIME   "329"
 
-/*
-** =========================
-** GENERIC ERRORS
-** =========================
-*/
+#define ERR_USERSDONTMATCH "502"
+#define ERR_UMODEUNKNOWNFLAG "501"
+#define ERR_NOSUCHNICK      "401"
+#define ERR_NOSUCHSERVER    "402"
+#define ERR_CANNOTSENDTOCHAN "404"
+#define ERR_TOOMANYTARGETS  "407"
+#define ERR_NORECIPIENT     "411"
+#define ERR_NOTEXTTOSEND    "412"
+#define ERR_NOTOPLEVEL      "413"
+#define ERR_WILDTOPLEVEL    "414"
+
+#define RPL_AWAY            "301"
+
+
+
 #define MSG_ERR_NEEDMOREPARAMS(server, nick, cmd) \
     (std::string(":") + server + " 461 " + nick + " " + cmd + " :Not enough parameters\r\n")
 
@@ -53,11 +62,7 @@
 #define MSG_ERR_UNKNOWNCOMMAND(server, nick, cmd) \
     (std::string(":") + server + " 421 " + nick + " " + cmd + " :Unknown command\r\n")
 
-/*
-** =========================
-** CHANNEL ERRORS
-** =========================
-*/
+
 #define MSG_ERR_NOSUCHCHANNEL(server, nick, channel) \
     (std::string(":") + server + " 403 " + nick + " " + channel + " :No such channel\r\n")
 
@@ -91,11 +96,7 @@
 #define MSG_ERR_USERONCHANNEL(server, nick, target, channel) \
     (std::string(":") + server + " 443 " + nick + " " + target + " " + channel + " :is already on channel\r\n")
 
-/*
-** =========================
-** CHANNEL REPLIES
-** =========================
-*/
+
 #define MSG_RPL_TOPIC(server, nick, channel, topic) \
     (std::string(":") + server + " 332 " + nick + " " + channel + " :" + topic + "\r\n")
 
@@ -113,11 +114,7 @@
 #define RPL_MODE(server, nick, channel, mode, target) \
     (std::string(":") + nick + " MODE " + channel + " " + mode + \
     (target.empty() ? "" : " " + target) + "\r\n")
-/*
-** =========================
-** MESSAGING ERRORS
-** =========================
-*/
+
 #define MSG_ERR_NOSUCHNICK(server, nick, target) \
     (std::string(":") + server + " 401 " + nick + " " + target + " :No such nick/channel\r\n")
 
@@ -145,11 +142,6 @@
 #define MSG_RPL_AWAY(server, nick, target, message) \
     (std::string(":") + server + " 301 " + nick + " " + target + " :" + message + "\r\n")
 
-/*
-** =========================
-** INVITE / KICK
-** =========================
-*/
 #define MSG_RPL_INVITING(server, nick, target, channel) \
     (std::string(":") + server + " 341 " + nick + " " + target + " " + channel + "\r\n")
 
@@ -162,61 +154,25 @@
 #define MSG_KICK_WITHOUT_REASON(nick, user, host, target, channel) \
     (std::string(":") + nick + "!" + user + "@" + host + " KICK " + channel + " " + target + " :Kicked\r\n")
 
-
-
-/*
-** =========================
-** MODE NUMERICS
-** =========================
-*/
-#define RPL_UMODEIS        "221"
-#define RPL_CHANNELMODEIS  "324"
-#define RPL_CREATIONTIME   "329"
-
-#define ERR_USERSDONTMATCH "502"
-#define ERR_UMODEUNKNOWNFLAG "501"
-
-/*
-** =========================
-** MODE ERRORS
-** =========================
-*/
-
 #define MSG_ERR_USERSDONTMATCH(server, nick) \
     (std::string(":") + server + " 502 " + nick + " :Cannot change mode for other users\r\n")
 
 #define MSG_ERR_UMODEUNKNOWNFLAG(server, nick) \
     (std::string(":") + server + " 501 " + nick + " :Unknown MODE flag\r\n")
 
-/*
-** =========================
-** MODE REPLIES
-** =========================
-*/
-
 #define MSG_ERR_UNKNOWNMODE(server, nick, mode) \
     (std::string(":") + server + " 472 " + nick + " " + mode + " :is unknown mode char to me\r\n")
 #define MSG_ERR_INVALIDTOPIC(server, nick, channel) \
     (std::string(":") + server + " 461 " + nick + " " + channel + " :Invalid topic format (contains non-printable characters)\r\n")
 
-/* User mode (e.g. MODE nick) */
 #define MSG_RPL_UMODEIS(server, nick, modes) \
     (std::string(":") + server + " 221 " + nick + " " + modes + "\r\n")
 
-/* Channel mode query (MODE #chan) */
 #define MSG_RPL_CHANNELMODEIS(server, nick, channel, modes) \
     (std::string(":") + server + " 324 " + nick + " " + channel + " " + modes + "\r\n")
 
 #define MSG_RPL_CREATIONTIME(server, nick, channel, timestamp) \
     (std::string(":") + server + " 329 " + nick + " " + channel + " " + timestamp + "\r\n")
-
-/*
-** =========================
-** MODE COMMAND BROADCAST
-** =========================
-** Sent to users when modes change
-*/
-
 #define MSG_MODE_T_SET(nick, user, host, channel, topic) \
     (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " +t :" + topic + "\r\n")
 /* +i (invite-only) */
@@ -241,32 +197,6 @@
 #define MSG_MODE_O(nick, user, host, channel, sign, target) \
     (std::string(":") + nick + "!" + user + "@" + host + " MODE " + channel + " " + sign + "o " + target + "\r\n")
 
-
-
-
-
-/*
-** =========================
-** PRIVMSG NUMERICS
-** =========================
-*/
-#define ERR_NOSUCHNICK      "401"
-#define ERR_NOSUCHSERVER    "402"
-#define ERR_CANNOTSENDTOCHAN "404"
-#define ERR_TOOMANYTARGETS  "407"
-#define ERR_NORECIPIENT     "411"
-#define ERR_NOTEXTTOSEND    "412"
-#define ERR_NOTOPLEVEL      "413"
-#define ERR_WILDTOPLEVEL    "414"
-
-#define RPL_AWAY            "301"
-
-/*
-** =========================
-** PRIVMSG ERRORS
-** =========================
-*/
-
 #define MSG_ERR_NOSUCHNICK(server, nick, target) \
     (std::string(":") + server + " 401 " + nick + " " + target + " :No such nick/channel\r\n")
 
@@ -291,20 +221,9 @@
 #define MSG_ERR_WILDTOPLEVEL(server, nick, mask) \
     (std::string(":") + server + " 414 " + nick + " " + mask + " :Wildcard in toplevel domain\r\n")
 
-/*
-** =========================
-** PRIVMSG REPLY
-** =========================
-*/
 
 #define MSG_RPL_AWAY(server, nick, target, message) \
     (std::string(":") + server + " 301 " + nick + " " + target + " :" + message + "\r\n")
-
-/*
-** =========================
-** PRIVMSG DELIVERY (not numeric)
-** =========================
-*/
 
 #define MSG_PRIVMSG(nick, user, host, target, message) \
     (std::string(":") + nick + "!" + user + "@" + host + " PRIVMSG " + target + " :" + message + "\r\n")
