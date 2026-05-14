@@ -1,0 +1,249 @@
+#include "channel.hpp"
+
+
+std::map<int, Client*> Channel::getmembers ()
+{
+    return (_members);
+}
+
+Channel::Channel(const std::string& name) : _name(name), _key(""), _topicOwner(""), _topicSetTime(0)
+{
+    
+    _topic = "";
+    _inviteOnly =  false;
+    _topicRestricted =  false;
+    _userLimit = 0;
+}
+
+Channel::~Channel()
+{
+}
+
+Channel::Channel(std::string key, const std::string& name) : _name(name), _key(key), _topicOwner(""), _topicSetTime(0)
+{
+    
+    _topic = "";
+    _inviteOnly =  false;
+    _topicRestricted =  false;
+    _userLimit = 0;
+}
+
+void Channel::addClient(Client* c)
+{
+    std::map<int, Client*>::iterator it = _members.find(c->getFd());
+
+    if (it == _members.end())
+        _members[c->getFd()] = c;
+    else
+        std::cout << " the client allready exist\n";
+    std::cout << "this is the client : " << c->getName() << " wanna be added to channel : "<< getName() << "\n";
+}
+
+
+void Channel::setTopicOwner(std::string name)
+{
+    this->_topicOwner = name;
+}
+void Channel::setTopicSetTime(time_t time)
+{
+    this->_topicSetTime = time;
+}
+
+
+void Channel::removeClient(Client* c)
+{
+    std::map<int, Client*>::iterator it = _members.find(c->getFd());
+
+    if (it != _members.end())
+        _members.erase(c->getFd());
+    else
+        std::cout << " the client not exist\n";
+}
+
+
+bool Channel::hasClient(Client* c)
+{
+    return _members.find(c->getFd()) != _members.end();
+}
+
+bool Channel::hasKey() const
+{
+    return !this->_key.empty();
+}
+
+bool Channel::isInviteOnly() const
+{
+    return(this->_inviteOnly);
+}
+
+bool Channel::isTopicRestricted() const
+{
+    return (this->_topicRestricted);
+}
+
+bool Channel::hasUserLimit() const
+{
+    return this->_userLimit > 0;
+}
+
+size_t Channel::getUserLimit() const
+{
+    return this->_userLimit;
+}
+
+const std::string& Channel::getName() const
+{
+    return (this->_name);
+}
+
+const std::string& Channel::getTopic() const
+{
+    return (this->_topic);
+}
+
+std::string Channel::getKey() const
+{
+    return (this->_key);
+}
+
+void  Channel::setKey(std::string key)
+{
+    this->_key = key;
+}
+
+std::map<int, Client*> Channel::getMembers() const
+{
+    return this->_members;
+}
+
+void  Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
+void Channel::setUserLimit(size_t limit)
+{
+    if (limit == 0)
+    {
+        std::cout << "User wanna set limit less than 0\n";
+        return;
+    }
+    this->_userLimit = limit;
+}
+
+void Channel::setInviteOnly(bool inviteOnly)
+{
+    this->_inviteOnly = inviteOnly;
+}
+
+bool Channel::getInviteOnly() const
+{
+    return this->_inviteOnly;
+}
+
+
+std::string Channel::getModes()
+{
+    std::string modes = "";
+    if (this->_inviteOnly)
+        modes += "i";
+    if (this->_topicRestricted)
+        modes += "t";
+    if (this->hasKey())
+        modes += "k";
+    if (!this->_operators.empty())
+        modes += "o";
+    if (this->hasUserLimit())
+        modes += "l";
+    return modes;
+}
+std::string Channel::getModeParams()
+{
+    std::string params = "";
+    if (this->hasKey())
+        params += " " + this->_key;
+    if (!this->_operators.empty())
+    {
+        for (std::set<Client*>::iterator it = this->_operators.begin(); it != this->_operators.end(); ++it)
+        {
+            params += " " + (*it)->getNick();
+        }
+    }
+    if (this->hasUserLimit())
+    {
+        std::stringstream ss;
+        ss << this->_userLimit;
+        params += " " + ss.str();
+    }
+    return params;
+}
+
+std::set<Client*> Channel::getoperators() const
+{
+    return this->_operators;
+}
+
+bool Channel::isBanned(const Client& client) const
+{
+    std::vector<Client *>::const_iterator it = std::find(_banned.begin(), _banned.end(), &client);
+    return it != _banned.end();
+}
+
+void Channel::addOperator(Client* client)
+{
+    if (!client)
+        return;
+    _operators.insert(client);
+}
+
+void Channel::removeOperator(Client* client)
+{
+    if (!client)
+        return;
+    std::set<Client*>::iterator it = _operators.find(client);
+    if (it != _operators.end())
+        _operators.erase(it);
+}
+
+void Channel::addInvited(Client* client)
+{
+    if (!client)
+        return;
+    _invited.insert(client->getFd());
+}
+
+void Channel::removeInvited(Client* client)
+{
+    if (!client)
+        return;
+    std::set<int>::iterator it = _invited.find(client->getFd());
+    if (it != _invited.end())
+        _invited.erase(it);
+}
+
+bool Channel::isInvited(const Client& client) const
+{
+    return _invited.find(client.getFd()) != _invited.end();
+}
+
+
+bool Channel::isOperator(const Client& client) const
+{
+    std::set<Client *>::const_iterator it = _operators.find(const_cast<Client*>(&client));
+    return it != _operators.end();
+}
+
+
+
+void Channel::broadcastMsg(const std::string& msg, const std::map<int, Client*>& members, Client* sender, std::vector<pollfd>& _pollFds)
+{
+    std::map<int, Client*>::const_iterator it = members.begin();
+
+    for ( ;it != members.end(); it++)
+    {
+        if (sender && it->second->getFd() == sender->getFd())
+            continue;
+        else if (it->second)
+            it->second->appendSendBuffer(msg, _pollFds, 0);
+    }
+}
