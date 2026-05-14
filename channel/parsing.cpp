@@ -61,8 +61,6 @@ Client *Parsing::searchForClientref(std::string Nick , std::map<int, Client*> _a
 
 Parsing::~Parsing(){}
 
-
-//check for this  : RPL_TOPICWHOTIME (333)  "<client> <channel> <nick> <setat>"
 void Parsing::topic(std::string line, Client& client)
 {
     std::vector<std::string> holder = HelperSplit(line, ' ');

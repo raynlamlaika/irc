@@ -28,23 +28,12 @@ Channel::Channel(std::string key, const std::string& name) : _name(name), _key(k
     _userLimit = 0;
 }
 
-/*--- ----*/
-
-
-    // Membership
 void Channel::addClient(Client* c)
 {
-    // MAY check if the c is null or have no value later
-
-    // check if the client already in the channel
-    // _members[c.getFd()] = &c;
-    // check if there is  in key needed
-
-
     std::map<int, Client*>::iterator it = _members.find(c->getFd());
-    // user not exesit i the channel
+
     if (it == _members.end())
-        _members[c->getFd()] = c; // add the user
+        _members[c->getFd()] = c;
     else
         std::cout << " the client allready exist\n";
     std::cout << "this is the client : " << c->getName() << " wanna be added to channel : "<< getName() << "\n";
@@ -63,12 +52,10 @@ void Channel::setTopicSetTime(time_t time)
 
 void Channel::removeClient(Client* c)
 {
-    // check if the client already in the channel
     std::map<int, Client*>::iterator it = _members.find(c->getFd());
 
-    // user not exesit i the channel
     if (it != _members.end())
-        _members.erase(c->getFd()); // remove the user
+        _members.erase(c->getFd());
     else
         std::cout << " the client not exist\n";
 }
@@ -78,8 +65,6 @@ bool Channel::hasClient(Client* c)
 {
     return _members.find(c->getFd()) != _members.end();
 }
-
-/*---    ---*/
 
 bool Channel::hasKey() const
 {
@@ -140,10 +125,9 @@ void Channel::setUserLimit(size_t limit)
 {
     if (limit == 0)
     {
-        std::cout << "User limit must be greater than 0\n";
+        std::cout << "User wanna set limit less than 0\n";
         return;
     }
-    // check the max shoud be of the clinet in every channel
     this->_userLimit = limit;
 }
 

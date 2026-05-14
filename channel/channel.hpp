@@ -86,4 +86,5 @@ public:
 };
 
 bool validName(std::string name, Client *client);
+
 #endif
