@@ -10,7 +10,7 @@
 #include "Client.hpp"
 #include <vector>
 #include <map>
-#include <cstring>
+// #include <cstring>
 #include "../channel/parsing.hpp"
 #include <csignal>
 #include <fcntl.h>
