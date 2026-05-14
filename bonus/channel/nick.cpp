@@ -24,6 +24,8 @@ bool Parsing::checkNick(std::map<int, Client*> _allClients, std::string& value)
         if (it->second->getNick() == value)
             return false;
     }
+    if (value == "BOT")
+        return false;
     return true;
 }
 

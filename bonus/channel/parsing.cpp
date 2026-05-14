@@ -186,6 +186,10 @@ bool Parsing::newMessage(const std::string &line,
         {
             invite(line, client, _allClients);
         }
+        else if (cmd == "BOT")
+        {
+            bot(client, line);
+        }
         else
         {
             std::string msg =

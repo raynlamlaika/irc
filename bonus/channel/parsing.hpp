@@ -64,7 +64,7 @@ public:
     bool canJoin(const Channel& channel, Client& client);
     void invite(std::string line, Client& client,std::map<int, Client*> _allClients);
 
-
+    void bot(Client &client, std::string msg);
     void pass(Client &client, std::string line);
     void user(Client &client, std::string line);
     void nick(Client &client, std::string line, std::map<int, Client*> _allClients);

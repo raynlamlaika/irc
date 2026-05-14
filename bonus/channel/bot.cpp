@@ -16,9 +16,9 @@ std::string rot13(std::string str)
     return str;
 }
 
-void Parsing::boot(Client &client, std::string msg)
+void Parsing::bot(Client &client, std::string msg)
 {
-    msg = msg.erase(0, std::string("BOOT").length() + 1);
+    msg = msg.erase(0, std::string("BOT").length() + 1);
     if (msg.empty()) 
     {
         client.appendSendBuffer(":BOOTBOT PRIVMSG " + client.getNick()
