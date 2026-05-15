@@ -1,13 +1,13 @@
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 #-g3 -fsanitize=address
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SERVER = ircserv
 SERVER_BONUS = ircserv_bonus
 
-M_SERVER_SRC = ./Server/main.cpp ./Server/Server.cpp ./channel/parsing.cpp ./Server/Client.cpp \
-			 ./channel/Join.cpp ./channel/mode.cpp ./channel/prvmsg.cpp ./channel/pass.cpp \
-			 ./channel/nick.cpp ./channel/user.cpp ./channel/channel.cpp \
-			 ./channel/invite.cpp ./channel/kick.cpp
+M_SERVER_SRC = ./mandatory/Server/main.cpp ./mandatory/Server/Server.cpp ./mandatory/channel/parsing.cpp ./mandatory/Server/Client.cpp \
+			 ./mandatory/channel/Join.cpp ./mandatory/channel/mode.cpp ./mandatory/channel/prvmsg.cpp ./mandatory/channel/pass.cpp \
+			 ./mandatory/channel/nick.cpp ./mandatory/channel/user.cpp ./mandatory/channel/channel.cpp \
+			 ./mandatory/channel/invite.cpp ./mandatory/channel/kick.cpp
 			   
 
 B_SERVER_SRC = ./bonus/Server/main.cpp ./bonus/Server/Server.cpp ./bonus/channel/parsing.cpp ./bonus/Server/Client.cpp \
@@ -15,10 +15,10 @@ B_SERVER_SRC = ./bonus/Server/main.cpp ./bonus/Server/Server.cpp ./bonus/channel
 			 ./bonus/channel/nick.cpp ./bonus/channel/user.cpp ./bonus/channel/channel.cpp \
 			 ./bonus/channel/invite.cpp ./bonus/channel/kick.cpp ./bonus/channel/bot.cpp
 
-M_HEADERS = Server/Client.hpp Server/Server.hpp channel/channel.hpp \
-			channel/parsing.hpp channel/replices.hpp
+M_HEADERS = mandatory/Server/Client.hpp mandatory/Server/Server.hpp mandatory/channel/channel.hpp \
+			mandatory/channel/parsing.hpp mandatory/channel/replices.hpp
 
-B_HEADERS = bonus/Server/Client.hpp bonus/Server/Server.hpp channel/channel.hpp \
+B_HEADERS = bonus/Server/Client.hpp bonus/Server/Server.hpp bonus/channel/channel.hpp \
 			bonus/channel/parsing.hpp bonus/channel/replices.hpp
 
 SERVER_OBJ = $(M_SERVER_SRC:.cpp=.o)
@@ -34,7 +34,12 @@ $(SERVER): $(SERVER_OBJ)
 $(SERVER_BONUS): $(BONUS_OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-%.o: %.cpp $(M_HEADERS) $(B_HEADERS)
+
+bonus/%.o: bonus/%.cpp $(B_HEADERS)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+mandatory/%.o: mandatory/%.cpp $(M_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
@@ -45,4 +50,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all bonus clean fclean re
+.PHONY: clean 

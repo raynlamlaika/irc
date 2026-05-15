@@ -12,6 +12,7 @@
 #include "replices.hpp"
 #include  "../Server/Client.hpp"
 
+
 class Client;
 
 class Channel
@@ -51,7 +52,6 @@ public:
     std::string getModes();
     std::string getModeParams();
 
-    // Basic info
     const std::string& getName() const;
     const std::string& getTopic() const;
 
@@ -59,7 +59,6 @@ public:
     void addClient(Client* c);
     void removeClient(Client* c);
     bool hasClient(Client* c);
-
     bool hasKey() const;
     std::string getKey() const;
     bool isInviteOnly() const;

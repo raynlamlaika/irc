@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include <poll.h>
 
-
-
 class Client
 {
 private:

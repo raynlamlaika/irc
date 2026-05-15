@@ -24,6 +24,7 @@ typedef struct s_mode
     std::string param;
 } t_mode;
 
+
 class Parsing
 {
 private:
