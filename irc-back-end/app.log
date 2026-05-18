@@ -1,0 +1,73 @@
+[INFO] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Progress (1): 249 BProgress (2): 249 B | 255 BProgress (3): 249 B | 255 B | 243 BProgress (4): 249 B | 255 B | 243 B | 234 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 735 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 759 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 796 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 754 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
+Progress (1): 394 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 10 kB/s)
+Progress (1): 398 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 8.0 kB/s)
+Progress (1): 242 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 6.4 kB/s)
+Progress (1): 375 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 4.7 kB/s)
+[INFO] 
+[INFO] ------------------------< com.irc:irc-back-end >------------------------
+[INFO] Building irc-back-end 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.2:run (default-cli) > test-compile @ irc-back-end >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ irc-back-end ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ irc-back-end ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 3 source files with javac [debug parameters release 17] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ irc-back-end ---
+[INFO] skip non existing resourceDirectory /goinfre/rlamlaik/irc-back-end/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ irc-back-end ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target/test-classes
+[INFO] 
+[INFO] <<< spring-boot:3.3.2:run (default-cli) < test-compile @ irc-back-end <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.2:run (default-cli) @ irc-back-end ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-05-18T10:24:38.011+01:00  INFO 979294 --- [irc-back-end] [           main] c.i.irc_back_end.IrcBackEndApplication   : Starting IrcBackEndApplication using Java 17.0.18 with PID 979294 (/goinfre/rlamlaik/irc-back-end/target/classes started by rlamlaik in /goinfre/rlamlaik/irc-back-end)
+2026-05-18T10:24:38.013+01:00  INFO 979294 --- [irc-back-end] [           main] c.i.irc_back_end.IrcBackEndApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-05-18T10:24:38.657+01:00  INFO 979294 --- [irc-back-end] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-18T10:24:38.666+01:00  INFO 979294 --- [irc-back-end] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-18T10:24:38.666+01:00  INFO 979294 --- [irc-back-end] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.26]
+2026-05-18T10:24:38.700+01:00  INFO 979294 --- [irc-back-end] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-18T10:24:38.701+01:00  INFO 979294 --- [irc-back-end] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 655 ms
+2026-05-18T10:24:38.983+01:00  INFO 979294 --- [irc-back-end] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-18T10:24:38.993+01:00  INFO 979294 --- [irc-back-end] [           main] c.i.irc_back_end.IrcBackEndApplication   : Started IrcBackEndApplication in 1.25 seconds (process running for 1.457)
+2026-05-18T10:25:02.974+01:00  INFO 979294 --- [irc-back-end] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-18T10:25:02.975+01:00  INFO 979294 --- [irc-back-end] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-18T10:25:02.976+01:00  INFO 979294 --- [irc-back-end] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  51.644 s
+[INFO] Finished at: 2026-05-18T10:25:26+01:00
+[INFO] ------------------------------------------------------------------------
