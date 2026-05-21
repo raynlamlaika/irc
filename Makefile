@@ -42,6 +42,12 @@ bonus/%.o: bonus/%.cpp $(B_HEADERS)
 mandatory/%.o: mandatory/%.cpp $(M_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+run: $(SERVER_BONUS)
+	@mkdir -p logs
+	@stdbuf -oL -eL ./$(SERVER_BONUS) 6667 password 2>&1 | tee logs/server.log &
+	cd irc-back-end && mvn spring-boot:run
+
+
 clean:
 	rm -f $(SERVER_OBJ) $(BONUS_OBJ)
 
@@ -50,4 +56,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: clean 
+.PHONY: clean run

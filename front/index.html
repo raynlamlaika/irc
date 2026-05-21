@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IRC Back-end Tester</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 16px; }
+    input, button, select, textarea { margin: 4px 0; padding: 6px; }
+    .col { display: inline-block; vertical-align: top; width: 48%; }
+    .log { border: 1px solid #ccc; padding: 8px; height: 300px; overflow: auto; background:#f9f9f9 }
+    label { display:block; font-size: 13px; margin-top:8px }
+    .controls { margin-bottom: 12px }
+  </style>
+</head>
+<body>
+  <h2>IRC Back-end Manual Tester</h2>
+  <div class="col">
+    <div class="controls">
+      <label>Host <input id="host" value="127.0.0.1"></label>
+      <label>Port <input id="port" value="6667" type="number"></label>
+      <label>Password <input id="password" value="password"></label>
+      <label>Nickname <input id="nickname" value="rayn"></label>
+      <label>Real name <input id="realName" value="rayne"></label>
+      <button id="btnConnect">Connect</button>
+      <button id="btnConnectMsg">Connect+Join+Send</button>
+      <button id="btnStatus">Status</button>
+      <button id="btnDisconnect">Disconnect</button>
+    </div>
+
+    <div>
+      <label>Channel <input id="channel" value="#ultra"></label>
+      <label>Message <input id="message" value="hello from front"></label>
+      <button id="btnJoin">Join</button>
+      <button id="btnMessage">Send Message</button>
+      <button id="btnHistory">History</button>
+      <button id="btnSubscribe">Subscribe Events</button>
+      <button id="btnUnsubscribe">Unsubscribe Events</button>
+    </div>
+  </div>
+  <div class="col">
+    <div><strong>Response / Logs</strong></div>
+    <div id="log" class="log"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

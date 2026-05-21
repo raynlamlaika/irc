@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,26 +34,54 @@ class IrcService {
     private PrintWriter out;
     private BufferedReader in;
     private Thread listenerThread;
+    private String userId;
+    private final AtomicBoolean connecting = new AtomicBoolean(false);
 
     public IrcConnectionStatus connect(IrcConnectionRequest request) throws IOException {
-        synchronized (connectionLock) {
-            disconnectInternal();
-
-            socket = new Socket(request.host(), request.port());
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            if (request.password() != null && !request.password().isBlank()) {
-                out.println("PASS " + request.password());
-            }
-            out.println("NICK " + request.nickname());
-            out.println("USER " + request.nickname() + " 0 * :" + request.realName());
-
-            connected.set(true);
-            startListenerThread();
-            publish(new IrcEvent("system", "Connected to IRC server", Instant.now()));
+        if (connected.get()) {
             return status();
         }
+
+        if (!connecting.compareAndSet(false, true)) {
+            // another thread is already trying to connect — return current status so caller can retry/poll
+            return status();
+        }
+
+        IrcConnectionStatus result;
+        IrcEvent connectEvent = null;
+        try {
+            synchronized (connectionLock) {
+                // ensure previous resources are cleaned up before opening a new socket
+                disconnectInternal();
+
+                // use a connect timeout to avoid blocking indefinitely
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(request.host(), request.port()), 5000);
+
+                out = new PrintWriter(socket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                if (request.password() != null && !request.password().isBlank()) {
+                    out.println("PASS " + request.password());
+                }
+                out.println("NICK " + request.nickname());
+                out.println("USER " + request.nickname() + " 0 * :" + request.realName());
+
+                userId = UUID.randomUUID().toString();
+                connected.set(true);
+                startListenerThread();
+                connectEvent = new IrcEvent("system", "Connected to IRC server", Instant.now());
+                result = status();
+            }
+        } finally {
+            connecting.set(false);
+        }
+
+        if (connectEvent != null) {
+            publish(connectEvent);
+        }
+
+        return result;
     }
 
     public IrcConnectionStatus status() {
@@ -59,22 +89,43 @@ class IrcService {
     }
 
     public void disconnect() {
+        IrcEvent disconnectEvent;
         synchronized (connectionLock) {
             disconnectInternal();
-            publish(new IrcEvent("system", "Disconnected from IRC server", Instant.now()));
+            disconnectEvent = new IrcEvent("system", "Disconnected from IRC server", Instant.now());
         }
+
+        publish(disconnectEvent);
     }
 
-    public void joinChannel(String channel) {
+    public IrcEvent joinChannel(String channel)
+    {
         ensureConnected();
         out.println("JOIN " + channel);
-        publish(new IrcEvent("client", "JOIN " + channel, Instant.now()));
+
+        IrcEvent event = new IrcEvent(currentUserId(), "JOIN " + channel, Instant.now());
+        publish(event);
+        return event;
     }
 
     public void sendMessage(String message, String target) {
         ensureConnected();
         out.println("PRIVMSG " + target + " :" + message);
-        publish(new IrcEvent("client", target + ": " + message, Instant.now()));
+        publish(new IrcEvent(currentUserId(), target + ": " + message, Instant.now()));
+    }
+
+    public IrcEvent connectJoinAndSend(IrcChannelMessageRequest request) throws IOException {
+        connect(new IrcConnectionRequest(
+            request.host(),
+            request.port(),
+            request.password(),
+            request.nickname(),
+            request.realName()));
+
+        joinChannel(request.channel());
+        sendMessage(request.message(), request.channel());
+
+        return new IrcEvent(currentUserId(), request.channel() + ": " + request.message(), Instant.now());
     }
 
     public IrcHistoryResponse history() {
@@ -144,6 +195,11 @@ class IrcService {
         in = null;
         out = null;
         socket = null;
+        userId = null;
+    }
+
+    private String currentUserId() {
+        return userId != null ? userId : "unknown";
     }
 
     private void publish(IrcEvent event) {
@@ -185,6 +241,16 @@ record IrcChannelRequest(@NotBlank String channel) {
 }
 
 record IrcMessageRequest(@NotBlank String channel, @NotBlank String message) {
+}
+
+record IrcChannelMessageRequest(
+    @NotBlank String host,
+    @Min(1) int port,
+    String password,
+    @NotBlank String nickname,
+    @NotBlank String realName,
+    @NotBlank String channel,
+    @NotBlank String message) {
 }
 
 record IrcEvent(String source, String message, Instant timestamp) {

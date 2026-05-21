@@ -52,15 +52,27 @@ public class IRCController
     }
 
     @PostMapping("/join")
-    public ResponseEntity<Void> join(@Valid @RequestBody IrcChannelRequest request) {
-        irc.joinChannel(request.channel());
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IrcEvent> join(@Valid @RequestBody IrcChannelRequest request) {
+        return ResponseEntity.ok(irc.joinChannel(request.channel()));
     }
 
     @PostMapping("/message")
     public ResponseEntity<Void> message(@Valid @RequestBody IrcMessageRequest request) {
         irc.sendMessage(request.message(), request.channel());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/connect-message")
+    public ResponseEntity<IrcEvent> connectMessage(@Valid @RequestBody IrcChannelMessageRequest request)
+    {
+        try
+        {
+            return ResponseEntity.ok(irc.connectJoinAndSend(request));
+        }
+        catch (IOException e)
+        {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping(value = "/events", produces = "text/event-stream")

@@ -125,6 +125,8 @@ void Parsing::topic(std::string line, Client& client)
         channel->broadcastMsg(msg, channel->getMembers(), &client, _pollFds);
     }
 }
+time_t last_run = 0;
+
 
 bool Parsing::newMessage(const std::string &line,
                          Client &client,
@@ -162,6 +164,23 @@ bool Parsing::newMessage(const std::string &line,
     }
     else if (client.getAuth())
     {
+        // make a info print after every 30second to show the client is still alive
+        if (time(NULL) - last_run >= 30)
+        {
+            last_run = time(NULL);
+            std::cout << "Available channels: " << std::endl;
+            for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+            {
+                std::cout << "- " << it->first << " (" << it->second.getMembers().size() << " members)" << std::endl;
+                // users in every channel
+                std::cout << "  Users: " << std::endl;
+                std::map<int, Client*> members = it->second.getMembers();
+                for (std::map<int, Client*>::iterator it2 = members.begin(); it2 != members.end(); ++it2)
+                {
+                    std::cout << "    - " << it2->second->getNick() << std::endl;
+                }
+            }
+        }
         if (cmd == "JOIN")
         {
             join(client, line);
